@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace NeuralEvolution
 {
+	// Basic demo program checking basic functions of the network
 	class Program
 	{
 		static void Main(string[] args)
@@ -117,6 +118,7 @@ namespace NeuralEvolution
 			///////////////////////
 			List<Innovation> innovations = new List<Innovation>();
 			Genome gen3 = new Genome(r);
+			gen3.ParentSimulation = tmpSim;
 
 			gen3.addNode(new Node(Node.ENodeType.SENSOR, 1));
 			gen3.addNode(new Node(Node.ENodeType.SENSOR, 2));
@@ -135,6 +137,7 @@ namespace NeuralEvolution
 			// Test add connection mutation
 			///////////////////////
 			Genome gen4 = new Genome(r);
+			gen4.ParentSimulation = tmpSim;
 
 			// Create 3 sensors
 			gen4.addNode(new Node(Node.ENodeType.SENSOR, 1));
