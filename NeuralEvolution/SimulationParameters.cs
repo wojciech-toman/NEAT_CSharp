@@ -14,9 +14,9 @@
 		public float WeightMutationPower { get; set; } = 2.5f;                  // Maximum value by which connection weight can change as a result of mutation
 		public float SpeciesStagnationPenalty { get; set; } = 0.01f;            // Extreme penalty for species not improving for too long
 
-		public float MutateToggleEnabledProbability = 0.0f;                     // Probability of changing 'enabled' status of a connection gene
-		public float MutateReenableProbability = 0.0f;                          // Probability of reenabling previously disabled connection gene
-		public float RecurrencyProbability = 0.0f;                              // Probability of adding recurrent link
+		public float MutateToggleEnabledProbability { get; set; } = 0.0f;       // Probability of changing 'enabled' status of a connection gene
+		public float MutateReenableProbability { get; set; } = 0.0f;            // Probability of reenabling previously disabled connection gene
+		public float RecurrencyProbability { get; set; } = 0.0f;                // Probability of adding recurrent link
 
 		// Coefficients used by the compatibility function
 		public float c1 { get; set; } = 1.0f;
