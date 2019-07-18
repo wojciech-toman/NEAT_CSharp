@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace NeuralEvolution
 {
 	[Serializable]
+	// A node (neuron) in the network. It can be marked as SENSOR (input), BIAS, OUTPUT, HIDDEN (belonging to one of the hidden layers).
 	public class Node
 	{
 		public enum ENodeType

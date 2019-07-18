@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace NeuralEvolution
 {
 	[Serializable]
+	// An undirected edge in the network connecting two nodes
 	public class Link
 	{
 		public Node InNode { get; set; }

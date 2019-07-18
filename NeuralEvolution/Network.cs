@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace NeuralEvolution
 {
 	[Serializable]
+	// Neural network with nodes and connections between them.
 	public class Network
 	{
 		private List<Node> nodes = new List<Node>();
@@ -59,6 +60,8 @@ namespace NeuralEvolution
 
 		public void addNode(Node node)
 		{
+			if (node == null) throw new ArgumentNullException(nameof(node));
+
 			this.nodes.Add(node);
 			if (node.NodeType == Node.ENodeType.SENSOR || node.NodeType == Node.ENodeType.BIAS)
 				this.inputNodes.Add(node);
@@ -69,6 +72,8 @@ namespace NeuralEvolution
 		// Call after adding all nodes
 		public void addLink(Link link)
 		{
+			if (link == null) throw new ArgumentNullException(nameof(link));
+
 			this.links.Add(link);
 			bool inNodeFound = false, outNodeFound = false;
 			foreach (Node n in this.nodes)
@@ -95,6 +100,8 @@ namespace NeuralEvolution
 
 		public void setInput(float[] input)
 		{
+			if (input == null) throw new ArgumentNullException(nameof(input));
+
 			if (input.Length != this.inputNodes.Count)
 			{
 				Console.WriteLine("Error: invalid number of input elements!!!");
@@ -217,6 +224,8 @@ namespace NeuralEvolution
 		{
 			if (++count > thresh)
 				return false;
+
+			if (inNode == null) throw new ArgumentNullException(nameof(inNode));
 
 			if (inNode == outNode) return true;
 			else

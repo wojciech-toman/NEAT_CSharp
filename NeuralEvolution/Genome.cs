@@ -10,6 +10,7 @@ using System.Xml.Serialization;
 namespace NeuralEvolution
 {
 	[Serializable]
+	// Genome represents a single Neural Network.
 	public class Genome
 	{
 		private List<ConnectionGene> connectionGenes = new List<ConnectionGene>();
@@ -25,7 +26,7 @@ namespace NeuralEvolution
 		[NonSerialized] private Simulation parentSimulation = null;
 
 
-		protected int localInnovationCounter = 0;
+		private int localInnovationCounter = 0;
 
 
 		public int NextInnovationNumber()
@@ -46,6 +47,8 @@ namespace NeuralEvolution
 		// Create genome from the existing network (for instance loaded from file)
 		public Genome(Network net, Random rnd) : this(rnd)
 		{
+			if (net == null) throw new ArgumentNullException(nameof(net));
+
 			// First add all nodes
 			foreach (Node n in net.Nodes)
 			{
@@ -79,8 +82,6 @@ namespace NeuralEvolution
 				formatter.Serialize(memoryStream, this);
 				memoryStream.Seek(0, SeekOrigin.Begin);
 				result = (Genome)formatter.Deserialize(memoryStream);
-
-				memoryStream.Close();
 			}
 
 			result.random = this.random;
@@ -142,6 +143,8 @@ namespace NeuralEvolution
 
 		public void insertGene(ConnectionGene gene)
 		{
+			if (gene == null) throw new ArgumentNullException(nameof(gene));
+
 			int innovation = gene.Innovation;
 			int i = 0;
 			for(i = 0; i < this.connectionGenes.Count; ++i)
@@ -217,6 +220,9 @@ namespace NeuralEvolution
 
 		public Genome crossover(Genome gen2, Random rnd)
 		{
+			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
+			if (rnd == null) throw new ArgumentNullException(nameof(rnd));
+
 			Genome gen1 = this;
 			Genome child = new Genome(rnd);
 			child.ParentSimulation = gen1.ParentSimulation;
@@ -287,6 +293,9 @@ namespace NeuralEvolution
 		// Performs crossover by averaging both genomes
 		public Genome crossoverAverage(Genome gen2, Random rnd)
 		{
+			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
+			if (rnd == null) throw new ArgumentNullException(nameof(rnd));
+
 			Genome gen1 = this;
 			Genome child = new Genome(rnd);
 			child.ParentSimulation = gen1.ParentSimulation;
@@ -357,6 +366,8 @@ namespace NeuralEvolution
 
 		public void addConnectionMutation(List<Innovation> innovations)
 		{
+			if (innovations == null) throw new ArgumentNullException(nameof(innovations));
+
 			// Find first non-sensor node, so the target is never a sensor
 			int minTargetNode = 0;
 			while (this.nodes[minTargetNode].NodeType == Node.ENodeType.SENSOR || this.nodes[minTargetNode].NodeType == Node.ENodeType.BIAS)
@@ -493,6 +504,8 @@ namespace NeuralEvolution
 
 		public void addNodeMutation(List<Innovation> innovations)
 		{
+			if (innovations == null) throw new ArgumentNullException(nameof(innovations));
+
 			// If there are no genes at all, return
 			if (connectionGenes.Count == 0)
 				return;
@@ -625,6 +638,9 @@ namespace NeuralEvolution
 
 		public static int excessGenesCount(Genome gen1, Genome gen2)
 		{
+			if (gen1 == null) throw new ArgumentNullException(nameof(gen1));
+			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
+
 			// Handle special case when one of the genomes is completely empty
 			if (gen1.getConnectionGenes().Count == 0 || gen2.getConnectionGenes().Count == 0)
 				return Math.Max(gen1.getConnectionGenes().Count, gen2.getConnectionGenes().Count);
@@ -655,6 +671,9 @@ namespace NeuralEvolution
 
 		public static int disjointGenesCount(Genome gen1, Genome gen2)
 		{
+			if (gen1 == null) throw new ArgumentNullException(nameof(gen1));
+			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
+
 			// Handle special case when one of the genomes is completely empty
 			if (gen1.getConnectionGenes().Count == 0 || gen2.getConnectionGenes().Count == 0)
 				return 0;
@@ -680,6 +699,9 @@ namespace NeuralEvolution
 
 		public static int matchingGenesCount(Genome gen1, Genome gen2)
 		{
+			if (gen1 == null) throw new ArgumentNullException(nameof(gen1));
+			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
+
 			// Handle special case when one of the genomes is completely empty
 			if (gen1.getConnectionGenes().Count == 0 || gen2.getConnectionGenes().Count == 0)
 				return 0;
@@ -705,6 +727,9 @@ namespace NeuralEvolution
 
 		public static float getAverageWeightDifference(Genome gen1, Genome gen2)
 		{
+			if (gen1 == null) throw new ArgumentNullException(nameof(gen1));
+			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
+
 			// Handle special case when one of the genomes is completely empty
 			if (gen1.getConnectionGenes().Count == 0 || gen2.getConnectionGenes().Count == 0)
 				return 0.0f;
@@ -740,6 +765,8 @@ namespace NeuralEvolution
 		// number of disjoint and excess nodes as well as on an average connection weight difference
 		public float compatibilityDistance(Genome gen2)
 		{
+			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
+
 			int N = Math.Max(this.getConnectionGenes().Count, gen2.getConnectionGenes().Count);
 			// Handle special case when both genomes have no genes at all
 			if (N == 0) return 0.0f;

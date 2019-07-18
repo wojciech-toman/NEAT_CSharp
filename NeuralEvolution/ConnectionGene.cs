@@ -23,7 +23,7 @@ namespace NeuralEvolution
 			this.Weight = weight;
 			this.IsEnabled = isExpressed;
 			this.Innovation = innovation;
-			this.IsRecurrent = IsRecurrent;
+			this.IsRecurrent = isRecurrent;
 		}
 
 		public ConnectionGene copy()

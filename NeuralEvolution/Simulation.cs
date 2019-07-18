@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace NeuralEvolution
 {
+	// Main class of the simulation.
+	// Basically it allows to set parameters of the simulation and then to run each iteration of the simulation by
+	// calling epoch() method.
 	// TODO: add option to perform extinction of all species due to stagnation and then recreate population with new
 	// random genomes?
 	public class Simulation
@@ -36,7 +39,7 @@ namespace NeuralEvolution
 			//const float uniformPerturbProbability = 0.9f;
 			//const float perturbationRate = 0.3f;
 			public bool AreConnectionWeightsCapped { get; set; } = true;            // Tells whether connection weight bound is used (if not, weights can take arbitrary value)
-			public float MaxWeight { get; set; } = 8.0f;                            // Maximum value, a connection weight can take
+			public float MaxWeight { get; set; } = 8.0f;                            // Maximum value a connection weight can take
 			public float DisableGeneProbability { get; set; } = 0.75f;              // Probability of disabling connection gene if it was disabled in either of parents
 
 			public float CompatibilityThreshold { get; set; } = 3.0f;               // Compatibility threshold used when comparing 2 genomes for similarity
@@ -61,6 +64,8 @@ namespace NeuralEvolution
 		// Spawn population from a single genome and with populationSize number of organisms
 		public Simulation(Random rnd, Genome basicGenome, int populationSize)
 		{
+			if (basicGenome == null) throw new ArgumentNullException(nameof(basicGenome));
+
 			this.populationSize = populationSize;
 			this.random = rnd;
 
@@ -100,6 +105,10 @@ namespace NeuralEvolution
 			}
 		}
 
+		// Advances the NEAT simulation to the next step. This involves several steps:
+		// 1. Penalize the species that didn't improve for a long time - the idea is to minimize their chances of getting offspring
+		// 2. Remove genomes marked for deletion (stagnant)
+		// 3. Reproduce the species (genome's offspring count is based on its fitness function result)
 		public void epoch()
 		{
 			if (this.Genomes.Count > this.populationSize)

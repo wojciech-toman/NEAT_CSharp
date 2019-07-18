@@ -8,6 +8,8 @@ namespace NeuralEvolution
 {
 	// TODO: add 'elitism' - option to move more than one of the best genomes of the species to the next generation unchanged
 	[Serializable]
+	// Species is basically a collection of genomes sharing some common features. Each species have Champion - the best performing
+	// Genome in the previous epoch of simulation.
 	public class Species
 	{
 		List<Genome> genomes = new List<Genome>();
@@ -100,6 +102,8 @@ namespace NeuralEvolution
 		// Performs reproduction of organisms in the genomes list
 		public void reproduce(List<Genome> nextGeneration, List<Innovation> innovations)
 		{
+			if (nextGeneration == null) throw new ArgumentNullException(nameof(nextGeneration));
+
 			if (this.Offspring <= 0) return;
 
 			bool championCloned = false;
