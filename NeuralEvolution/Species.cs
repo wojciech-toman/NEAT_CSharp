@@ -8,15 +8,14 @@ namespace NeuralEvolution
 {
 	// TODO: add 'elitism' - option to move more than one of the best genomes of the species to the next generation unchanged
 	[Serializable]
-	// Species is basically a collection of genomes sharing some common features. Each species have Champion - the best performing
+	// Species is basically a collection of genomes sharing some common features ('distance'). Each species have Champion - the best performing
 	// Genome in the previous epoch of simulation.
 	public class Species
 	{
-		List<Genome> genomes = new List<Genome>();
-		Genome champion = null;
-		Random random = null;
+		private List<Genome> genomes = new List<Genome>();
+		private Genome champion = null;
+		private Random random = null;
 
-		double maxFitnessEver = -1.0;
 		public int Age { get; set; }
 
 		// Population to which this species belongs
@@ -27,7 +26,7 @@ namespace NeuralEvolution
 		public int LastImprovementAge { get; set; }
 		public bool ShouldBeObliterated { get; set; }
 		// Maximum property ever registered by this species
-		public double MaxFitnessEver { get { return this.maxFitnessEver; } }
+		public double MaxFitnessEver { get; private set; } = -1.0;
 
 		public List<Innovation> Innovations { get; set; }
 		public int ChampionOffspring { get; internal set; }
@@ -253,9 +252,9 @@ namespace NeuralEvolution
 			this.orderGenomes();
 
 			// If current best fitness is greater than maximum fitness ever found, there's improvement
-			if (this.genomes[0].OriginalFitness > maxFitnessEver)
+			if (this.genomes[0].OriginalFitness > MaxFitnessEver)
 			{
-				this.maxFitnessEver = this.genomes[0].OriginalFitness;
+				this.MaxFitnessEver = this.genomes[0].OriginalFitness;
 				this.LastImprovementAge = this.Age;
 			}
 

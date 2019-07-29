@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace NeuralEvolution
+using NeuralEvolution;
+
+namespace NeuralEvolutionDemo
 {
 	// Basic demo program checking basic functions of the network
 	class Program
@@ -453,9 +452,11 @@ namespace NeuralEvolution
 
 				Console.WriteLine(String.Format("Epoch {0} | best: {1} | best output: [{2}, {3}, {4}, {5}] | avg genes: {6} | species: {7}", i, epochBestFitness, bestOutput[0], bestOutput[1], bestOutput[2], bestOutput[3], avgConnectionGenes, sim.Species.Count));
 
+				// We found a solution so we can exit already
 				if (solutionFound)
 					break;
 
+				// Advance to the next step of simulation
 				sim.epoch();
 			}
 

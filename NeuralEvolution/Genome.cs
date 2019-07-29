@@ -11,6 +11,7 @@ namespace NeuralEvolution
 {
 	[Serializable]
 	// Genome represents a single Neural Network.
+	// You need to create at least one object of Genome type and pass it to Simulation constructor.
 	public class Genome
 	{
 		private List<ConnectionGene> connectionGenes = new List<ConnectionGene>();
@@ -133,6 +134,7 @@ namespace NeuralEvolution
 			return this.network;
 		}
 
+		// Adds a new node to the genome
 		public void addNode(Node node)
 		{
 			this.nodes.Add(node);
@@ -155,6 +157,7 @@ namespace NeuralEvolution
 			this.connectionGenes.Insert(i, gene);
 		}
 
+		// Adds a connection gene to the genome. Connection gene is equivalent of an edge in the network (it connects two nodes)
 		public void addConnection(ConnectionGene gene)
 		{
 			this.insertGene(gene);
@@ -176,16 +179,21 @@ namespace NeuralEvolution
 			this.phenotypeChanged = true;
 		}
 
+		// Adds a connection gene to the genome by connecting nodes with inNode and outNode indices.
+		// Connection gene is equivalent of an edge in the network (it connects two nodes)
 		public void addConnection(int inNode, int outNode)
 		{
 			this.addConnection(inNode, outNode, true);
 		}
 
+		// Adds a connection gene to the genome by connecting nodes with inNode and outNode indices and setting the weight.
+		// Connection gene is equivalent of an edge in the network (it connects two nodes)
 		public void addConnection(int inNode, int outNode, float weight)
 		{
 			this.addConnection(inNode, outNode, true, this.NextInnovationNumber(), weight);
 		}
 
+		// Adds a connection gene to the genome. Connection gene is equivalent of an edge in the network (it connects two nodes)
 		public void addConnection(int inNode, int outNode, bool isExpressed)
 		{
 			//this.connectionGenes.Add(new ConnectionGene(this.getNode(inNode), this.getNode(outNode), 1.0f, isExpressed, this.NextInnovationNumber()));
@@ -210,6 +218,7 @@ namespace NeuralEvolution
 			return this.connectionGenes;
 		}
 
+		// Helper method printing basic information about the genome
 		public void debugPrint()
 		{
 			for (int i = 0; i < this.connectionGenes.Count; ++i)
@@ -218,6 +227,7 @@ namespace NeuralEvolution
 			}
 		}
 
+		#region Mutations
 		public Genome crossover(Genome gen2, Random rnd)
 		{
 			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
@@ -364,6 +374,7 @@ namespace NeuralEvolution
 			return child;
 		}
 
+		// Mutation that creates new connection between 2 nodes.
 		public void addConnectionMutation(List<Innovation> innovations)
 		{
 			if (innovations == null) throw new ArgumentNullException(nameof(innovations));
@@ -502,6 +513,7 @@ namespace NeuralEvolution
 			}
 		}
 
+		// Mutation that creates new node in the genome.
 		public void addNodeMutation(List<Innovation> innovations)
 		{
 			if (innovations == null) throw new ArgumentNullException(nameof(innovations));
@@ -576,6 +588,7 @@ namespace NeuralEvolution
 			this.phenotypeChanged = true;
 		}
 
+		// Mutation that changes connection weights.
 		public void mutateWeights(float mutationPower)
 		{
 			bool severeMutation = false;
@@ -635,6 +648,23 @@ namespace NeuralEvolution
 
 			this.phenotypeChanged = true;
 		}
+
+		// Mutation that reenables previously disabled connection gene
+		internal void reenableMutation()
+		{
+			// Find first disabled gene and reenable it
+			foreach (ConnectionGene gene in this.connectionGenes)
+			{
+				if (!gene.IsEnabled)
+				{
+					gene.IsEnabled = true;
+					break;
+				}
+			}
+			this.phenotypeChanged = true;
+		}
+
+		#endregion
 
 		public static int excessGenesCount(Genome gen1, Genome gen2)
 		{
@@ -759,10 +789,10 @@ namespace NeuralEvolution
 			return difference / matchingCount;
 		}
 
-		// TODO: compatibility distance should calculate everything in one place to avoid too many 'while' loops for
-		// performance reasons
 		// Calculates compatibility distance between 'this' genome and another one. Result is based on the difference in the
 		// number of disjoint and excess nodes as well as on an average connection weight difference
+		// TODO: compatibility distance should calculate everything in one place to avoid too many 'while' loops for
+		// performance reasons
 		public float compatibilityDistance(Genome gen2)
 		{
 			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
@@ -787,20 +817,6 @@ namespace NeuralEvolution
 		public List<Node> getNodes()
 		{
 			return this.nodes;
-		}
-
-		internal void reenableMutation()
-		{
-			// Find first disabled gene and reenable it
-			foreach (ConnectionGene gene in this.connectionGenes)
-			{
-				if (!gene.IsEnabled)
-				{
-					gene.IsEnabled = true;
-					break;
-				}
-			}
-			this.phenotypeChanged = true;
 		}
 
 		internal void toggleEnabledMutation()

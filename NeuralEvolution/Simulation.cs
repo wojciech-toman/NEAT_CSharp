@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace NeuralEvolution
 {
 	// Main class of the simulation.
-	// Basically it allows to set parameters of the simulation and then to run each iteration of the simulation by
-	// calling epoch() method.
+	// To set up a simulation you need to call constructor and pass it initial genome (initial neural network). Then you can
+	// advance the simulation by calling epoch() method.
 	// TODO: add option to perform extinction of all species due to stagnation and then recreate population with new
 	// random genomes?
 	public class Simulation
@@ -26,7 +26,7 @@ namespace NeuralEvolution
 		public SimulationParameters Parameters { get; set; } = new SimulationParameters();
 
 
-		// Spawn population from a single genome and with populationSize number of organisms
+		// Spawn population from a single genome (this will be initial state) and with populationSize number of organisms.
 		public Simulation(Random rnd, Genome basicGenome, int populationSize)
 		{
 			if (basicGenome == null) throw new ArgumentNullException(nameof(basicGenome));
