@@ -420,7 +420,7 @@ namespace NeuralEvolution
 						Node netNode1 = net.getNodeById(node1.ID);
 						Node netNode2 = net.getNodeById(node2.ID);
 						if (netNode1 != null && netNode2 != null)
-							recurFlag = net.isRecurrentConnection(netNode1, netNode2, 0, this.nodes.Count * this.nodes.Count);
+							recurFlag = (parentSimulation.Parameters.RecurrencyProbability > 0.0f && net.isRecurrentConnection(netNode1, netNode2, 0, this.nodes.Count * this.nodes.Count));
 						// Connections outgoing from Output nodes are considered recurrent
 						if (node1.NodeType == Node.ENodeType.OUTPUT)
 							recurFlag = true;
@@ -462,7 +462,7 @@ namespace NeuralEvolution
 							Node netNode1 = net.getNodeById(node1.ID);
 							Node netNode2 = net.getNodeById(node2.ID);
 							if(netNode1 != null && netNode2 != null)
-								recurFlag = net.isRecurrentConnection(netNode1, netNode2, 0, this.nodes.Count * this.nodes.Count);
+								recurFlag = (parentSimulation.Parameters.RecurrencyProbability > 0.0f && net.isRecurrentConnection(netNode1, netNode2, 0, this.nodes.Count * this.nodes.Count));
 							// Connections outgoing from Output nodes are considered recurrent
 							if (node1.NodeType == Node.ENodeType.OUTPUT)
 								recurFlag = true;

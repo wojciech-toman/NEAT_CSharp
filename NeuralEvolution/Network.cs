@@ -181,6 +181,7 @@ namespace NeuralEvolution
 						// TODO: move activation function outside (maybe to the Program.cs) so it's more flexible
 						float constant = 4.924273f; // Used to steepen the function
 						node.Activation = (float)(1.0f / (1.0f + Math.Exp(-constant * node.ActivationSum)));
+						//node.Activation = (float)(1.0f / (1.0f + (Math.Exp(-(constant * node.ActivationSum - 2.4621365)))));
 
 						node.ActivationCount++;
 					}

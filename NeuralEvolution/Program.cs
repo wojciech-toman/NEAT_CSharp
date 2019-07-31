@@ -5,6 +5,672 @@ using NeuralEvolution;
 
 namespace NeuralEvolutionDemo
 {
+	using NeuralEvolution;
+	using System;
+	using System.Collections;
+	using System.Collections.Generic;
+    using System.Threading;
+
+    public struct Point
+	{
+		public int x;
+		public int y;
+	}
+
+	public class SnakeSimulation
+	{
+		Simulation sim;
+		System.Random rnd = new System.Random();
+
+		private int numberOfRuns = 1;
+
+
+		Dictionary<Species, List<float>> fitnessDict = new Dictionary<Species, List<float>>();
+
+		List<float> bestFitnesses = new List<float>();
+		List<float> avgFitnesses = new List<float>();
+		float snakeBestAvg = 0.0f;
+
+		List<int> speciesCount = new List<int>();
+
+		// Use this for initialization
+		public void Start()
+		{
+			this.InitSimulation();
+
+			this.isSimulationStarted = true;
+		}
+
+		string dirName;
+		private void InitSimulation()
+		{
+			Snake.StartingLength = 1;// 3;// int.Parse(this.startingSnakeLength.text);
+
+			Genome startGenome = new Genome(rnd);
+			int inputs = 3 + 1 + 3 + 3;
+			// 3 nodes are used to store distance to food and
+			// 1 node is used as a bias
+			// 3 nodes are used to store distance to the snake itself (to avoid collisions with self - hopefully) and
+			// 3 nodes are used to store distance to the walls
+			for (int i = 0; i < inputs; ++i)
+				startGenome.addNode(new Node(i != 3 ? Node.ENodeType.SENSOR : Node.ENodeType.BIAS, i + 1));
+
+			// Output: Move left, right, straight
+			int outputStart = inputs + 1;
+			startGenome.addNode(new Node(Node.ENodeType.OUTPUT, outputStart + 0));
+			startGenome.addNode(new Node(Node.ENodeType.OUTPUT, outputStart + 1));
+			startGenome.addNode(new Node(Node.ENodeType.OUTPUT, outputStart + 2));
+
+
+			// Food distance
+			startGenome.addConnection(1, outputStart + 0, 0.0f);
+			startGenome.addConnection(2, outputStart + 2, 0.0f);
+			startGenome.addConnection(3, outputStart + 1, 0.0f);
+
+			// Tails distance
+			startGenome.addConnection(5, outputStart + 0, 0.0f);
+			startGenome.addConnection(6, outputStart + 2, 0.0f);
+			startGenome.addConnection(7, outputStart + 1, 0.0f);
+
+			// Walls distance
+			startGenome.addConnection(8, outputStart + 0, 0.0f);
+			startGenome.addConnection(9, outputStart + 2, 0.0f);
+			startGenome.addConnection(10, outputStart + 1, 0.0f);
+
+			// Connect bias to every output
+			startGenome.addConnection(4, outputStart + 0, 0.0f);
+			startGenome.addConnection(4, outputStart + 1, 0.0f);
+			startGenome.addConnection(4, outputStart + 2, 0.0f);
+
+
+			// Start simulation
+			sim = new Simulation(rnd, startGenome, 150);
+			sim.Parameters.AddNodeProbability = 0.02f;
+			sim.Parameters.AddConnectionProbability = 0.1f;
+			sim.Parameters.WeightMutationPower = 1.0f;
+			sim.Parameters.MutateConnectionWeightsProbability = 0.8f;
+			sim.Parameters.MutateToggleEnabledProbability = 0.05f;
+			sim.Parameters.MutateReenableProbability = 0.025f;
+			sim.Parameters.AreConnectionWeightsCapped = true;
+			sim.Parameters.MaxWeight = 2.0f;
+			sim.Parameters.MaxSpeciesGenerationsWithoutImprovement = 70;
+			sim.Parameters.MaxGeneralGenerationsWithoutImprovement = 80;
+		}
+
+		// Update is called once per frame
+		public void Update()
+		{
+			if (isSimulationStarted)
+				Sim();
+		}
+
+		List<NeuralEvolution.Network> bestNetworks = new List<NeuralEvolution.Network>();
+
+		public int generationID = 1;
+		List<Snake> allSnakes = new List<Snake>();
+		bool firstTime = true;
+		bool isSimulationStarted = false;
+		double bestFitnessEver = 0.0f;
+		int run = 0;
+
+		private static void waitCallBack(Snake snake, CountdownEvent evt)
+		{
+			snake.Move();
+			evt.Signal();
+		}
+
+		double bestScore = -1;
+
+		void Sim()
+		{
+			if (bestFitnessEver > bestScore)
+			{
+				Console.WriteLine("");
+				Console.WriteLine(System.String.Format("Generation: {0} | Current best: {1}", this.generationID, bestFitnessEver.ToString("0.###"))); //Snake.currentBestScore.ToString("0.###")));
+				bestScore = bestFitnessEver;
+			} else
+			{
+				Console.Write(".");
+			}
+
+			//int maxLife = 150;
+			// Check if all snakes are dead
+			bool allSnakesDead = this.allSnakes.Count == 0 ? true : false;
+
+			int counter = 0;
+			foreach (Snake s in this.allSnakes)
+			{
+				//if (!s.IsDead)
+				//s.Move();
+				if (!s.IsDead)
+					++counter;
+			}
+			using (CountdownEvent threadCounter = new CountdownEvent(counter))
+			{
+				foreach (Snake s in this.allSnakes)
+				{
+					if (!s.IsDead)
+					{
+						ThreadPool.QueueUserWorkItem(_ => waitCallBack(s, threadCounter));
+					}
+				}
+				threadCounter.Wait();
+			}
+
+			allSnakesDead = true;
+			foreach (Snake s in this.allSnakes)
+			{
+				if (!s.IsDead)
+				{
+					allSnakesDead = false;
+					break;
+				}
+			}
+
+			// All snakes died so we can move onto next epoch
+			if (allSnakesDead)
+			{
+				Snake.currentBestScore = 0;
+				int randomSeed = rnd.Next();
+
+				// Remove snakes (all are dead at the moment)
+				float max = 0.0f;
+				foreach (Snake s in this.allSnakes)
+				{
+					if ((run % numberOfRuns) == 0)
+					{
+						s.Genome.Fitness /= numberOfRuns;
+						if (s.Genome.Fitness > Snake.allSnakesBestScore)
+						{
+							Snake.allSnakesBestScore = (float)s.Genome.Fitness;
+						}
+						if (s.Genome.Fitness > max) max = (float)s.Genome.Fitness;
+					}
+				}
+				if ((run % numberOfRuns) == 0)
+				{
+					float avg = 0.0f;
+					foreach (Genome gen in this.sim.Species[0].getGenomes())
+					{
+						avg += (float)gen.Fitness;
+					}
+					avg /= this.sim.Species[0].getGenomes().Count;
+					if (avg > this.snakeBestAvg)
+					{
+						this.snakeBestAvg = avg;
+						//Console.WriteLine(string.Format("Average fitness: {0}", this.snakeBestAvg.ToString("0.###")));
+					}
+					this.avgFitnesses.Add(avg);
+				}
+				// Show graph of best scores
+				/*if ((run % numberOfRuns) == 0)
+				{
+					if (max > 0 || this.bestFitnesses.Count > 0)
+						this.bestFitnesses.Add(max);
+					DrawBestFitnessGraph(this.fitnessBestGraphCanvas, false);
+					DrawBestFitnessGraph(this.fitnessAvgGraphCanvas, true);
+
+					this.speciesCount.Add(this.sim.Species.Count);
+					DrawSpeciesCountGraph();
+				}*/
+
+				//if ((run % numberOfRuns) == 0)
+					//this.DrawFitnessGraph();
+
+				this.allSnakes.Clear();
+
+				// Go to the next epoch of the simulation
+				if (!firstTime && ((run % numberOfRuns) == 0))
+				{
+					sim.epoch();
+					++generationID;
+				}
+
+				//if ((generationID % 15 == 0) && (generationID > 0) && Snake.NumberOfFoodToSpawn > 0 && Snake.allSnakesBestScore > 0)
+				//Snake.NumberOfFoodToSpawn--;
+
+				//txtSpeciesCount.text = string.Format("Species: {0}", sim.Species.Count);
+				//txtRunID.text = string.Format("Run no: {0}", run % numberOfRuns);
+
+				//primitiveCanvas.Clear();
+				this.bestNetworks.Clear();
+
+				for (int i = 0; i < sim.Species.Count; ++i)
+				{
+					Species s = sim.Species[i];
+					List<Genome> genomes = s.getGenomes();
+
+					for (int j = 0; j < genomes.Count; ++j)
+					{
+						Genome gen = genomes[j];
+						if ((run % numberOfRuns) == 0)
+							gen.Fitness = 0.0;
+
+						//int counter = 0;
+						NeuralEvolution.Network net = gen.getNetwork();
+
+						// Visualize best performer from each species
+						if (j == 0)
+						{
+							this.bestNetworks.Add(net);
+						}
+
+						// Store champion of the generation in a file - for potential further use
+						if (i == 0 && j == 0 && ((run % numberOfRuns) == 0))
+						{
+							// Serialize the networks now
+							//net.SerializeBinary(string.Format("{0}/best_solution_gen_{1}", dirName, generationID));
+							// Also serialize to a different file if that's the best solution ever found
+							if (gen.OriginalFitness > bestFitnessEver)
+							{
+								bestFitnessEver = gen.OriginalFitness;
+								//net.SerializeBinary(string.Format("{0}/best_solution_sim_fitness_{1}", dirName, gen.OriginalFitness));
+							}
+						}
+
+						Snake snakeObj = new Snake(); //snake.GetComponent<Snake>();
+						snakeObj.Brain = net;
+						snakeObj.Genome = gen;
+						snakeObj.rnd = rnd;
+						snakeObj.RunID = (run % numberOfRuns);
+						snakeObj.Seed = rnd.Next();// this.randomSeed.isOn ? rnd.Next() : int.Parse(this.seed.text); 
+						snakeObj.Start();
+
+						allSnakes.Add(snakeObj);
+					}
+
+					if (firstTime) firstTime = false;
+				}
+
+				// Finally increase run counter
+				run++;
+			}
+		}
+	}
+
+	public class Snake
+	{
+		const int borderTop = -15;
+		const int borderBottom = 15;
+		const int borderLeft = -15;
+		const int borderRight = 15;
+
+		public static int GlobalSnakeID = 0;
+		private int SnakeID;
+		private string foodName;
+
+		public static float allSnakesBestScore = 0;
+		public static float currentBestScore = 0;
+
+		float fitness = 0;
+
+		
+		// Current Movement Direction (by default it moves to the right)
+		Point vecDirection;
+
+		// Keep Track of Tail
+		List<Point> tails = new List<Point>();
+		// Did the snake eat something?
+		bool ate = false;
+
+		public NeuralEvolution.Network Brain { get; set; }
+		public NeuralEvolution.Genome Genome { get; set; }
+		public bool IsDead { get; set; }
+
+		public System.Random rnd;
+
+		private Point currentLocation;
+		private Point foodLocation;
+
+		// Starting length of the snake
+		public static int StartingLength { get; set; } = 1;
+
+		void SpawnFood()
+		{
+			int newX = rnd.Next(borderLeft + 1, borderRight);
+			int newY = rnd.Next(borderTop + 1, borderBottom);
+
+			foodLocation.x = newX;
+			foodLocation.y = newY;
+
+			this.previousDistanceToFood = 200.0f;
+
+			int xDiff = (foodLocation.x - currentLocation.x);
+			int yDiff = (foodLocation.y - currentLocation.y);
+			float distance = (float)Math.Sqrt(xDiff * xDiff + yDiff * yDiff);
+			if (distance < previousDistanceToFood)
+				previousDistanceToFood = distance;
+		}
+
+		private void OnDestroy()
+		{
+			tails.Clear();
+		}
+		public int Seed { get; set; }
+
+		public void Start()
+		{
+			vecDirection.x = 1;
+			vecDirection.y = 0;
+
+			// Below is using given seed to make sure each snake has same conditions
+			this.rnd = new System.Random(Seed);
+			
+			this.SnakeID = GlobalSnakeID;
+			//this.name = "Snake_" + this.SnakeID;
+
+			// Start in random direction
+			int startDir = rnd.Next(3);
+			if (startDir == 0) { vecDirection.x = 0; vecDirection.y = -1; }
+			if (startDir == 1) { vecDirection.x = 0; vecDirection.y = 1; }
+			if (startDir == 2) { vecDirection.x = -1; vecDirection.y = 0; }
+			if (startDir == 3) { vecDirection.x = 1; vecDirection.y = 0; }
+
+			this.SpawnFood();
+
+			// Add tail objects if starting length > 1
+			if (Snake.StartingLength > 1)
+			{
+				Point pos = currentLocation;
+				for (int i = 1; i < Snake.StartingLength; ++i)
+				{
+					pos.x -= vecDirection.x; pos.y -= vecDirection.y;
+					//this.AddTailObject(pos);
+					tails.Add(pos);
+
+					// Move last Tail Element to wher.e the Head was
+					/*tails[tails.Count - 1] = pos;
+
+					// Add to front of list, remove from the back
+					tails.Insert(0, tails[tails.Count - 1]);
+					tails.RemoveAt(tails.Count - 1);*/
+				}
+			}
+
+			++GlobalSnakeID;
+		}
+
+		private float previousDistanceToFood = 1000;
+
+		public void SetDirection(int direction)
+		{
+			Point newDir;
+			// Move in a new Direction?
+			if (direction == 1)
+			{
+				newDir.x = -vecDirection.y;
+				newDir.y = vecDirection.x;
+			}
+			else if (direction == -1)
+			{
+				newDir.x = vecDirection.y;
+				newDir.y = -vecDirection.x;
+			}
+			else
+			{
+				newDir.x = vecDirection.x;
+				newDir.y = vecDirection.y;
+			}
+
+			vecDirection.x = newDir.x;
+			vecDirection.y = newDir.y;
+		}
+
+		float maxDistance;
+
+		public int WithoutChangesThreshold { get; set; } = 240;
+		public int RunID { get; internal set; }
+
+		int sinceLastUpdate = 0;
+		float topScore = 0.0f;          // Maximum fitness for this snake
+		public void Move()
+		{
+			// Died - so don't move it
+			if (this.IsDead)
+				return;
+
+			while (!this.IsDead && sinceLastUpdate < WithoutChangesThreshold)
+			{
+
+				++sinceLastUpdate;
+
+				// Died - so don't move it
+				if (this.IsDead)
+					return;
+
+				// "Thinking" phase
+				int inputs = 3 + 3 + 3 + 1;
+				float[] input = new float[inputs];
+
+				float distX = borderRight - borderLeft;
+				float distY = borderBottom - borderTop;
+				maxDistance = Math.Max(distX, distY);// (float)Math.Sqrt(distX * distX + distY * distY);
+				for (int i = 0; i < input.Length; ++i)
+					input[i] = maxDistance;
+
+				Point vecLeft; vecLeft.x = -vecDirection.y; vecLeft.y = vecDirection.x;
+				Point vecStraight; vecStraight.x = vecDirection.x; vecStraight.y = vecDirection.y;
+				Point vecRight; vecRight.x = vecDirection.y; vecRight.y = -vecDirection.x;
+
+				Point[] vectors = new Point[] { vecLeft, vecStraight, vecRight };
+				for(int i = 0; i < vectors.Length; ++i)
+				{
+					Point currentPos = this.currentLocation;
+
+
+					while (currentPos.x > borderLeft && currentPos.x < borderRight && currentPos.y > borderTop && currentPos.y < borderBottom)
+					{
+						currentPos.x += vectors[i].x; currentPos.y += vectors[i].y;
+
+						if (currentPos.x == borderLeft) {
+							input[i] = Math.Abs(currentLocation.x - currentPos.x); break;
+						}
+						else if (currentPos.x == borderRight) {
+							input[i] = Math.Abs(currentLocation.x - currentPos.x); break;
+						}
+						else if (currentPos.y == borderTop) {
+							input[i] = Math.Abs(currentLocation.y - currentPos.y); break;
+						}
+						else if (currentPos.y == borderBottom) {
+							input[i] = Math.Abs(currentLocation.y - currentPos.y); break;
+						}
+
+						foreach (Point tail in this.tails)
+						{
+							if (tail.x == currentPos.x && tail.y == currentPos.y)
+							{
+								input[i + 4] = Math.Abs(currentLocation.x - tail.x) + Math.Abs(currentLocation.y - tail.y);
+							}
+						}
+
+						if (currentPos.x == foodLocation.x && currentPos.y == foodLocation.y)
+						{
+							//float dist = (float)Math.Sqrt(diffX * diffX + diffY * diffY);
+							input[i + 7] = Math.Abs(foodLocation.x - currentLocation.x) + Math.Abs(foodLocation.y - currentLocation.y);
+						}
+					}
+				}
+
+				/*if (vecDirection.x == -1 && vecDirection.y == 0)
+				{
+					input[0] = (foodLocation.x == currentLocation.x && foodLocation.y > currentLocation.y) ? input[0] = Math.Abs(currentLocation.y - foodLocation.y) : maxDistance;
+					input[1] = (foodLocation.x < currentLocation.x && foodLocation.y == currentLocation.y) ? input[1] = Math.Abs(currentLocation.x - foodLocation.x) : maxDistance;
+					input[2] = (foodLocation.x == currentLocation.x && foodLocation.y < currentLocation.y) ? input[2] = Math.Abs(currentLocation.y - foodLocation.y) : maxDistance;
+
+					// TODO: Add input[4] to input[6] as a distance to snake itself
+
+					input[7] = Math.Abs(borderBottom - currentLocation.y);
+					input[8] = Math.Abs(borderLeft - currentLocation.x);
+					input[9] = Math.Abs(borderTop - currentLocation.y);
+				}
+				else if (vecDirection.x == 1 && vecDirection.y == 0)
+				{
+					input[0] = (foodLocation.x == currentLocation.x && foodLocation.y < currentLocation.y) ? input[0] = Math.Abs(currentLocation.y - foodLocation.y) : maxDistance;
+					input[1] = (foodLocation.x < currentLocation.x && foodLocation.y == currentLocation.y) ? input[1] = Math.Abs(currentLocation.x - foodLocation.x) : maxDistance;
+					input[2] = (foodLocation.x == currentLocation.x && foodLocation.y > currentLocation.y) ? input[2] = Math.Abs(currentLocation.y - foodLocation.y) : maxDistance;
+
+					// TODO: Add input[4] to input[6] as a distance to snake itself
+
+					input[7] = Math.Abs(borderTop - currentLocation.y);
+					input[8] = Math.Abs(borderRight - currentLocation.x);
+					input[9] = Math.Abs(borderBottom - currentLocation.y);
+				}
+				else if (vecDirection.x == 0 && vecDirection.y == 1)
+				{
+					input[0] = (foodLocation.y == currentLocation.y && foodLocation.x > currentLocation.x) ? input[0] = Math.Abs(currentLocation.x - foodLocation.x) : maxDistance;
+					input[1] = (foodLocation.x == currentLocation.x && foodLocation.y > currentLocation.y) ? input[1] = Math.Abs(currentLocation.y - foodLocation.y) : maxDistance;
+					input[2] = (foodLocation.y == currentLocation.y && foodLocation.x < currentLocation.x) ? input[2] = Math.Abs(currentLocation.x - foodLocation.x) : maxDistance;
+
+					// TODO: Add input[4] to input[6] as a distance to snake itself
+
+					input[7] = Math.Abs(borderRight - currentLocation.x);
+					input[8] = Math.Abs(borderBottom - currentLocation.y);
+					input[9] = Math.Abs(borderLeft - currentLocation.x);
+				}
+				else if (vecDirection.x == 0 && vecDirection.y == -1)
+				{
+					input[0] = (foodLocation.y == currentLocation.y && foodLocation.x < currentLocation.x) ? input[0] = Math.Abs(currentLocation.x - foodLocation.x) : maxDistance;
+					input[1] = (foodLocation.x == currentLocation.x && foodLocation.y < currentLocation.y) ? input[1] = Math.Abs(currentLocation.y - foodLocation.y) : maxDistance;
+					input[2] = (foodLocation.y == currentLocation.y && foodLocation.x > currentLocation.x) ? input[2] = Math.Abs(currentLocation.x - foodLocation.x) : maxDistance;
+
+					// TODO: Add input[4] to input[6] as a distance to snake itself
+
+					input[7] = Math.Abs(borderLeft - currentLocation.x);
+					input[8] = Math.Abs(borderTop - currentLocation.y);
+					input[9] = Math.Abs(borderRight - currentLocation.x);
+				}*/
+
+
+
+
+
+				for (int i = 0; i < input.Length; ++i)
+				{
+					input[i] /= maxDistance;
+				}
+
+				// Set bias node always to 1
+				input[3] = 1.0f;
+
+
+				// Activate the neural network
+				this.Brain.setInput(input);
+				bool isActivated = this.Brain.activate();
+				if (!isActivated)
+				{
+					this.MarkAsDead();
+					if (this.Genome != null)
+						this.Genome.Fitness = 0;
+					return;
+				}
+
+				List<Node> outputs = this.Brain.Output;
+				float out1 = outputs[0].Activation;
+				float out2 = outputs[1].Activation;
+				float out3 = outputs[2].Activation;
+				int dir = -10;
+				if (out1 > out2) dir = out1 > out3 ? -1 : 0;
+				else dir = out2 > out3 ? 1 : 0;
+
+				this.SetDirection(dir);
+
+				// Save current position (gap will be here)
+				Point v = this.currentLocation;
+
+				// Move head into new direction (now there is a gap)
+				currentLocation.x += vecDirection.x; currentLocation.y += vecDirection.y;
+
+				if (currentLocation.x == foodLocation.x && currentLocation.y == foodLocation.y)
+					ate = true;
+
+				// Ate something? Then insert new Element into gap
+				if (ate)
+				{
+					fitness += 1;// 250.0f;
+					this.Genome.Fitness += 1;
+					float score = (float)(this.Genome.Fitness / (this.RunID + 1));
+					if (score > Snake.currentBestScore)
+						currentBestScore = score;
+
+					this.AddTailObject(v);
+
+					sinceLastUpdate = 0;
+
+					// Reset the flag
+					ate = false;
+					SpawnFood();
+				}
+				// Do we have a Tail?
+				else if (tails.Count > 0)
+				{
+					if(currentLocation.x == borderLeft || currentLocation.x == borderRight || currentLocation.y == borderTop || currentLocation.y == borderBottom)
+					{
+						this.MarkAsDead();
+						return;
+					}
+
+					for (int i = 0; i < tails.Count; ++i)
+					{
+						if (tails[i].x == currentLocation.x && tails[i].y == currentLocation.y)
+						{
+							this.MarkAsDead();
+							return;
+						}
+					}
+
+					// Move last Tail Element to wher.e the Head was
+					tails[tails.Count - 1] = v;
+
+					// Add to front of list, remove from the back
+					tails.Insert(0, tails[tails.Count - 1]);
+					tails.RemoveAt(tails.Count - 1);
+				}
+
+				// Incur small fitness penalty for every move away from food
+				float newDistanceToFood = 200.0f;
+
+				int xDiff = (foodLocation.x - currentLocation.x);
+				int yDiff = (foodLocation.y - currentLocation.y);
+				float distance = (float)Math.Sqrt(xDiff * xDiff + yDiff * yDiff);
+				if (distance < newDistanceToFood)
+					newDistanceToFood = distance;
+
+
+				previousDistanceToFood = newDistanceToFood;
+
+
+				if (fitness > this.topScore)
+				{
+					topScore = fitness;
+				}
+			}
+
+			this.MarkAsDead();
+		}
+
+		private void AddTailObject(Point pos)
+		{
+			// Keep track of it in our tail list
+			tails.Insert(0, pos);
+		}
+
+		private void MarkAsDead()
+		{
+			// Make sure fitness isn't negative (it can be at that point if snake was moving away from food most of the time)
+			//if (fitness < 0) fitness = 0;
+			if (this.IsDead) return;
+
+
+			if (this.Genome != null)
+			{
+				this.Genome.Fitness += Math.Pow(Math.Max(1.0f - previousDistanceToFood / maxDistance, 0.0f), 2);
+			}
+			this.IsDead = true;
+		}
+	}
+
+
+
 	// Basic demo program checking basic functions of the network
 	class Program
 	{
@@ -15,6 +681,7 @@ namespace NeuralEvolutionDemo
 			Console.WriteLine("Tests of NEAT. Press:");
 			Console.WriteLine("- 1 to run XOR test");
 			Console.WriteLine("- 2 to run Pole Balancing (single) test");
+			Console.WriteLine("- 3 to run Snake Game test (prints only results)");
 			Console.WriteLine("- 0 to perform basic system tests (mutation, innovation, etc.)");
 			Console.WriteLine("- ESC to quit");
 
@@ -26,6 +693,8 @@ namespace NeuralEvolutionDemo
 					XorTest(r);
 				else if (key.Key == ConsoleKey.D2)
 					PoleBalanceSingleTest(r);
+				else if (key.Key == ConsoleKey.D3)
+					SnakeGameTest(r);
 				else if (key.Key == ConsoleKey.D0)
 					SystemTests(r);
 				else
@@ -33,6 +702,7 @@ namespace NeuralEvolutionDemo
 			}
 		}
 
+		// TODO: move to unit tests
 		private static void SystemTests(Random r)
 		{
 			///////////////////////
@@ -178,6 +848,17 @@ namespace NeuralEvolutionDemo
 			Console.WriteLine("\nAfter reenable connection mutation:");
 			gen5.reenableMutation();
 			gen5.debugPrint();
+		}
+
+
+		private static void SnakeGameTest(Random r)
+		{
+			SnakeSimulation sim = new SnakeSimulation();
+			sim.Start();
+			while(true)
+			{
+				sim.Update();
+			}
 		}
 
 		private static void PoleBalanceSingleTest(Random r)
@@ -379,9 +1060,9 @@ namespace NeuralEvolutionDemo
 
 			// Run simulation
 			Simulation sim = new Simulation(r, xorGene, 150);
-			sim.Parameters.AreConnectionWeightsCapped = true;
+			sim.Parameters.AreConnectionWeightsCapped = false;
 			sim.Parameters.MaxWeight = 1.0f;
-			sim.Parameters.WeightMutationPower = 1.0f;
+			sim.Parameters.WeightMutationPower = 2.5f;
 
 			int numberOfRuns = 200;
 			bool solutionFound = false;
