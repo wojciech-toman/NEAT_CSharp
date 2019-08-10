@@ -881,34 +881,63 @@ namespace NeuralEvolutionDemo
 			snakeObj.Seed = r.Next();
 			snakeObj.Start();
 
+			// Draw the board
 			Console.SetWindowSize(32, 32);
-			while (!snakeObj.IsDead)
+			Console.Clear();
+			for (int y = 0; y <= 30; ++y)
 			{
-				Console.Clear();
-				for (int y = 0; y <= 30; ++y)
+				for (int x = 0; x <= 30; ++x)
 				{
-					for (int x = 0; x <= 30; ++x)
+					if (x == 0 || x == 30 || y == 0 || y == 30)
 					{
-						if (x == 0 || x == 30 || y == 0 || y == 30)
-						{
-							Console.SetCursorPosition(x, y);
-							Console.Write("#");
-						}
+						Console.SetCursorPosition(x, y);
+						Console.Write("#");
 					}
 				}
+			}
 
+			Point previousSnakeLocation;
+			previousSnakeLocation.x = -100;
+			previousSnakeLocation.y = -100;
+			List<Point> previousSnake = new List<Point>();
+
+			while (!snakeObj.IsDead)
+			{
+				// Clear previous food and snake
+				if (previousSnakeLocation.x != -100 && previousSnakeLocation.y != 10 &&
+					previousSnakeLocation.x != snakeObj.FoodLocation.x && previousSnakeLocation.y != snakeObj.FoodLocation.y)
+				{
+					Console.SetCursorPosition(previousSnakeLocation.x + 15, previousSnakeLocation.y + 15);
+					Console.Write(" ");
+				}
+				previousSnakeLocation = snakeObj.FoodLocation;
+
+				if(previousSnake.Count > 0)
+				{
+					foreach(Point p in previousSnake)
+					{
+						Console.SetCursorPosition(p.x + 15, p.y + 15);
+						Console.Write(" ");
+					}
+				}
+				previousSnake.Clear();
+
+				// Draw current food and snake
 				Console.SetCursorPosition(snakeObj.FoodLocation.x + 15, snakeObj.FoodLocation.y + 15);
 				Console.Write("O");
 
+				previousSnake.Add(snakeObj.CurrentLocation);
 				Console.SetCursorPosition(snakeObj.CurrentLocation.x + 15, snakeObj.CurrentLocation.y + 15);
 				Console.Write("@");
 				foreach(Point p in snakeObj.Tails)
 				{
+					previousSnake.Add(p);
+
 					Console.SetCursorPosition(p.x + 15, p.y + 15);
 					Console.Write("@");
 				}
 
-				// Move the snake finally
+				// Move the snake
 				snakeObj.MoveOnce();
 
 				Thread.Sleep(10);
