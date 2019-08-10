@@ -650,7 +650,7 @@ namespace NeuralEvolution
 		}
 
 		// Mutation that reenables previously disabled connection gene
-		internal void reenableMutation()
+		public void reenableMutation()
 		{
 			// Find first disabled gene and reenable it
 			foreach (ConnectionGene gene in this.connectionGenes)
@@ -819,7 +819,7 @@ namespace NeuralEvolution
 			return this.nodes;
 		}
 
-		internal void toggleEnabledMutation()
+		public void toggleEnabledMutation()
 		{
 			// Handle special case when one of the genomes is completely empty
 			if (this.connectionGenes.Count == 0)

@@ -9,10 +9,10 @@ namespace NeuralEvolutionDemo
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
-    using System.IO;
-    using System.Threading;
+	using System.IO;
+	using System.Threading;
 
-    public struct Point
+	public struct Point
 	{
 		public int x;
 		public int y;
@@ -132,7 +132,8 @@ namespace NeuralEvolutionDemo
 				Console.WriteLine("");
 				Console.WriteLine(System.String.Format("Generation: {0} | Current best: {1}", this.generationID, bestFitnessEver.ToString("0.###"))); //Snake.currentBestScore.ToString("0.###")));
 				bestScore = bestFitnessEver;
-			} else
+			}
+			else
 			{
 				Console.Write(".");
 			}
@@ -288,7 +289,7 @@ namespace NeuralEvolutionDemo
 
 		float fitness = 0;
 
-		
+
 		// Current Movement Direction (by default it moves to the right)
 		private Point vecDirection;
 
@@ -687,7 +688,7 @@ namespace NeuralEvolutionDemo
 			Console.WriteLine("- ESC to quit");
 
 			ConsoleKeyInfo key;
-			while((key = Console.ReadKey()).Key != ConsoleKey.Escape)
+			while ((key = Console.ReadKey()).Key != ConsoleKey.Escape)
 			{
 				Console.WriteLine("");
 				if (key.Key == ConsoleKey.D1)
@@ -920,7 +921,7 @@ namespace NeuralEvolutionDemo
 				if (previousSnake.Count > 0)
 				{
 					List<Point> pointsToClear = new List<Point>();
-					foreach(Point p in previousSnake)
+					foreach (Point p in previousSnake)
 					{
 						if (!pointsToDraw.Contains(p))
 						{
@@ -928,7 +929,7 @@ namespace NeuralEvolutionDemo
 							pointsToDraw.Remove(p);
 						}
 					}
-					foreach(Point p in pointsToClear)
+					foreach (Point p in pointsToClear)
 					{
 						Console.SetCursorPosition(p.x + 15, p.y + 15);
 						Console.Write(" ");
@@ -1038,7 +1039,7 @@ namespace NeuralEvolutionDemo
 		//     by Richard Sutton and Charles Anderson.
 		private static int go_cart(Network net, int max_steps, int thresh, Random rnd)
 		{
-			float x,			    /* cart position, meters */
+			float x,                /* cart position, meters */
 				  x_dot,            /* cart velocity */
 				  theta,            /* pole angle, radians */
 				  theta_dot;        /* pole angular velocity */
