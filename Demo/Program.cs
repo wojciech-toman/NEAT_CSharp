@@ -951,6 +951,7 @@ namespace NeuralEvolutionDemo
 					Console.SetCursorPosition(p.x + 15, p.y + 15);
 					Console.Write("@");
 				}
+				Console.ForegroundColor = ConsoleColor.White;
 
 				Console.SetCursorPosition(0, 0);
 
