@@ -900,6 +900,7 @@ namespace NeuralEvolutionDemo
 			previousSnakeLocation.x = -100;
 			previousSnakeLocation.y = -100;
 			List<Point> previousSnake = new List<Point>();
+			List<Point> pointsToDraw = new List<Point>();
 
 			while (!snakeObj.IsDead)
 			{
@@ -912,30 +913,45 @@ namespace NeuralEvolutionDemo
 				}
 				previousSnakeLocation = snakeObj.FoodLocation;
 
-				if(previousSnake.Count > 0)
+				pointsToDraw.Clear();
+				pointsToDraw.Add(snakeObj.CurrentLocation);
+				pointsToDraw.AddRange(snakeObj.Tails);
+
+				if (previousSnake.Count > 0)
 				{
+					List<Point> pointsToClear = new List<Point>();
 					foreach(Point p in previousSnake)
+					{
+						if (!pointsToDraw.Contains(p))
+						{
+							pointsToClear.Add(p);
+							pointsToDraw.Remove(p);
+						}
+					}
+					foreach(Point p in pointsToClear)
 					{
 						Console.SetCursorPosition(p.x + 15, p.y + 15);
 						Console.Write(" ");
 					}
 				}
+
 				previousSnake.Clear();
+				previousSnake.Add(snakeObj.CurrentLocation);
+				previousSnake.AddRange(snakeObj.Tails);
 
 				// Draw current food and snake
+				Console.ForegroundColor = ConsoleColor.Red;
 				Console.SetCursorPosition(snakeObj.FoodLocation.x + 15, snakeObj.FoodLocation.y + 15);
 				Console.Write("O");
 
-				previousSnake.Add(snakeObj.CurrentLocation);
-				Console.SetCursorPosition(snakeObj.CurrentLocation.x + 15, snakeObj.CurrentLocation.y + 15);
-				Console.Write("@");
-				foreach(Point p in snakeObj.Tails)
+				Console.ForegroundColor = ConsoleColor.Green;
+				foreach (Point p in pointsToDraw)
 				{
-					previousSnake.Add(p);
-
 					Console.SetCursorPosition(p.x + 15, p.y + 15);
 					Console.Write("@");
 				}
+
+				Console.SetCursorPosition(0, 0);
 
 				// Move the snake
 				snakeObj.MoveOnce();
