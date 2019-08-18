@@ -223,7 +223,9 @@ namespace NeuralEvolution
 		{
 			for (int i = 0; i < this.connectionGenes.Count; ++i)
 			{
-				Console.WriteLine(string.Format("{0}: {1} -> {2} | weight: {3} | {4}", this.connectionGenes[i].Innovation, this.connectionGenes[i].InNodeGene.ID, this.connectionGenes[i].OutNodeGene.ID, this.connectionGenes[i].Weight, this.connectionGenes[i].IsEnabled ? "" : "DIS"));
+				Console.WriteLine(string.Format("{0}: {1} -> {2} | weight: {3} | {4}", this.connectionGenes[i].Innovation,
+					this.connectionGenes[i].InNodeGene.ID, this.connectionGenes[i].OutNodeGene.ID,
+					this.connectionGenes[i].Weight, this.connectionGenes[i].IsEnabled ? "" : "DIS"));
 			}
 		}
 

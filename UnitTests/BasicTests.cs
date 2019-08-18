@@ -10,9 +10,46 @@ namespace NeuralEvolution.Tests
 	public class BasicTests
 	{
 		[TestMethod()]
-		public void TestAddNodeMutation()
+		public void TestGenomeConstruction()
 		{
 			Random r = new Random();
+
+			// Genome 1
+			Genome gen1 = new Genome(r);
+
+			// Create 3 sensors
+			gen1.addNode(new Node(Node.ENodeType.SENSOR, 1));
+			gen1.addNode(new Node(Node.ENodeType.SENSOR, 2));
+			gen1.addNode(new Node(Node.ENodeType.SENSOR, 3));
+
+			// Create 1 output
+			gen1.addNode(new Node(Node.ENodeType.OUTPUT, 4));
+
+			// Create 1 hidden node
+			gen1.addNode(new Node(Node.ENodeType.HIDDEN, 5));
+
+
+			Assert.IsTrue(gen1.getNodes().Count == 5);
+			Assert.IsTrue(gen1.getConnectionGenes().Count == 0);
+
+
+			// Add connections from the paper
+			gen1.addConnection(1, 4, 0.5f);
+			gen1.addConnection(2, 4, false);
+			gen1.addConnection(3, 4);
+			gen1.addConnection(2, 5);
+			gen1.addConnection(5, 4);
+			gen1.addConnection(1, 5, true, 8);
+
+
+			Assert.IsTrue(gen1.getNodes().Count == 5);
+			Assert.IsTrue(gen1.getConnectionGenes().Count == 6);
+		}
+
+		[TestMethod()]
+		public void TestAddNodeMutation()
+		{
+			Random r = new Random(0);
 
 			// Genome 1
 			Genome gen1 = new Genome(r);
@@ -52,11 +89,13 @@ namespace NeuralEvolution.Tests
 			gen3.addConnection(1, 3, 0.5f);
 			gen3.addConnection(2, 3, 1.0f);
 
-			Console.WriteLine("\n\nBefore node mutation:");
-			gen3.debugPrint();
-			Console.WriteLine("\nAfter node mutation:");
+			Assert.IsTrue(gen3.getNodes().Count == 3);
+			//Console.WriteLine("\n\nBefore node mutation:");
+			//gen3.debugPrint();
+			//Console.WriteLine("\nAfter node mutation:");
 			gen3.addNodeMutation(innovations);
-			gen3.debugPrint();
+			//gen3.debugPrint();
+			Assert.IsTrue(gen3.getNodes().Count == 4);
 		}
 
 		[TestMethod()]
@@ -136,7 +175,7 @@ namespace NeuralEvolution.Tests
 		[TestMethod()]
 		public void TestAddConnectionMutation()
 		{
-			Random r = new Random();
+			Random r = new Random(0);
 
 			List<Innovation> innovations = new List<Innovation>();
 
@@ -188,17 +227,19 @@ namespace NeuralEvolution.Tests
 			gen4.addConnection(2, 5);
 			gen4.addConnection(5, 4);
 
-			Console.WriteLine("\n\nBefore connection mutation:");
-			gen4.debugPrint();
-			Console.WriteLine("\nAfter connection mutation:");
+			Assert.IsTrue(gen4.getConnectionGenes().Count == 5);
+			//Console.WriteLine("\n\nBefore connection mutation:");
+			//gen4.debugPrint();
+			//Console.WriteLine("\nAfter connection mutation:");
 			gen4.addConnectionMutation(innovations);
-			gen4.debugPrint();
+			Assert.IsTrue(gen4.getConnectionGenes().Count == 6);
+			//gen4.debugPrint();
 		}
 
 		[TestMethod()]
 		public void TestToggleConnectionEnabilityMutation()
 		{
-			Random r = new Random();
+			Random r = new Random(0);
 
 			// Genome 2
 			Genome gen2 = new Genome(r);
@@ -227,22 +268,45 @@ namespace NeuralEvolution.Tests
 			gen2.addConnection(1, 6, true, 10);
 
 
-			///////////////////////
-			// Test toggle enabled/reanable connection mutation
-			///////////////////////
 			Genome gen5 = gen2.copy();
-			Console.WriteLine("\n\nBefore toggle enabled mutation:");
+			Assert.IsTrue(gen5.getConnectionGenes()[7].IsEnabled == true);
+			/*Console.WriteLine("\n\nBefore toggle enabled mutation:");
 			gen5.debugPrint();
-			Console.WriteLine("\nAfter toggle enabled mutation:");
+			Console.WriteLine("\nAfter toggle enabled mutation:");*/
 			gen5.toggleEnabledMutation();
-			gen5.debugPrint();
+			//gen5.debugPrint();
+			Assert.IsTrue(gen5.getConnectionGenes()[7].IsEnabled == false);
 
 			gen5 = gen2.copy();
-			Console.WriteLine("\n\nBefore reenable connection mutation:");
+			Assert.IsTrue(gen5.getConnectionGenes()[1].IsEnabled == false);
+			/*Console.WriteLine("\n\nBefore reenable connection mutation:");
 			gen5.debugPrint();
-			Console.WriteLine("\nAfter reenable connection mutation:");
+			Console.WriteLine("\nAfter reenable connection mutation:");*/
 			gen5.reenableMutation();
-			gen5.debugPrint();
+			//gen5.debugPrint();
+
+			Assert.IsTrue(gen5.getConnectionGenes()[1].IsEnabled == true);
+		}
+
+		[TestMethod()]
+		public void LinkCreateTest()
+		{
+			Node node1 = new Node(Node.ENodeType.SENSOR, 1);
+			Node node2 = new Node(Node.ENodeType.SENSOR, 2);
+
+			// Test 1
+			Link lnk = new Link(node1, node2, false, 1.0f);
+
+			Assert.IsTrue(lnk.InNode.ID == node1.ID);
+			Assert.IsTrue(lnk.OutNode.ID == node2.ID);
+			Assert.IsTrue(lnk.IsRecurrent == false);
+			Assert.IsTrue(lnk.Weight == 1.0f);
+
+			// Test 2
+			lnk = new Link(node1, node2, true, 2.0f);
+
+			Assert.IsTrue(lnk.IsRecurrent == true);
+			Assert.IsTrue(lnk.Weight == 2.0f);
 		}
 	}
 }
