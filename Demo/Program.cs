@@ -272,10 +272,13 @@ namespace NeuralEvolutionDemo
 
 	public class Snake
 	{
-		const int borderTop = -15;
-		const int borderBottom = 15;
-		const int borderLeft = -15;
-		const int borderRight = 15;
+		public const int gridWidth = 16;
+		public const int gridHeight = 16;
+
+		public const int borderTop = -gridHeight / 2;
+		public const int borderBottom = gridHeight / 2;
+		public const int borderLeft = -gridWidth / 2;
+		public const int borderRight = gridWidth / 2;
 
 		private static float allSnakesBestScore = 0;
 		private static float currentBestScore = 0;
@@ -337,11 +340,11 @@ namespace NeuralEvolutionDemo
 			this.rnd = new System.Random(Seed);
 
 			// Start in random direction
-			int startDir = rnd.Next(3);
+			/*int startDir = rnd.Next(3);
 			if (startDir == 0) { vecDirection.x = 0; vecDirection.y = -1; }
 			if (startDir == 1) { vecDirection.x = 0; vecDirection.y = 1; }
 			if (startDir == 2) { vecDirection.x = -1; vecDirection.y = 0; }
-			if (startDir == 3) { vecDirection.x = 1; vecDirection.y = 0; }
+			if (startDir == 3) { vecDirection.x = 1; vecDirection.y = 0; }*/
 
 			this.SpawnFood();
 
@@ -830,13 +833,13 @@ namespace NeuralEvolutionDemo
 			snakeObj.Start();
 
 			// Draw the board
-			Console.SetWindowSize(32, 32);
+			Console.SetWindowSize(Snake.gridWidth + 2, Snake.gridHeight + 2);
 			Console.Clear();
-			for (int y = 0; y <= 30; ++y)
+			for (int y = 0; y <= Snake.gridHeight; ++y)
 			{
-				for (int x = 0; x <= 30; ++x)
+				for (int x = 0; x <= Snake.gridWidth; ++x)
 				{
-					if (x == 0 || x == 30 || y == 0 || y == 30)
+					if (x == 0 || x == Snake.gridWidth || y == 0 || y == Snake.gridHeight)
 					{
 						Console.SetCursorPosition(x, y);
 						Console.Write("#");
@@ -853,10 +856,10 @@ namespace NeuralEvolutionDemo
 			while (!snakeObj.IsDead)
 			{
 				// Clear previous food and snake
-				if (previousSnakeLocation.x != -100 && previousSnakeLocation.y != 10 &&
+				if (previousSnakeLocation.x != -100 && previousSnakeLocation.y != -100 &&
 					previousSnakeLocation.x != snakeObj.FoodLocation.x && previousSnakeLocation.y != snakeObj.FoodLocation.y)
 				{
-					Console.SetCursorPosition(previousSnakeLocation.x + 15, previousSnakeLocation.y + 15);
+					Console.SetCursorPosition(previousSnakeLocation.x + Snake.gridWidth / 2, previousSnakeLocation.y + Snake.gridHeight / 2);
 					Console.Write(" ");
 				}
 				previousSnakeLocation = snakeObj.FoodLocation;
@@ -878,7 +881,7 @@ namespace NeuralEvolutionDemo
 					}
 					foreach (Point p in pointsToClear)
 					{
-						Console.SetCursorPosition(p.x + 15, p.y + 15);
+						Console.SetCursorPosition(p.x + Snake.gridWidth / 2, p.y + Snake.gridHeight / 2);
 						Console.Write(" ");
 					}
 				}
@@ -889,13 +892,13 @@ namespace NeuralEvolutionDemo
 
 				// Draw current food and snake
 				Console.ForegroundColor = ConsoleColor.Red;
-				Console.SetCursorPosition(snakeObj.FoodLocation.x + 15, snakeObj.FoodLocation.y + 15);
+				Console.SetCursorPosition(snakeObj.FoodLocation.x + Snake.gridWidth / 2, snakeObj.FoodLocation.y + Snake.gridHeight / 2);
 				Console.Write("O");
 
 				Console.ForegroundColor = ConsoleColor.Green;
 				foreach (Point p in pointsToDraw)
 				{
-					Console.SetCursorPosition(p.x + 15, p.y + 15);
+					Console.SetCursorPosition(p.x + Snake.gridWidth / 2, p.y + Snake.gridHeight / 2);
 					Console.Write("@");
 				}
 				Console.ForegroundColor = ConsoleColor.White;
