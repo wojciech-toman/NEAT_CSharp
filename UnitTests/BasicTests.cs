@@ -44,6 +44,13 @@ namespace NeuralEvolution.Tests
 
 			Assert.IsTrue(gen1.getNodes().Count == 5);
 			Assert.IsTrue(gen1.getConnectionGenes().Count == 6);
+
+			for(int i = 1; i <= gen1.getNodes().Count; ++i)
+			{
+				Assert.IsTrue(gen1.getNode(i).ID == i);
+			}
+			Assert.IsTrue(gen1.getNode(0) == null);
+			Assert.IsTrue(gen1.getNode(6) == null);
 		}
 
 		[TestMethod()]
@@ -289,7 +296,7 @@ namespace NeuralEvolution.Tests
 		}
 
 		[TestMethod()]
-		public void LinkCreateTest()
+		public void TestLinkConstruction()
 		{
 			Node node1 = new Node(Node.ENodeType.SENSOR, 1);
 			Node node2 = new Node(Node.ENodeType.SENSOR, 2);

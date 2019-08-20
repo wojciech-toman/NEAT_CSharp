@@ -272,8 +272,8 @@ namespace NeuralEvolutionDemo
 
 	public class Snake
 	{
-		public const int gridWidth = 16;
-		public const int gridHeight = 16;
+		public const int gridWidth = 30;
+		public const int gridHeight = 30;
 
 		public const int borderTop = -gridHeight / 2;
 		public const int borderBottom = gridHeight / 2;
