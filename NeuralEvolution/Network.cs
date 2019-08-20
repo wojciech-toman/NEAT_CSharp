@@ -137,7 +137,7 @@ namespace NeuralEvolution
 			return null;
 		}
 
-		public List<Link> Links
+        public List<Link> Links
 		{
 			get { return this.links; }
 			set { this.links = value; }
