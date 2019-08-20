@@ -90,7 +90,7 @@ namespace NeuralEvolution
 			return result;
 		}
 
-		private double fitness = 0.0;
+        private double fitness = 0.0;
 		public double Fitness
 		{
 			get { return this.fitness; }
@@ -103,7 +103,7 @@ namespace NeuralEvolution
 
 		public Simulation ParentSimulation { get { return this.parentSimulation; } set { this.parentSimulation = value; } }
 
-		public Node getNode(int id)
+		public Node getNodeById(int id)
 		{
 			foreach (Node n in this.nodes)
 				if (n.ID == id) return n;
@@ -197,19 +197,19 @@ namespace NeuralEvolution
 		public void addConnection(int inNode, int outNode, bool isExpressed)
 		{
 			//this.connectionGenes.Add(new ConnectionGene(this.getNode(inNode), this.getNode(outNode), 1.0f, isExpressed, this.NextInnovationNumber()));
-			this.insertGene(new ConnectionGene(this.getNode(inNode), this.getNode(outNode), false, 1.0f, isExpressed, this.NextInnovationNumber()));
+			this.insertGene(new ConnectionGene(this.getNodeById(inNode), this.getNodeById(outNode), false, 1.0f, isExpressed, this.NextInnovationNumber()));
 			this.phenotypeChanged = true;
 		}
 
 		public void addConnection(int inNode, int outNode, bool isExpressed, int innovation)
 		{
-			this.addConnection(this.getNode(inNode).ID, this.getNode(outNode).ID, isExpressed, innovation, 1.0f);
+			this.addConnection(this.getNodeById(inNode).ID, this.getNodeById(outNode).ID, isExpressed, innovation, 1.0f);
 		}
 
 		public void addConnection(int inNode, int outNode, bool isExpressed, int innovation, float weight)
 		{
 			//this.connectionGenes.Add(new ConnectionGene(this.getNode(inNode), this.getNode(outNode), weight, isExpressed, innovation));
-			this.insertGene(new ConnectionGene(this.getNode(inNode), this.getNode(outNode), false, weight, isExpressed, innovation));
+			this.insertGene(new ConnectionGene(this.getNodeById(inNode), this.getNodeById(outNode), false, weight, isExpressed, innovation));
 			this.phenotypeChanged = true;
 		}
 
