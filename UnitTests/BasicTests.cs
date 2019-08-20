@@ -47,10 +47,56 @@ namespace NeuralEvolution.Tests
 
             for (int i = 1; i <= gen1.Nodes.Count; ++i)
             {
-                Assert.IsTrue(gen1.getNode(i).ID == i);
+                Assert.IsTrue(gen1.getNodeById(i).ID == i);
             }
-            Assert.IsTrue(gen1.getNode(0) == null);
-            Assert.IsTrue(gen1.getNode(6) == null);
+            Assert.IsTrue(gen1.getNodeById(0) == null);
+            Assert.IsTrue(gen1.getNodeById(6) == null);
+        }
+
+        [TestMethod]
+        public void TestGenomeConstruction_ByCopying()
+        {
+            Random r = new Random();
+
+            // Genome 1
+            Genome gen1 = new Genome(r);
+
+            // Create 3 sensors
+            gen1.addNode(new Node(Node.ENodeType.SENSOR, 1));
+            gen1.addNode(new Node(Node.ENodeType.SENSOR, 2));
+            gen1.addNode(new Node(Node.ENodeType.SENSOR, 3));
+
+            // Create 1 output
+            gen1.addNode(new Node(Node.ENodeType.OUTPUT, 4));
+
+            // Create 1 hidden node
+            gen1.addNode(new Node(Node.ENodeType.HIDDEN, 5));
+
+            // Add connections from the paper
+            gen1.addConnection(1, 4, 0.5f);
+            gen1.addConnection(2, 4, false);
+            gen1.addConnection(3, 4);
+            gen1.addConnection(2, 5);
+            gen1.addConnection(5, 4);
+            gen1.addConnection(1, 5, true, 8);
+
+
+            Genome genCopied = gen1.copy();
+
+
+            Assert.IsTrue(genCopied.Nodes.Count == gen1.Nodes.Count);
+            Assert.IsTrue(genCopied.ConnectionGenes.Count == gen1.ConnectionGenes.Count);
+            for(int i = 0; i < genCopied.Nodes.Count; ++i)
+            {
+                Assert.IsTrue(genCopied.Nodes[i].Equals(gen1.Nodes[i]));
+                Assert.AreNotSame(genCopied.Nodes[i], gen1.Nodes[i]);
+            }
+
+            for (int i = 0; i < genCopied.ConnectionGenes.Count; ++i)
+            {
+                Assert.IsTrue(genCopied.ConnectionGenes[i].Equals(gen1.ConnectionGenes[i]));
+                Assert.AreNotSame(genCopied.ConnectionGenes[i], gen1.ConnectionGenes[i]);
+            }
         }
 
         [TestMethod]

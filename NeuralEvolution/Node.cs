@@ -22,7 +22,21 @@ namespace NeuralEvolution
 		private List<Link> incomingLinks = new List<Link>();
 		private List<Link> outcomingLinks = new List<Link>();
 
-		public void addIncomingLink(Link lnk)
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            Node n = (Node)obj;
+
+            return (this.ID == n.ID && this.IsActive == n.IsActive && this.NodeType == n.NodeType &&
+                this.incomingLinks.Count == n.incomingLinks.Count && this.outcomingLinks.Count == n.outcomingLinks.Count &&
+                this.LastActivation == n.LastActivation && this.LastActivation2 == n.LastActivation2 && this.Activation == n.Activation &&
+                this.ActivationCount == n.ActivationCount && this.ActivationOut == n.ActivationOut && this.ActivationSum == n.ActivationSum);
+        }
+
+        public void addIncomingLink(Link lnk)
 		{
 			this.incomingLinks.Add(lnk);
 		}

@@ -28,7 +28,19 @@ namespace NeuralEvolution
 			this.IsRecurrent = isRecurrent;
 		}
 
-		public ConnectionGene copy()
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            ConnectionGene rhs = (ConnectionGene)obj;
+
+            return (this.InNodeGene.ID == rhs.InNodeGene.ID && this.OutNodeGene.ID == rhs.OutNodeGene.ID && this.Weight == rhs.Weight && 
+                this.IsEnabled == rhs.IsEnabled && this.Innovation == rhs.Innovation && this.IsRecurrent == rhs.IsRecurrent);
+        }
+
+        public ConnectionGene copy()
 		{
 			return new ConnectionGene(this.InNodeGene.copy(), this.OutNodeGene.copy(), this.IsRecurrent, this.Weight, this.IsEnabled, this.Innovation);
 		}
