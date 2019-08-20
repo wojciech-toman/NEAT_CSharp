@@ -801,7 +801,7 @@ namespace NeuralEvolutionDemo
 				foreach (Genome gen in sim.Genomes)
 				{
 					Network network = gen.getNetwork();
-					numnodes = gen.getNodes().Count;
+					numnodes = gen.Nodes.Count;
 					thresh = numnodes * 2;
 
 					gen.Fitness = go_cart(network, MAX_STEPS, thresh, r);
@@ -809,7 +809,7 @@ namespace NeuralEvolutionDemo
 					{
 						epochBestFitness = gen.Fitness;
 					}
-					avgConnectionGenes += gen.getConnectionGenes().Count;
+					avgConnectionGenes += gen.ConnectionGenes.Count;
 
 					if (gen.Fitness >= MAX_STEPS)
 					{
@@ -830,7 +830,7 @@ namespace NeuralEvolutionDemo
 			}
 
 			if (solutionFound)
-				Console.WriteLine(String.Format("Solution network nodes count: {0} | connections count: {1}", bestGenome.getNodes().Count, bestGenome.getConnectionGenes().Count));
+				Console.WriteLine(String.Format("Solution network nodes count: {0} | connections count: {1}", bestGenome.Nodes.Count, bestGenome.ConnectionGenes.Count));
 			else
 				Console.WriteLine("Solution NOT found!");
 		}
@@ -1018,7 +1018,7 @@ namespace NeuralEvolutionDemo
 						epochBestFitness = gen.Fitness;
 					}
 
-					avgConnectionGenes += gen.getConnectionGenes().Count;
+					avgConnectionGenes += gen.ConnectionGenes.Count;
 
 					if ((output[0] < 0.5f) && (output[1] >= 0.5f) && (output[2] >= 0.5f) && (output[3] < 0.5f))
 					{
@@ -1044,7 +1044,7 @@ namespace NeuralEvolutionDemo
 			if (solutionFound)
 			{
 				Console.WriteLine(String.Format("Solution found: [{0}, {1}, {2}, {3}]", bestOutput[0], bestOutput[1], bestOutput[2], bestOutput[3]));
-				Console.WriteLine(String.Format("Solution network nodes count: {0} | connections count: {1}", bestGenome.getNodes().Count, bestGenome.getConnectionGenes().Count));
+				Console.WriteLine(String.Format("Solution network nodes count: {0} | connections count: {1}", bestGenome.Nodes.Count, bestGenome.ConnectionGenes.Count));
 			}
 			else
 				Console.WriteLine("Solution NOT found!");

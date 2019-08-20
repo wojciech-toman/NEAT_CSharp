@@ -29,8 +29,8 @@ namespace NeuralEvolution.Tests
             gen1.addNode(new Node(Node.ENodeType.HIDDEN, 5));
 
 
-            Assert.IsTrue(gen1.getNodes().Count == 5);
-            Assert.IsTrue(gen1.getConnectionGenes().Count == 0);
+            Assert.IsTrue(gen1.Nodes.Count == 5);
+            Assert.IsTrue(gen1.ConnectionGenes.Count == 0);
 
 
             // Add connections from the paper
@@ -42,10 +42,10 @@ namespace NeuralEvolution.Tests
             gen1.addConnection(1, 5, true, 8);
 
 
-            Assert.IsTrue(gen1.getNodes().Count == 5);
-            Assert.IsTrue(gen1.getConnectionGenes().Count == 6);
+            Assert.IsTrue(gen1.Nodes.Count == 5);
+            Assert.IsTrue(gen1.ConnectionGenes.Count == 6);
 
-            for (int i = 1; i <= gen1.getNodes().Count; ++i)
+            for (int i = 1; i <= gen1.Nodes.Count; ++i)
             {
                 Assert.IsTrue(gen1.getNode(i).ID == i);
             }
@@ -96,13 +96,13 @@ namespace NeuralEvolution.Tests
             gen3.addConnection(1, 3, 0.5f);
             gen3.addConnection(2, 3, 1.0f);
 
-            Assert.IsTrue(gen3.getNodes().Count == 3);
+            Assert.IsTrue(gen3.Nodes.Count == 3);
             //Console.WriteLine("\n\nBefore node mutation:");
             //gen3.debugPrint();
             //Console.WriteLine("\nAfter node mutation:");
             gen3.addNodeMutation(innovations);
             //gen3.debugPrint();
-            Assert.IsTrue(gen3.getNodes().Count == 4);
+            Assert.IsTrue(gen3.Nodes.Count == 4);
         }
 
         [TestMethod]
@@ -234,12 +234,12 @@ namespace NeuralEvolution.Tests
             gen4.addConnection(2, 5);
             gen4.addConnection(5, 4);
 
-            Assert.IsTrue(gen4.getConnectionGenes().Count == 5);
+            Assert.IsTrue(gen4.ConnectionGenes.Count == 5);
             //Console.WriteLine("\n\nBefore connection mutation:");
             //gen4.debugPrint();
             //Console.WriteLine("\nAfter connection mutation:");
             gen4.addConnectionMutation(innovations);
-            Assert.IsTrue(gen4.getConnectionGenes().Count == 6);
+            Assert.IsTrue(gen4.ConnectionGenes.Count == 6);
             //gen4.debugPrint();
         }
 
@@ -276,23 +276,23 @@ namespace NeuralEvolution.Tests
 
 
             Genome gen5 = gen2.copy();
-            Assert.IsTrue(gen5.getConnectionGenes()[7].IsEnabled == true);
+            Assert.IsTrue(gen5.ConnectionGenes[7].IsEnabled == true);
             /*Console.WriteLine("\n\nBefore toggle enabled mutation:");
 			gen5.debugPrint();
 			Console.WriteLine("\nAfter toggle enabled mutation:");*/
             gen5.toggleEnabledMutation();
             //gen5.debugPrint();
-            Assert.IsTrue(gen5.getConnectionGenes()[7].IsEnabled == false);
+            Assert.IsTrue(gen5.ConnectionGenes[7].IsEnabled == false);
 
             gen5 = gen2.copy();
-            Assert.IsTrue(gen5.getConnectionGenes()[1].IsEnabled == false);
+            Assert.IsTrue(gen5.ConnectionGenes[1].IsEnabled == false);
             /*Console.WriteLine("\n\nBefore reenable connection mutation:");
 			gen5.debugPrint();
 			Console.WriteLine("\nAfter reenable connection mutation:");*/
             gen5.reenableMutation();
             //gen5.debugPrint();
 
-            Assert.IsTrue(gen5.getConnectionGenes()[1].IsEnabled == true);
+            Assert.IsTrue(gen5.ConnectionGenes[1].IsEnabled == true);
         }
 
         [TestMethod]
@@ -350,16 +350,16 @@ namespace NeuralEvolution.Tests
             Network net = gen2.getNetwork();
 
 
-            Assert.IsTrue(net.Nodes.Count == gen2.getNodes().Count);
+            Assert.IsTrue(net.Nodes.Count == gen2.Nodes.Count);
             Assert.IsTrue(net.Input.Count == 3);
             Assert.IsTrue(net.Output.Count == 1);
-            Assert.IsTrue(net.Links.Count == gen2.getConnectionGenes().Count);
+            Assert.IsTrue(net.Links.Count == gen2.ConnectionGenes.Count);
             for (int i = 0; i < net.Nodes.Count; ++i)
-                Assert.IsTrue(net.Nodes[i].ID == gen2.getNodes()[i].ID);
+                Assert.IsTrue(net.Nodes[i].ID == gen2.Nodes[i].ID);
             for (int i = 0; i < net.Links.Count; ++i)
             {
-                Assert.IsTrue(net.Links[i].InNode.ID == gen2.getConnectionGenes()[i].InNodeGene.ID);
-                Assert.IsTrue(net.Links[i].OutNode.ID == gen2.getConnectionGenes()[i].OutNodeGene.ID);
+                Assert.IsTrue(net.Links[i].InNode.ID == gen2.ConnectionGenes[i].InNodeGene.ID);
+                Assert.IsTrue(net.Links[i].OutNode.ID == gen2.ConnectionGenes[i].OutNodeGene.ID);
             }
         }
 
@@ -397,19 +397,19 @@ namespace NeuralEvolution.Tests
             Network net = gen2.getNetwork();
 
 
-            Assert.IsTrue(net.Nodes.Count == gen2.getNodes().Count);
+            Assert.IsTrue(net.Nodes.Count == gen2.Nodes.Count);
             Assert.IsTrue(net.Input.Count == 3);
             Assert.IsTrue(net.Output.Count == 1);
-            Assert.IsTrue(net.Links.Count == gen2.getConnectionGenes().Count - 4);
+            Assert.IsTrue(net.Links.Count == gen2.ConnectionGenes.Count - 4);
             for (int i = 0; i < net.Nodes.Count; ++i)
-                Assert.IsTrue(net.Nodes[i].ID == gen2.getNodes()[i].ID);
+                Assert.IsTrue(net.Nodes[i].ID == gen2.Nodes[i].ID);
             int linkID = 0;
-            for (int geneID = 0; geneID < gen2.getConnectionGenes().Count; ++geneID)
+            for (int geneID = 0; geneID < gen2.ConnectionGenes.Count; ++geneID)
             {
-                if(!gen2.getConnectionGenes()[geneID].IsEnabled) continue;
+                if(!gen2.ConnectionGenes[geneID].IsEnabled) continue;
 
-                Assert.IsTrue(net.Links[linkID].InNode.ID == gen2.getConnectionGenes()[geneID].InNodeGene.ID);
-                Assert.IsTrue(net.Links[linkID].OutNode.ID == gen2.getConnectionGenes()[geneID].OutNodeGene.ID);
+                Assert.IsTrue(net.Links[linkID].InNode.ID == gen2.ConnectionGenes[geneID].InNodeGene.ID);
+                Assert.IsTrue(net.Links[linkID].OutNode.ID == gen2.ConnectionGenes[geneID].OutNodeGene.ID);
 
                 ++linkID;
             }

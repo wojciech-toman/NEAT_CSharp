@@ -42,8 +42,8 @@ namespace NeuralEvolution
 				this.nextGeneration.Add(g);
 			}
 
-			if (basicGenome.getConnectionGenes().Count > 0)
-				Innovation.SetCurrentID(basicGenome.getConnectionGenes()[basicGenome.getConnectionGenes().Count - 1].Innovation);
+			if (basicGenome.ConnectionGenes.Count > 0)
+				Innovation.SetCurrentID(basicGenome.ConnectionGenes[basicGenome.ConnectionGenes.Count - 1].Innovation);
 			else
 				Innovation.SetCurrentID(0);
 

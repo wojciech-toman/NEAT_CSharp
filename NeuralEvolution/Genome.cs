@@ -213,13 +213,10 @@ namespace NeuralEvolution
 			this.phenotypeChanged = true;
 		}
 
-		public List<ConnectionGene> getConnectionGenes()
-		{
-			return this.connectionGenes;
-		}
+        public List<ConnectionGene> ConnectionGenes => this.connectionGenes;
 
-		// Helper method printing basic information about the genome
-		public void debugPrint()
+        // Helper method printing basic information about the genome
+        public void debugPrint()
 		{
 			for (int i = 0; i < this.connectionGenes.Count; ++i)
 			{
@@ -252,18 +249,18 @@ namespace NeuralEvolution
 			}
 
 			// Make sure all inputs and outputs are included in the child genome
-			foreach (Node n in gen1.getNodes())
+			foreach (Node n in gen1.Nodes)
 			{
 				if (n.NodeType == Node.ENodeType.SENSOR || n.NodeType == Node.ENodeType.BIAS || n.NodeType == Node.ENodeType.OUTPUT)
 					child.addNode(n.copy());
 			}
 
-			foreach (ConnectionGene gene1 in moreFit.getConnectionGenes())
+			foreach (ConnectionGene gene1 in moreFit.ConnectionGenes)
 			{
 				bool foundMatch = false;
 				bool skip = false;
 				ConnectionGene newGene = null;
-				foreach (ConnectionGene gene2 in lessFit.getConnectionGenes())
+				foreach (ConnectionGene gene2 in lessFit.ConnectionGenes)
 				{
 					// Found matching gene, so add it to the child by randomly selecting from one of the parents
 					if (gene1.Innovation == gene2.Innovation)
@@ -284,7 +281,7 @@ namespace NeuralEvolution
 				}
 
 				// Check if there aren't any conflicts with an existing connection
-				foreach (ConnectionGene g in child.getConnectionGenes())
+				foreach (ConnectionGene g in child.ConnectionGenes)
 				{
 					if ((g.InNodeGene.ID == newGene.InNodeGene.ID && g.OutNodeGene.ID == newGene.OutNodeGene.ID && g.IsRecurrent == newGene.IsRecurrent) ||
 						(g.InNodeGene.ID == newGene.OutNodeGene.ID && g.OutNodeGene.ID == newGene.InNodeGene.ID && !g.IsRecurrent && !newGene.IsRecurrent))
@@ -325,18 +322,18 @@ namespace NeuralEvolution
 			}
 
 			// Make sure all inputs and outputs are included in the child genome
-			foreach (Node n in gen1.getNodes())
+			foreach (Node n in gen1.Nodes)
 			{
 				if (n.NodeType == Node.ENodeType.SENSOR || n.NodeType == Node.ENodeType.BIAS || n.NodeType == Node.ENodeType.OUTPUT)
 					child.addNode(n.copy());
 			}
 
-			foreach (ConnectionGene gene1 in moreFit.getConnectionGenes())
+			foreach (ConnectionGene gene1 in moreFit.ConnectionGenes)
 			{
 				bool foundMatch = false;
 				bool skip = false;
 				ConnectionGene newGene = null;
-				foreach (ConnectionGene gene2 in lessFit.getConnectionGenes())
+				foreach (ConnectionGene gene2 in lessFit.ConnectionGenes)
 				{
 					// Found matching gene, so add it to the child by randomly selecting from one of the parents
 					if (gene1.Innovation == gene2.Innovation)
@@ -358,7 +355,7 @@ namespace NeuralEvolution
 					newGene = gene1;
 
 				// Check if there aren't any conflicts with an existing connection
-				foreach (ConnectionGene g in child.getConnectionGenes())
+				foreach (ConnectionGene g in child.ConnectionGenes)
 				{
 					if ((g.InNodeGene.ID == newGene.InNodeGene.ID && g.OutNodeGene.ID == newGene.OutNodeGene.ID && g.IsRecurrent == newGene.IsRecurrent) ||
 						(g.InNodeGene.ID == newGene.OutNodeGene.ID && g.OutNodeGene.ID == newGene.InNodeGene.ID && !g.IsRecurrent && !newGene.IsRecurrent))
@@ -674,13 +671,13 @@ namespace NeuralEvolution
 			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
 
 			// Handle special case when one of the genomes is completely empty
-			if (gen1.getConnectionGenes().Count == 0 || gen2.getConnectionGenes().Count == 0)
-				return Math.Max(gen1.getConnectionGenes().Count, gen2.getConnectionGenes().Count);
+			if (gen1.ConnectionGenes.Count == 0 || gen2.ConnectionGenes.Count == 0)
+				return Math.Max(gen1.ConnectionGenes.Count, gen2.ConnectionGenes.Count);
 
 			int excessCount = 0;
 
-			List<ConnectionGene> connGenes1 = gen1.getConnectionGenes();
-			List<ConnectionGene> connGenes2 = gen2.getConnectionGenes();
+			List<ConnectionGene> connGenes1 = gen1.ConnectionGenes;
+			List<ConnectionGene> connGenes2 = gen2.ConnectionGenes;
 
 			int i = 0, j = 0;
 			while (i < connGenes1.Count || j < connGenes2.Count)
@@ -707,13 +704,13 @@ namespace NeuralEvolution
 			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
 
 			// Handle special case when one of the genomes is completely empty
-			if (gen1.getConnectionGenes().Count == 0 || gen2.getConnectionGenes().Count == 0)
+			if (gen1.ConnectionGenes.Count == 0 || gen2.ConnectionGenes.Count == 0)
 				return 0;
 
 			int disjointCount = 0;
 
-			List<ConnectionGene> connGenes1 = gen1.getConnectionGenes();
-			List<ConnectionGene> connGenes2 = gen2.getConnectionGenes();
+			List<ConnectionGene> connGenes1 = gen1.ConnectionGenes;
+			List<ConnectionGene> connGenes2 = gen2.ConnectionGenes;
 
 			int i = 0, j = 0;
 			while (i < connGenes1.Count && j < connGenes2.Count)
@@ -735,13 +732,13 @@ namespace NeuralEvolution
 			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
 
 			// Handle special case when one of the genomes is completely empty
-			if (gen1.getConnectionGenes().Count == 0 || gen2.getConnectionGenes().Count == 0)
+			if (gen1.ConnectionGenes.Count == 0 || gen2.ConnectionGenes.Count == 0)
 				return 0;
 
 			int matchingCount = 0;
 
-			List<ConnectionGene> connGenes1 = gen1.getConnectionGenes();
-			List<ConnectionGene> connGenes2 = gen2.getConnectionGenes();
+			List<ConnectionGene> connGenes1 = gen1.ConnectionGenes;
+			List<ConnectionGene> connGenes2 = gen2.ConnectionGenes;
 
 			int i = 0, j = 0;
 			while (i < connGenes1.Count && j < connGenes2.Count)
@@ -763,15 +760,15 @@ namespace NeuralEvolution
 			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
 
 			// Handle special case when one of the genomes is completely empty
-			if (gen1.getConnectionGenes().Count == 0 || gen2.getConnectionGenes().Count == 0)
+			if (gen1.ConnectionGenes.Count == 0 || gen2.ConnectionGenes.Count == 0)
 				return 0.0f;
 
 			int matchingCount = Genome.matchingGenesCount(gen1, gen2);
 
 			float difference = 0.0f;
 
-			List<ConnectionGene> connGenes1 = gen1.getConnectionGenes();
-			List<ConnectionGene> connGenes2 = gen2.getConnectionGenes();
+			List<ConnectionGene> connGenes1 = gen1.ConnectionGenes;
+			List<ConnectionGene> connGenes2 = gen2.ConnectionGenes;
 
 			int i = 0, j = 0;
 			while (i < connGenes1.Count && j < connGenes2.Count)
@@ -799,7 +796,7 @@ namespace NeuralEvolution
 		{
 			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
 
-			int N = Math.Max(this.getConnectionGenes().Count, gen2.getConnectionGenes().Count);
+			int N = Math.Max(this.ConnectionGenes.Count, gen2.ConnectionGenes.Count);
 			// Handle special case when both genomes have no genes at all
 			if (N == 0) return 0.0f;
 
@@ -816,12 +813,9 @@ namespace NeuralEvolution
 			return (c1 * Genome.excessGenesCount(this, gen2) / N) + (c2 * Genome.disjointGenesCount(this, gen2) / N) + (c3 * avgWeightDiff);
 		}
 
-		public List<Node> getNodes()
-		{
-			return this.nodes;
-		}
+        public List<Node> Nodes => this.nodes;
 
-		public void toggleEnabledMutation()
+        public void toggleEnabledMutation()
 		{
 			// Handle special case when one of the genomes is completely empty
 			if (this.connectionGenes.Count == 0)
