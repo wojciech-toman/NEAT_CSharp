@@ -35,6 +35,11 @@ namespace NeuralEvolution
 			return ++this.localInnovationCounter;
 		}
 
+        public int GetInnovationNumber()
+        {
+            return this.localInnovationCounter;
+        }
+
 
 		public bool IsPopulationChampion { get; set; }
 
@@ -161,7 +166,6 @@ namespace NeuralEvolution
 		public void addConnection(ConnectionGene gene)
 		{
 			this.insertGene(gene);
-			//this.connectionGenes.Add(gene);
 
 			// Add nodes if necessary
 			bool foundNode1 = false, foundNode2 = false;
