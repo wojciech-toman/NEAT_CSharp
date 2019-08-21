@@ -26,10 +26,11 @@ namespace NeuralEvolution
 		public SimulationParameters Parameters { get; set; } = new SimulationParameters();
 
 
-		// Spawn population from a single genome (this will be initial state) and with populationSize number of organisms.
+		// Spawn population from a single genome (this will be initial state) and with positive populationSize number of organisms.
 		public Simulation(Random rnd, Genome basicGenome, int populationSize)
 		{
 			if (basicGenome == null) throw new ArgumentNullException(nameof(basicGenome));
+            if (populationSize <= 0) throw new ArgumentException("Population size has to be positive number");
 
 			this.populationSize = populationSize;
 			this.random = rnd;

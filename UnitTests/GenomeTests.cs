@@ -7,15 +7,18 @@ using NeuralEvolution;
 namespace NeuralEvolution.Tests
 {
     [TestClass]
-    public class BasicTests
+    public class GenomeTests
     {
-        [TestMethod]
-        public void TestGenomeConstruction()
-        {
-            Random r = new Random();
+        Random r = null;
+        Genome gen1 = null;
 
-            // Genome 1
-            Genome gen1 = new Genome(r);
+        [TestInitialize]
+        public void SetupTest()
+        {
+            r = new Random(0);
+
+            // Genome 
+            gen1 = new Genome(r);
 
             // Create 3 sensors
             gen1.addNode(new Node(Node.ENodeType.SENSOR, 1));
@@ -28,11 +31,6 @@ namespace NeuralEvolution.Tests
             // Create 1 hidden node
             gen1.addNode(new Node(Node.ENodeType.HIDDEN, 5));
 
-
-            Assert.IsTrue(gen1.Nodes.Count == 5);
-            Assert.IsTrue(gen1.ConnectionGenes.Count == 0);
-
-
             // Add connections from the paper
             gen1.addConnection(1, 4, 0.5f);
             gen1.addConnection(2, 4, false);
@@ -40,8 +38,19 @@ namespace NeuralEvolution.Tests
             gen1.addConnection(2, 5);
             gen1.addConnection(5, 4);
             gen1.addConnection(1, 5, true, 8);
+        }
+
+        [TestCleanup]
+        public void CleanupTest()
+        {
+            r = null;
+            gen1 = null;
+        }
 
 
+        [TestMethod]
+        public void TestGenomeConstruction()
+        {
             Assert.IsTrue(gen1.Nodes.Count == 5);
             Assert.IsTrue(gen1.ConnectionGenes.Count == 6);
 
@@ -56,37 +65,12 @@ namespace NeuralEvolution.Tests
         [TestMethod]
         public void TestGenomeConstruction_ByCopying()
         {
-            Random r = new Random();
-
-            // Genome 1
-            Genome gen1 = new Genome(r);
-
-            // Create 3 sensors
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 2));
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 3));
-
-            // Create 1 output
-            gen1.addNode(new Node(Node.ENodeType.OUTPUT, 4));
-
-            // Create 1 hidden node
-            gen1.addNode(new Node(Node.ENodeType.HIDDEN, 5));
-
-            // Add connections from the paper
-            gen1.addConnection(1, 4, 0.5f);
-            gen1.addConnection(2, 4, false);
-            gen1.addConnection(3, 4);
-            gen1.addConnection(2, 5);
-            gen1.addConnection(5, 4);
-            gen1.addConnection(1, 5, true, 8);
-
-
             Genome genCopied = gen1.copy();
 
 
             Assert.IsTrue(genCopied.Nodes.Count == gen1.Nodes.Count);
             Assert.IsTrue(genCopied.ConnectionGenes.Count == gen1.ConnectionGenes.Count);
-            for(int i = 0; i < genCopied.Nodes.Count; ++i)
+            for (int i = 0; i < genCopied.Nodes.Count; ++i)
             {
                 Assert.IsTrue(genCopied.Nodes[i].Equals(gen1.Nodes[i]));
                 Assert.AreNotSame(genCopied.Nodes[i], gen1.Nodes[i]);
@@ -102,30 +86,6 @@ namespace NeuralEvolution.Tests
         [TestMethod]
         public void TestAddNodeMutation()
         {
-            Random r = new Random(0);
-
-            // Genome 1
-            Genome gen1 = new Genome(r);
-
-            // Create 3 sensors
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 2));
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 3));
-
-            // Create 1 output
-            gen1.addNode(new Node(Node.ENodeType.OUTPUT, 4));
-
-            // Create 1 hidden node
-            gen1.addNode(new Node(Node.ENodeType.HIDDEN, 5));
-
-            // Add connections from the paper
-            gen1.addConnection(1, 4, 0.5f);
-            gen1.addConnection(2, 4, false);
-            gen1.addConnection(3, 4);
-            gen1.addConnection(2, 5);
-            gen1.addConnection(5, 4);
-            gen1.addConnection(1, 5, true, 8);
-
             Simulation tmpSim = new Simulation(r, gen1, 1);
 
             gen1.ParentSimulation = tmpSim;
@@ -143,43 +103,14 @@ namespace NeuralEvolution.Tests
             gen3.addConnection(2, 3, 1.0f);
 
             Assert.IsTrue(gen3.Nodes.Count == 3);
-            //Console.WriteLine("\n\nBefore node mutation:");
-            //gen3.debugPrint();
-            //Console.WriteLine("\nAfter node mutation:");
             gen3.addNodeMutation(innovations);
-            //gen3.debugPrint();
             Assert.IsTrue(gen3.Nodes.Count == 4);
         }
 
         [TestMethod]
         public void TestCrossover()
         {
-            Random r = new Random();
-
-            Genome gen1 = new Genome(r);
             Genome gen2 = new Genome(r);
-            // Genome 1
-
-            // Create 3 sensors
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 2));
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 3));
-
-            // Create 1 output
-            gen1.addNode(new Node(Node.ENodeType.OUTPUT, 4));
-
-            // Create 1 hidden node
-            gen1.addNode(new Node(Node.ENodeType.HIDDEN, 5));
-
-            // Add connections from the paper
-            gen1.addConnection(1, 4, 0.5f);
-            gen1.addConnection(2, 4, false);
-            gen1.addConnection(3, 4);
-            gen1.addConnection(2, 5);
-            gen1.addConnection(5, 4);
-            gen1.addConnection(1, 5, true, 8);
-
-
 
             // Genome 2
 
@@ -228,31 +159,8 @@ namespace NeuralEvolution.Tests
         [TestMethod]
         public void TestAddConnectionMutation()
         {
-            Random r = new Random(0);
-
             List<Innovation> innovations = new List<Innovation>();
 
-            // Genome 1
-            Genome gen1 = new Genome(r);
-
-            // Create 3 sensors
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 2));
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 3));
-
-            // Create 1 output
-            gen1.addNode(new Node(Node.ENodeType.OUTPUT, 4));
-
-            // Create 1 hidden node
-            gen1.addNode(new Node(Node.ENodeType.HIDDEN, 5));
-
-            // Add connections from the paper
-            gen1.addConnection(1, 4, 0.5f);
-            gen1.addConnection(2, 4, false);
-            gen1.addConnection(3, 4);
-            gen1.addConnection(2, 5);
-            gen1.addConnection(5, 4);
-            gen1.addConnection(1, 5, true, 8);
 
             Simulation tmpSim = new Simulation(r, gen1, 1);
 
@@ -281,19 +189,13 @@ namespace NeuralEvolution.Tests
             gen4.addConnection(5, 4);
 
             Assert.IsTrue(gen4.ConnectionGenes.Count == 5);
-            //Console.WriteLine("\n\nBefore connection mutation:");
-            //gen4.debugPrint();
-            //Console.WriteLine("\nAfter connection mutation:");
             gen4.addConnectionMutation(innovations);
             Assert.IsTrue(gen4.ConnectionGenes.Count == 6);
-            //gen4.debugPrint();
         }
 
         [TestMethod]
         public void TestToggleConnectionEnabilityMutation()
         {
-            Random r = new Random(0);
-
             // Genome 2
             Genome gen2 = new Genome(r);
 
@@ -323,20 +225,12 @@ namespace NeuralEvolution.Tests
 
             Genome gen5 = gen2.copy();
             Assert.IsTrue(gen5.ConnectionGenes[7].IsEnabled == true);
-            /*Console.WriteLine("\n\nBefore toggle enabled mutation:");
-			gen5.debugPrint();
-			Console.WriteLine("\nAfter toggle enabled mutation:");*/
             gen5.toggleEnabledMutation();
-            //gen5.debugPrint();
             Assert.IsTrue(gen5.ConnectionGenes[7].IsEnabled == false);
 
             gen5 = gen2.copy();
             Assert.IsTrue(gen5.ConnectionGenes[1].IsEnabled == false);
-            /*Console.WriteLine("\n\nBefore reenable connection mutation:");
-			gen5.debugPrint();
-			Console.WriteLine("\nAfter reenable connection mutation:");*/
             gen5.reenableMutation();
-            //gen5.debugPrint();
 
             Assert.IsTrue(gen5.ConnectionGenes[1].IsEnabled == true);
         }
@@ -365,8 +259,6 @@ namespace NeuralEvolution.Tests
         [TestMethod]
         public void GetNetworkFromGenome_AllGenesEnabled()
         {
-            Random r = new Random(0);
-
             // Genome 2
             Genome gen2 = new Genome(r);
 
@@ -412,8 +304,6 @@ namespace NeuralEvolution.Tests
         [TestMethod]
         public void GetNetworkFromGenome_SomeGenesDisabled()
         {
-            Random r = new Random(0);
-
             // Genome 2
             Genome gen2 = new Genome(r);
 
@@ -452,13 +342,48 @@ namespace NeuralEvolution.Tests
             int linkID = 0;
             for (int geneID = 0; geneID < gen2.ConnectionGenes.Count; ++geneID)
             {
-                if(!gen2.ConnectionGenes[geneID].IsEnabled) continue;
+                if (!gen2.ConnectionGenes[geneID].IsEnabled) continue;
 
                 Assert.IsTrue(net.Links[linkID].InNode.ID == gen2.ConnectionGenes[geneID].InNodeGene.ID);
                 Assert.IsTrue(net.Links[linkID].OutNode.ID == gen2.ConnectionGenes[geneID].OutNodeGene.ID);
 
                 ++linkID;
             }
+        }
+
+        [TestMethod]
+        public void InnovationNumberTest()
+        {
+            // Genome 
+            Genome gen1 = new Genome(r);
+
+            Assert.IsTrue(gen1.GetInnovationNumber() == 0);
+
+            // Create 3 sensors
+            gen1.addNode(new Node(Node.ENodeType.SENSOR, 1));
+            gen1.addNode(new Node(Node.ENodeType.SENSOR, 2));
+            gen1.addNode(new Node(Node.ENodeType.SENSOR, 3));
+
+            // Create 1 output
+            gen1.addNode(new Node(Node.ENodeType.OUTPUT, 4));
+
+            // Create 1 hidden node
+            gen1.addNode(new Node(Node.ENodeType.HIDDEN, 5));
+
+            // Add connections from the paper
+            gen1.addConnection(1, 4, 0.5f);
+            Assert.IsTrue(gen1.GetInnovationNumber() == 1);
+
+            gen1.addConnection(2, 4, false);
+            Assert.IsTrue(gen1.GetInnovationNumber() == 2);
+            gen1.addConnection(3, 4);
+            Assert.IsTrue(gen1.GetInnovationNumber() == 3);
+            gen1.addConnection(2, 5);
+            Assert.IsTrue(gen1.GetInnovationNumber() == 4);
+            gen1.addConnection(5, 4);
+            Assert.IsTrue(gen1.GetInnovationNumber() == 5);
+            gen1.addConnection(1, 5, true);
+            Assert.IsTrue(gen1.GetInnovationNumber() == 6);
         }
     }
 }
