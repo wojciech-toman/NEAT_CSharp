@@ -11,13 +11,14 @@ namespace NeuralEvolution.Tests
     {
         Random r = null;
         Genome gen1 = null;
+        Genome gen2 = null;
 
         [TestInitialize]
         public void SetupTest()
         {
             r = new Random(0);
-
-            // Genome 
+            
+            // Genome 1
             gen1 = new Genome(r);
 
             // Create 3 sensors
@@ -38,6 +39,34 @@ namespace NeuralEvolution.Tests
             gen1.addConnection(2, 5);
             gen1.addConnection(5, 4);
             gen1.addConnection(1, 5, true, 8);
+
+
+
+            // Genome 2
+            gen2 = new Genome(r);
+
+            // Create 3 sensors
+            gen2.addNode(new Node(Node.ENodeType.SENSOR, 1));
+            gen2.addNode(new Node(Node.ENodeType.SENSOR, 2));
+            gen2.addNode(new Node(Node.ENodeType.SENSOR, 3));
+
+            // Create 1 output
+            gen2.addNode(new Node(Node.ENodeType.OUTPUT, 4));
+
+            // Create 2 hidden nodes
+            gen2.addNode(new Node(Node.ENodeType.HIDDEN, 5));
+            gen2.addNode(new Node(Node.ENodeType.HIDDEN, 6));
+
+            // Add connections from the paper
+            gen2.addConnection(1, 4);
+            gen2.addConnection(2, 4, false);
+            gen2.addConnection(3, 4);
+            gen2.addConnection(2, 5);
+            gen2.addConnection(5, 4, false);
+            gen2.addConnection(5, 6);
+            gen2.addConnection(6, 4);
+            gen2.addConnection(3, 5, true, 9);
+            gen2.addConnection(1, 6, true, 10);
         }
 
         [TestCleanup]
@@ -45,6 +74,7 @@ namespace NeuralEvolution.Tests
         {
             r = null;
             gen1 = null;
+            gen2 = null;
         }
 
 
@@ -110,34 +140,6 @@ namespace NeuralEvolution.Tests
         [TestMethod]
         public void TestCrossover()
         {
-            Genome gen2 = new Genome(r);
-
-            // Genome 2
-
-            // Create 3 sensors
-            gen2.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            gen2.addNode(new Node(Node.ENodeType.SENSOR, 2));
-            gen2.addNode(new Node(Node.ENodeType.SENSOR, 3));
-
-            // Create 1 output
-            gen2.addNode(new Node(Node.ENodeType.OUTPUT, 4));
-
-            // Create 2 hidden nodes
-            gen2.addNode(new Node(Node.ENodeType.HIDDEN, 5));
-            gen2.addNode(new Node(Node.ENodeType.HIDDEN, 6));
-
-            // Add connections from the paper
-            gen2.addConnection(1, 4);
-            gen2.addConnection(2, 4, false);
-            gen2.addConnection(3, 4);
-            gen2.addConnection(2, 5);
-            gen2.addConnection(5, 4, false);
-            gen2.addConnection(5, 6);
-            gen2.addConnection(6, 4);
-            gen2.addConnection(3, 5, true, 9);
-            gen2.addConnection(1, 6, true, 10);
-
-
             Simulation tmpSim = new Simulation(r, gen1, 1);
 
             gen1.ParentSimulation = tmpSim;
@@ -196,33 +198,6 @@ namespace NeuralEvolution.Tests
         [TestMethod]
         public void TestToggleConnectionEnabilityMutation()
         {
-            // Genome 2
-            Genome gen2 = new Genome(r);
-
-            // Create 3 sensors
-            gen2.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            gen2.addNode(new Node(Node.ENodeType.SENSOR, 2));
-            gen2.addNode(new Node(Node.ENodeType.SENSOR, 3));
-
-            // Create 1 output
-            gen2.addNode(new Node(Node.ENodeType.OUTPUT, 4));
-
-            // Create 2 hidden nodes
-            gen2.addNode(new Node(Node.ENodeType.HIDDEN, 5));
-            gen2.addNode(new Node(Node.ENodeType.HIDDEN, 6));
-
-            // Add connections from the paper
-            gen2.addConnection(1, 4);
-            gen2.addConnection(2, 4, false);
-            gen2.addConnection(3, 4);
-            gen2.addConnection(2, 5);
-            gen2.addConnection(5, 4, false);
-            gen2.addConnection(5, 6);
-            gen2.addConnection(6, 4);
-            gen2.addConnection(3, 5, true, 9);
-            gen2.addConnection(1, 6, true, 10);
-
-
             Genome gen5 = gen2.copy();
             Assert.IsTrue(gen5.ConnectionGenes[7].IsEnabled == true);
             gen5.toggleEnabledMutation();
@@ -259,31 +234,10 @@ namespace NeuralEvolution.Tests
         [TestMethod]
         public void GetNetworkFromGenome_AllGenesEnabled()
         {
-            // Genome 2
-            Genome gen2 = new Genome(r);
-
-            // Create 3 sensors
-            gen2.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            gen2.addNode(new Node(Node.ENodeType.SENSOR, 2));
-            gen2.addNode(new Node(Node.ENodeType.SENSOR, 3));
-
-            // Create 1 output
-            gen2.addNode(new Node(Node.ENodeType.OUTPUT, 4));
-
-            // Create 2 hidden nodes
-            gen2.addNode(new Node(Node.ENodeType.HIDDEN, 5));
-            gen2.addNode(new Node(Node.ENodeType.HIDDEN, 6));
-
-            // Add connections from the paper
-            gen2.addConnection(1, 4);
-            gen2.addConnection(2, 4, true);
-            gen2.addConnection(3, 4);
-            gen2.addConnection(2, 5);
-            gen2.addConnection(5, 4, true);
-            gen2.addConnection(5, 6);
-            gen2.addConnection(6, 4);
-            gen2.addConnection(3, 5, true, 9);
-            gen2.addConnection(1, 6, true, 10);
+            // Change enability of some genes from 'false' to 'true'
+            gen2.ConnectionGenes[1].IsEnabled = true;
+            gen2.ConnectionGenes[4].IsEnabled = true;
+            
 
             Network net = gen2.getNetwork();
 
@@ -304,31 +258,10 @@ namespace NeuralEvolution.Tests
         [TestMethod]
         public void GetNetworkFromGenome_SomeGenesDisabled()
         {
-            // Genome 2
-            Genome gen2 = new Genome(r);
+            // Change enability of some genes from 'true' to 'false'
+            gen2.ConnectionGenes[7].IsEnabled = false;
+            gen2.ConnectionGenes[8].IsEnabled = false;
 
-            // Create 3 sensors
-            gen2.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            gen2.addNode(new Node(Node.ENodeType.SENSOR, 2));
-            gen2.addNode(new Node(Node.ENodeType.SENSOR, 3));
-
-            // Create 1 output
-            gen2.addNode(new Node(Node.ENodeType.OUTPUT, 4));
-
-            // Create 2 hidden nodes
-            gen2.addNode(new Node(Node.ENodeType.HIDDEN, 5));
-            gen2.addNode(new Node(Node.ENodeType.HIDDEN, 6));
-
-            // Add connections from the paper
-            gen2.addConnection(1, 4);
-            gen2.addConnection(2, 4, false);
-            gen2.addConnection(3, 4);
-            gen2.addConnection(2, 5);
-            gen2.addConnection(5, 4, false);
-            gen2.addConnection(5, 6);
-            gen2.addConnection(6, 4);
-            gen2.addConnection(3, 5, false);
-            gen2.addConnection(1, 6, false);
 
             Network net = gen2.getNetwork();
 
@@ -384,6 +317,114 @@ namespace NeuralEvolution.Tests
             Assert.IsTrue(gen1.GetInnovationNumber() == 5);
             gen1.addConnection(1, 5, true);
             Assert.IsTrue(gen1.GetInnovationNumber() == 6);
+        }
+
+        [TestMethod]
+        public void compatibilityDistanceTest_EmptyGenomes_Expected_0()
+        {
+            Genome gen1 = new Genome(r);
+            Genome gen2 = new Genome(r);
+
+            Simulation tmpSim = new Simulation(r, gen1, 1);
+
+            gen1.ParentSimulation = tmpSim;
+            gen2.ParentSimulation = tmpSim;
+
+            float epsilon = 0.0001f;
+            Assert.IsTrue(gen1.compatibilityDistance(gen2) < epsilon);
+            Assert.IsTrue(gen2.compatibilityDistance(gen1) < epsilon);
+        }
+
+        [TestMethod]
+        public void compatibilityDistanceTest_ToSelf_Expected_0()
+        {
+            float epsilon = 0.0001f;
+            Simulation tmpSim = new Simulation(r, gen1, 1);
+            gen1.ParentSimulation = tmpSim;
+
+            Assert.IsTrue(gen1.compatibilityDistance(gen1) < epsilon);
+        }
+
+        [TestMethod]
+        public void compatibilityDistanceTest_ToCopyOfSelf_Expected_0()
+        {
+            float epsilon = 0.0001f;
+            Simulation tmpSim = new Simulation(r, gen1, 1);
+            gen1.ParentSimulation = tmpSim;
+
+            Genome genCopy = gen1.copy();
+            genCopy.ParentSimulation = tmpSim;
+
+            Assert.IsTrue(gen1.compatibilityDistance(genCopy) < epsilon);
+            Assert.IsTrue(genCopy.compatibilityDistance(gen1) < epsilon);
+        }
+
+        [TestMethod]
+        public void compatibilityDistanceTest_TwoDifferentGenomes()
+        {
+            Simulation tmpSim = new Simulation(r, gen1, 1);
+
+            gen1.ParentSimulation = tmpSim;
+            gen2.ParentSimulation = tmpSim;
+
+            float epsilon = 0.0001f;
+
+            Assert.IsTrue(Math.Abs(gen1.compatibilityDistance(gen2) - 5.04) < epsilon);
+        }
+
+        [TestMethod]
+        public void compatibilityDistanceTest_TwoDifferentGenomes_2()
+        {
+            Simulation tmpSim = new Simulation(r, gen1, 1);
+
+            Genome genCopy = gen1.copy();
+
+            gen1.ParentSimulation = tmpSim;
+            genCopy.ParentSimulation = tmpSim;
+
+            genCopy.addConnection(1, 2, 0.0f);
+
+            float epsilon = 0.0001f;
+
+            Assert.IsTrue(Genome.disjointGenesCount(gen1, genCopy) == 1);
+            float distance = Math.Abs(gen1.compatibilityDistance(genCopy));
+            Assert.IsTrue(Math.Abs(distance - 1.0f) < epsilon, String.Format("Expected {0}, got {1}", 1.0f, distance));
+        }
+
+        [TestMethod]
+        public void compatibilityDistanceTest_TwoDifferentGenomes_3()
+        {
+            Simulation tmpSim = new Simulation(r, gen1, 1);
+
+            Genome genCopy = gen1.copy();
+
+            gen1.ParentSimulation = tmpSim;
+            genCopy.ParentSimulation = tmpSim;
+
+            // Change some weights and add connections
+            genCopy.ConnectionGenes[0].Weight = 0.0f;
+            genCopy.ConnectionGenes[1].Weight = 0.0f;
+            genCopy.addConnection(1, 2, 0.0f);
+            genCopy.addConnection(1, 3, 0.0f);
+
+            float epsilon = 0.0001f;
+
+            Assert.IsTrue(Genome.disjointGenesCount(gen1, genCopy) == 2);
+
+            float distance = Math.Abs(gen1.compatibilityDistance(genCopy));
+            float weightDiff = 0.4f * (0.5f + 1.0f) / 6.0f;
+            float expected = 2.0f + weightDiff; // -> 2 new genes (2 x 1.0) + average weight difference
+            Assert.IsTrue(Math.Abs(distance - expected) < epsilon, String.Format("Expected {0}, got {1}", expected, distance));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void compatibilityDistanceTest_ToNull_Expected_Exception()
+        {
+            Simulation tmpSim = new Simulation(r, gen1, 1);
+            gen1.ParentSimulation = tmpSim;
+
+            gen1.compatibilityDistance(null);
         }
     }
 }
