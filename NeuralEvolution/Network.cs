@@ -162,7 +162,7 @@ namespace NeuralEvolution
 
 					node.ActivationSum = 0.0f;
 					node.IsActive = false;
-					foreach (Link lnk in node.getIncomingLinks())
+					foreach (Link lnk in node.IncomingLinks)
 					{
 						float toAdd = lnk.Weight * lnk.InNode.ActivationOut;
 						if (lnk.InNode.NodeType == Node.ENodeType.SENSOR || lnk.InNode.NodeType == Node.ENodeType.BIAS || lnk.InNode.IsActive) node.IsActive = true;
@@ -231,7 +231,7 @@ namespace NeuralEvolution
 			if (inNode == outNode) return true;
 			else
 			{
-				foreach(Link lnk in inNode.getIncomingLinks())
+				foreach(Link lnk in inNode.IncomingLinks)
 				{
 					if(!lnk.IsRecurrent)
 						if (this.isRecurrentConnection(lnk.InNode, outNode, count, thresh)) return true;

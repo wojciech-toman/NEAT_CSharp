@@ -41,17 +41,11 @@ namespace NeuralEvolution
 			this.incomingLinks.Add(lnk);
 		}
 
-		public List<Link> getIncomingLinks()
-		{
-			return this.incomingLinks;
-		}
+        public List<Link> IncomingLinks => this.incomingLinks;
 
-		public List<Link> getOutcomingLinks()
-		{
-			return this.outcomingLinks;
-		}
+        public List<Link> OutcomingLinks => this.outcomingLinks;
 
-		public void addOutcomingLink(Link lnk)
+        public void addOutcomingLink(Link lnk)
 		{
 			this.outcomingLinks.Add(lnk);
 		}
