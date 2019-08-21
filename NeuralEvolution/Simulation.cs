@@ -56,7 +56,7 @@ namespace NeuralEvolution
 
 		public void orderSpecies()
 		{
-			this.species.Sort((x, y) => (y.getGenomes()[0].OriginalFitness.CompareTo(x.getGenomes()[0].OriginalFitness)));
+			this.species.Sort((x, y) => (y.Genomes[0].OriginalFitness.CompareTo(x.Genomes[0].OriginalFitness)));
 		}
 
 		public int EpochID { get { return this.epochID; } }
@@ -188,8 +188,8 @@ namespace NeuralEvolution
 			}
 
 			// Check for population-level stagnation
-			double curBestFitness = this.species[0].getGenomes()[0].OriginalFitness;
-			this.species[0].getGenomes()[0].IsPopulationChampion = true;
+			double curBestFitness = this.species[0].Genomes[0].OriginalFitness;
+			this.species[0].Genomes[0].IsPopulationChampion = true;
 			if (curBestFitness > this.highestFitness)
 			{
 				this.highestFitness = curBestFitness;
@@ -253,7 +253,7 @@ namespace NeuralEvolution
 
 			// Remove all empty species (unless there is only 1 species left)
 			if (this.species.Count > 1)
-				this.species.RemoveAll(item => item.getGenomes().Count == 0);
+				this.species.RemoveAll(item => item.Genomes.Count == 0);
 
 			foreach (Species s in this.species)
 				s.orderGenomes();

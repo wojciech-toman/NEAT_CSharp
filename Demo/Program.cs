@@ -192,11 +192,11 @@ namespace NeuralEvolutionDemo
 				if ((run % numberOfRuns) == 0)
 				{
 					float avg = 0.0f;
-					foreach (Genome gen in this.sim.Species[0].getGenomes())
+					foreach (Genome gen in this.sim.Species[0].Genomes)
 					{
 						avg += (float)gen.Fitness;
 					}
-					avg /= this.sim.Species[0].getGenomes().Count;
+					avg /= this.sim.Species[0].Genomes.Count;
 					if (avg > this.snakeBestAvg)
 					{
 						this.snakeBestAvg = avg;
@@ -219,7 +219,7 @@ namespace NeuralEvolutionDemo
 				for (int i = 0; i < sim.Species.Count; ++i)
 				{
 					Species s = sim.Species[i];
-					List<Genome> genomes = s.getGenomes();
+					List<Genome> genomes = s.Genomes;
 
 					for (int j = 0; j < genomes.Count; ++j)
 					{

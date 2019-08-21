@@ -75,13 +75,10 @@ namespace NeuralEvolution
 			return this.genomes[0];
 		}
 
-		public List<Genome> getGenomes()
-		{
-			return this.genomes;
-		}
+        public List<Genome> Genomes => this.genomes;
 
-		// Looks for a best performing genome in the genomes list
-		public Genome getChampion()
+        // Looks for a best performing genome in the genomes list
+        public Genome getChampion()
 		{
 			double maxFitness = -1.0;
 			this.champion = null;
@@ -173,9 +170,9 @@ namespace NeuralEvolution
 							{
 								speciesFound = this.ParentSimulation.Species[this.random.Next(this.ParentSimulation.Species.Count)];
 							}
-							if (speciesFound.getGenomes().Count == 0) speciesFound = this;
+							if (speciesFound.Genomes.Count == 0) speciesFound = this;
 
-							parent2 = speciesFound.getGenomes()[this.random.Next(speciesFound.getGenomes().Count)];
+							parent2 = speciesFound.Genomes[this.random.Next(speciesFound.Genomes.Count)];
 						}
 
 						if (this.random.NextDouble() > this.ParentSimulation.Parameters.AverageCrossoverProbability)
