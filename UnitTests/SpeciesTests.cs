@@ -73,7 +73,7 @@ namespace NeuralEvolution.Tests
             Assert.IsTrue(species.getChampion() == gen3);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void adjustFitnessTest()
         {
             Genome gen1 = new Genome(r); gen1.ParentSimulation = sim; gen1.Fitness = 1.0f;
@@ -94,6 +94,18 @@ namespace NeuralEvolution.Tests
             Assert.IsTrue(species.Genomes[0] == gen3);
             Assert.IsTrue(species.Genomes[1] == gen2);
             Assert.IsTrue(species.Genomes[2] == gen1);
+        }
+
+        [TestMethod]
+        public void getSampleGenomeTest()
+        {
+            Genome gen1 = new Genome(r); gen1.ParentSimulation = sim; gen1.Fitness = 1.0f;
+            Genome gen2 = new Genome(r); gen2.ParentSimulation = sim; gen2.Fitness = 2.0f;
+            Genome gen3 = new Genome(r); gen3.ParentSimulation = sim; gen3.Fitness = 3.0f;
+
+            species.Genomes.AddRange(new Genome[] { gen1, gen2, gen3 });
+
+            Assert.IsTrue(species.getSampleGenome() == gen1);
         }
     }
 }
