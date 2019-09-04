@@ -183,13 +183,6 @@ namespace NeuralEvolution
 			this.phenotypeChanged = true;
 		}
 
-		// Adds a connection gene to the genome by connecting nodes with inNode and outNode indices.
-		// Connection gene is equivalent of an edge in the network (it connects two nodes)
-		public void addConnection(int inNode, int outNode)
-		{
-			this.addConnection(inNode, outNode, true);
-		}
-
 		// Adds a connection gene to the genome by connecting nodes with inNode and outNode indices and setting the weight.
 		// Connection gene is equivalent of an edge in the network (it connects two nodes)
 		public void addConnection(int inNode, int outNode, float weight)
@@ -198,7 +191,7 @@ namespace NeuralEvolution
 		}
 
 		// Adds a connection gene to the genome. Connection gene is equivalent of an edge in the network (it connects two nodes)
-		public void addConnection(int inNode, int outNode, bool isExpressed)
+		public void addConnection(int inNode, int outNode, bool isExpressed=true)
 		{
 			//this.connectionGenes.Add(new ConnectionGene(this.getNode(inNode), this.getNode(outNode), 1.0f, isExpressed, this.NextInnovationNumber()));
 			this.insertGene(new ConnectionGene(this.getNodeById(inNode), this.getNodeById(outNode), false, 1.0f, isExpressed, this.NextInnovationNumber()));
