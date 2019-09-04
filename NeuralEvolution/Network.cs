@@ -104,8 +104,7 @@ namespace NeuralEvolution
 
 			if (input.Length != this.inputNodes.Count)
 			{
-				Console.WriteLine("Error: invalid number of input elements!!!");
-				return;
+                throw new ArgumentException($"Invalid number of input elements. Expected {inputNodes.Count}, was {input.Length}");
 			}
 
 			// Set active state on the sensor nodes
