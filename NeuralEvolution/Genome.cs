@@ -191,22 +191,22 @@ namespace NeuralEvolution
 		}
 
 		// Adds a connection gene to the genome. Connection gene is equivalent of an edge in the network (it connects two nodes)
-		public void addConnection(int inNode, int outNode, bool isExpressed=true)
+		public void addConnection(int inNode, int outNode, bool isEnabled=true)
 		{
-			//this.connectionGenes.Add(new ConnectionGene(this.getNode(inNode), this.getNode(outNode), 1.0f, isExpressed, this.NextInnovationNumber()));
-			this.insertGene(new ConnectionGene(this.getNodeById(inNode), this.getNodeById(outNode), false, 1.0f, isExpressed, this.NextInnovationNumber()));
+			//this.connectionGenes.Add(new ConnectionGene(this.getNode(inNode), this.getNode(outNode), 1.0f, isEnabled, this.NextInnovationNumber()));
+			this.insertGene(new ConnectionGene(this.getNodeById(inNode), this.getNodeById(outNode), false, 1.0f, isEnabled, this.NextInnovationNumber()));
 			this.phenotypeChanged = true;
 		}
 
-		public void addConnection(int inNode, int outNode, bool isExpressed, int innovation)
+		public void addConnection(int inNode, int outNode, bool isEnabled, int innovation)
 		{
-			this.addConnection(this.getNodeById(inNode).ID, this.getNodeById(outNode).ID, isExpressed, innovation, 1.0f);
+			this.addConnection(this.getNodeById(inNode).ID, this.getNodeById(outNode).ID, isEnabled, innovation, 1.0f);
 		}
 
-		public void addConnection(int inNode, int outNode, bool isExpressed, int innovation, float weight)
+		public void addConnection(int inNode, int outNode, bool isEnabled, int innovation, float weight)
 		{
-			//this.connectionGenes.Add(new ConnectionGene(this.getNode(inNode), this.getNode(outNode), weight, isExpressed, innovation));
-			this.insertGene(new ConnectionGene(this.getNodeById(inNode), this.getNodeById(outNode), false, weight, isExpressed, innovation));
+			//this.connectionGenes.Add(new ConnectionGene(this.getNode(inNode), this.getNode(outNode), weight, isEnabled, innovation));
+			this.insertGene(new ConnectionGene(this.getNodeById(inNode), this.getNodeById(outNode), false, weight, isEnabled, innovation));
 			this.phenotypeChanged = true;
 		}
 
