@@ -78,8 +78,7 @@ namespace NeuralEvolution
         {
             if (this.Genomes.Count > this.populationSize)
             {
-                Console.WriteLine("Invalid number of genomes: {0}. Should be {1}", this.Genomes.Count, this.populationSize);
-                return;
+                throw new ArgumentException($"Invalid number of genomes: {Genomes.Count}. Should be {populationSize}");
             }
 
             List<Genome> previousGeneration = new List<Genome>(this.nextGeneration);
