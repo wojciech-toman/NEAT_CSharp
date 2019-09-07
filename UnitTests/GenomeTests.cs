@@ -17,7 +17,7 @@ namespace NeuralEvolution.Tests
         public void SetupTest()
         {
             r = new Random(0);
-            
+
             // Genome 1
             gen1 = new Genome(r);
 
@@ -148,9 +148,9 @@ namespace NeuralEvolution.Tests
             float epsilon = 0.0001f;
 
             Assert.IsTrue(Math.Abs(gen1.compatibilityDistance(gen2) - 5.04) < epsilon);
-            Assert.AreEqual(Genome.matchingGenesCount(gen1, gen2), 5);
-            Assert.AreEqual(Genome.excessGenesCount(gen1, gen2), 2);
-            Assert.AreEqual(Genome.disjointGenesCount(gen1, gen2), 3);
+            Assert.AreEqual(5, Genome.matchingGenesCount(gen1, gen2));
+            Assert.AreEqual(2, Genome.excessGenesCount(gen1, gen2));
+            Assert.AreEqual(3, Genome.disjointGenesCount(gen1, gen2));
             Assert.IsTrue(Math.Abs(Genome.getAverageWeightDifference(gen1, gen2) - 0.1) < epsilon);
 
 
@@ -237,7 +237,7 @@ namespace NeuralEvolution.Tests
             // Change enability of some genes from 'false' to 'true'
             gen2.ConnectionGenes[1].IsEnabled = true;
             gen2.ConnectionGenes[4].IsEnabled = true;
-            
+
 
             Network net = gen2.getNetwork();
 
@@ -425,6 +425,70 @@ namespace NeuralEvolution.Tests
             gen1.ParentSimulation = tmpSim;
 
             gen1.compatibilityDistance(null);
+        }
+
+        [TestMethod]
+        public void NextInnovationNumberTest()
+        {
+            Simulation tmpSim = new Simulation(r, gen1, 1);
+            gen1.ParentSimulation = tmpSim;
+
+            Assert.AreEqual(6, gen1.NextInnovationNumber());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void addConnectionTest_Null_ExpectectedException()
+        {
+            Simulation tmpSim = new Simulation(r, gen1, 1);
+            gen1.ParentSimulation = tmpSim;
+
+            gen1.addConnection(null);
+        }
+
+        [TestMethod]
+        public void addConnectionTest_NonExisting()
+        {
+            Simulation tmpSim = new Simulation(r, gen1, 1);
+            gen1.ParentSimulation = tmpSim;
+
+            ConnectionGene connection = new ConnectionGene(gen1.getNodeById(1), gen1.getNodeById(3), false, 1.0f, true, 1);
+
+            gen1.addConnection(connection);
+
+            Assert.AreEqual(7, gen1.ConnectionGenes.Count);
+            Assert.AreEqual(5, gen1.Nodes.Count);
+        }
+
+        [TestMethod]
+        public void addConnectionTest_OneNonExistingNode_Expected_AddIt()
+        {
+            Simulation tmpSim = new Simulation(r, gen1, 1);
+            gen1.ParentSimulation = tmpSim;
+
+            ConnectionGene connection = new ConnectionGene(gen1.getNodeById(1), new Node(Node.ENodeType.HIDDEN, 10, 0.0f), false, 1.0f, true, 1);
+
+            gen1.addConnection(connection);
+
+            Assert.AreEqual(7, gen1.ConnectionGenes.Count);
+            Assert.AreEqual(6, gen1.Nodes.Count);
+            Assert.AreEqual(10, gen1.Nodes[gen1.Nodes.Count - 1].ID);
+        }
+
+        [TestMethod]
+        public void addConnectionTest_TwoNonExistingNode_Expected_AddThem()
+        {
+            Simulation tmpSim = new Simulation(r, gen1, 1);
+            gen1.ParentSimulation = tmpSim;
+
+            ConnectionGene connection = new ConnectionGene(new Node(Node.ENodeType.HIDDEN, 9, 0.0f), new Node(Node.ENodeType.HIDDEN, 10, 0.0f), false, 1.0f, true, 1);
+
+            gen1.addConnection(connection);
+
+            Assert.AreEqual(7, gen1.ConnectionGenes.Count);
+            Assert.AreEqual(7, gen1.Nodes.Count);
+            Assert.AreEqual(9, gen1.Nodes[gen1.Nodes.Count - 2].ID);
+            Assert.AreEqual(10, gen1.Nodes[gen1.Nodes.Count - 1].ID);
         }
     }
 }
