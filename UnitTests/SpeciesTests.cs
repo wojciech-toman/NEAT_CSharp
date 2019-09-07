@@ -114,5 +114,25 @@ namespace NeuralEvolution.Tests
 
             Assert.IsTrue(species.getSampleGenome() == gen1);
         }
+
+        [DataTestMethod]
+        [DataRow(0)]
+        [DataRow(3)]
+        [DataRow(10)]
+        public void reproduceTest(int offspring)
+        {
+            Genome gen1 = new Genome(r); gen1.ParentSimulation = sim; gen1.Fitness = 1.0f;
+            Genome gen2 = new Genome(r); gen2.ParentSimulation = sim; gen2.Fitness = 2.0f;
+            Genome gen3 = new Genome(r); gen3.ParentSimulation = sim; gen3.Fitness = 3.0f;
+
+            species.Genomes.AddRange(new Genome[] { gen1, gen2, gen3 });
+            species.Offspring = offspring;
+
+            List<Genome> nextGeneration = new List<Genome>();
+            List<Innovation> innovations = new List<Innovation>();
+            species.reproduce(nextGeneration, innovations);
+
+            Assert.AreEqual(offspring, nextGeneration.Count);
+        }
     }
 }
