@@ -650,7 +650,10 @@ namespace NeuralEvolutionDemo
 
 		private static void SnakeGameReplay(Random r)
 		{
-			if (!File.Exists("./best_snake"))
+            int oldWidth = Console.WindowWidth;
+            int oldHeight = Console.WindowHeight;
+
+            if (!File.Exists("./best_snake"))
 			{
 				Console.WriteLine("\nNo saved networks found. Please make sure to run simulation first and then try again");
 				return;
@@ -741,7 +744,11 @@ namespace NeuralEvolutionDemo
 
 				Thread.Sleep(10);
 			}
-		}
+
+
+            Console.SetWindowSize(oldWidth, oldHeight);
+            Console.Clear();
+        }
 
 		private static void PoleBalanceSingleTest(Random r)
 		{
