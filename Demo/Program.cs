@@ -601,35 +601,42 @@ namespace NeuralEvolutionDemo
 	class Program
 	{
 		static void Main(string[] args)
-		{
-			Random r = new Random();
+        {
+            Random r = new Random();
 
-			Console.WriteLine("Tests of NEAT. Press:");
-			Console.WriteLine("- 1 to run XOR test");
-			Console.WriteLine("- 2 to run Pole Balancing (single) test");
-			Console.WriteLine("- 3 to run Snake Game test (prints only results)");
-			Console.WriteLine("- 4 to run Snake Game replay (using network saved in prior simulation)");
-			Console.WriteLine("- ESC to quit");
+            ShowMenuOptions();
 
-			ConsoleKeyInfo key;
-			while ((key = Console.ReadKey()).Key != ConsoleKey.Escape)
-			{
-				Console.WriteLine("");
-				if (key.Key == ConsoleKey.D1)
-					XorTest(r);
-				else if (key.Key == ConsoleKey.D2)
-					PoleBalanceSingleTest(r);
-				else if (key.Key == ConsoleKey.D3)
-					SnakeGameTest(r);
-				else if (key.Key == ConsoleKey.D4)
-					SnakeGameReplay(r);
-				else
-					Console.WriteLine("Test not found");
-			}
-		}
+            ConsoleKeyInfo key;
+            while ((key = Console.ReadKey()).Key != ConsoleKey.Escape)
+            {
+                Console.WriteLine("");
+                if (key.Key == ConsoleKey.D1)
+                    XorTest(r);
+                else if (key.Key == ConsoleKey.D2)
+                    PoleBalanceSingleTest(r);
+                else if (key.Key == ConsoleKey.D3)
+                    SnakeGameTest(r);
+                else if (key.Key == ConsoleKey.D4)
+                    SnakeGameReplay(r);
+                else
+                    Console.WriteLine("Demo not found");
 
+                Console.WriteLine("-----------------");
+                ShowMenuOptions();
+            }
+        }
 
-		private static void SnakeGameTest(Random r)
+        private static void ShowMenuOptions()
+        {
+            Console.WriteLine("Tests of NEAT. Press:");
+            Console.WriteLine("- 1 to run XOR test");
+            Console.WriteLine("- 2 to run Pole Balancing (single) test");
+            Console.WriteLine("- 3 to run Snake Game test (prints only results)");
+            Console.WriteLine("- 4 to run Snake Game replay (using network saved in prior simulation)");
+            Console.WriteLine("- ESC to quit");
+        }
+
+        private static void SnakeGameTest(Random r)
 		{
 			SnakeSimulation sim = new SnakeSimulation();
 			sim.Start();
@@ -645,7 +652,7 @@ namespace NeuralEvolutionDemo
 		{
 			if (!File.Exists("./best_snake"))
 			{
-				Console.WriteLine("\nNo saved networks found. Please make sure to run simulation first");
+				Console.WriteLine("\nNo saved networks found. Please make sure to run simulation first and then try again");
 				return;
 			}
 			Network net = Network.DeserializeNetwork("./best_snake");
