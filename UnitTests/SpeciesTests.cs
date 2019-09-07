@@ -81,9 +81,13 @@ namespace NeuralEvolution.Tests
             Genome gen3 = new Genome(r); gen3.ParentSimulation = sim; gen3.Fitness = 3.0f;
 
             species.Genomes.AddRange(new Genome[] { gen1, gen2, gen3 });
-            species.adjustFitness();
 
             float epsilon = 0.0001f;
+
+            double avgFitness = species.getAverageFitness();
+            Assert.IsTrue(Math.Abs(species.getAverageFitness() - 2.0f) < epsilon, String.Format("Expected {0}, got {1}", 2.0f, avgFitness));
+
+            species.adjustFitness();
 
             // Check if Fitness has correct values after adjustment
             Assert.IsTrue(Math.Abs(gen1.Fitness - 1.0f / 3.0f) < epsilon);
@@ -94,6 +98,9 @@ namespace NeuralEvolution.Tests
             Assert.IsTrue(species.Genomes[0] == gen3);
             Assert.IsTrue(species.Genomes[1] == gen2);
             Assert.IsTrue(species.Genomes[2] == gen1);
+
+            avgFitness = species.getAverageFitness();
+            Assert.IsTrue(Math.Abs(species.getAverageFitness() - 2.0f / 3.0f) < epsilon, String.Format("Expected {0}, got {1}", 2.0f / 3.0f, avgFitness));
         }
     }
 }
