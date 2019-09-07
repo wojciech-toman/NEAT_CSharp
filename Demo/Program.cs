@@ -20,29 +20,38 @@ namespace NeuralEvolutionDemo
 
 	public class SnakeSimulation
 	{
-		Simulation sim;
-		System.Random rnd = new System.Random();
+        #region Variables
+
+        private Simulation sim;
+        private System.Random rnd = new System.Random();
 
 		private int numberOfRuns = 1;
 
+        private List<float> bestFitnesses = new List<float>();
+        private List<float> avgFitnesses = new List<float>();
 
-		Dictionary<Species, List<float>> fitnessDict = new Dictionary<Species, List<float>>();
+        private float snakeBestAvg = 0.0f;
 
-		List<float> bestFitnesses = new List<float>();
-		List<float> avgFitnesses = new List<float>();
-		float snakeBestAvg = 0.0f;
+        private int generationID = 1;
+        private List<Snake> allSnakes = new List<Snake>();
+        private bool firstTime = true;
+        private bool isSimulationStarted = false;
+        private double bestFitnessEver = 0.0f;
+        private int run = 0;
 
-		List<int> speciesCount = new List<int>();
+        private double bestScore = -1;
 
-		// Use this for initialization
-		public void Start()
+        #endregion
+
+
+        // Use this for initialization
+        public void Start()
 		{
 			this.InitSimulation();
 
 			this.isSimulationStarted = true;
 		}
 
-		string dirName;
 		private void InitSimulation()
 		{
 			Snake.StartingLength = 1;// 3;// int.Parse(this.startingSnakeLength.text);
@@ -84,7 +93,7 @@ namespace NeuralEvolutionDemo
 			startGenome.addConnection(4, outputStart + 2, 0.0f);
 
 
-			// Start simulation
+			// Set up simulation - but don't start it
 			sim = new Simulation(rnd, startGenome, 150);
 			sim.Parameters.AddNodeProbability = 0.02f;
 			sim.Parameters.AddConnectionProbability = 0.1f;
@@ -105,21 +114,11 @@ namespace NeuralEvolutionDemo
 				Sim();
 		}
 
-
-		private int generationID = 1;
-		private List<Snake> allSnakes = new List<Snake>();
-		bool firstTime = true;
-		bool isSimulationStarted = false;
-		double bestFitnessEver = 0.0f;
-		int run = 0;
-
 		private static void snakeMoveCallback(Snake snake, CountdownEvent evt)
 		{
 			snake.Move();
 			evt.Signal();
 		}
-
-		double bestScore = -1;
 
 		public int GenerationID { get => generationID; }
 
@@ -214,8 +213,6 @@ namespace NeuralEvolutionDemo
 					++generationID;
 				}
 
-				//this.bestNetworks.Clear();
-
 				for (int i = 0; i < sim.Species.Count; ++i)
 				{
 					Species s = sim.Species[i];
@@ -228,12 +225,6 @@ namespace NeuralEvolutionDemo
 							gen.Fitness = 0.0;
 
 						NeuralEvolution.Network net = gen.getNetwork();
-
-						// Visualize best performer from each species
-						//if (j == 0)
-						//{
-						//	this.bestNetworks.Add(net);
-						//}
 
 						// Store "champion" of the generation in a file - for potential further use
 						if (i == 0 && j == 0 && ((run % numberOfRuns) == 0))
@@ -339,13 +330,6 @@ namespace NeuralEvolutionDemo
 			// Below is using given seed to make sure each snake has same conditions
 			this.rnd = new System.Random(Seed);
 
-			// Start in random direction
-			/*int startDir = rnd.Next(3);
-			if (startDir == 0) { vecDirection.x = 0; vecDirection.y = -1; }
-			if (startDir == 1) { vecDirection.x = 0; vecDirection.y = 1; }
-			if (startDir == 2) { vecDirection.x = -1; vecDirection.y = 0; }
-			if (startDir == 3) { vecDirection.x = 1; vecDirection.y = 0; }*/
-
 			this.SpawnFood();
 
 			// Add tail objects if starting length > 1
@@ -355,15 +339,7 @@ namespace NeuralEvolutionDemo
 				for (int i = 1; i < Snake.StartingLength; ++i)
 				{
 					pos.x -= vecDirection.x; pos.y -= vecDirection.y;
-					//this.AddTailObject(pos);
 					tails.Add(pos);
-
-					// Move last Tail Element to wher.e the Head was
-					/*tails[tails.Count - 1] = pos;
-
-					// Add to front of list, remove from the back
-					tails.Insert(0, tails[tails.Count - 1]);
-					tails.RemoveAt(tails.Count - 1);*/
 				}
 			}
 		}
@@ -608,7 +584,6 @@ namespace NeuralEvolutionDemo
 		private void MarkAsDead()
 		{
 			// Make sure fitness isn't negative (it can be at that point if snake was moving away from food most of the time)
-			//if (fitness < 0) fitness = 0;
 			if (this.IsDead) return;
 
 
