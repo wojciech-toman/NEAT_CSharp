@@ -102,7 +102,7 @@ namespace NeuralEvolutionDemo
 			sim.Parameters.MutateToggleEnabledProbability = 0.05f;
 			sim.Parameters.MutateReenableProbability = 0.025f;
 			sim.Parameters.AreConnectionWeightsCapped = true;
-			sim.Parameters.MaxWeight = 2.0f;
+			sim.Parameters.MaxWeight = 1.0f;
 			sim.Parameters.MaxSpeciesGenerationsWithoutImprovement = 70;
 			sim.Parameters.MaxGeneralGenerationsWithoutImprovement = 80;
 		}
@@ -225,7 +225,8 @@ namespace NeuralEvolutionDemo
 							gen.Fitness = 0.0;
 
 						NEAT_CSharp.Network net = gen.getNetwork();
-                        //net.ActivationFunction = new NeuralEvolution.ActivationFunctions.ReLU();
+                        //net.ActivationFunction = new NEAT_CSharp.ActivationFunctions.ReLU();
+                        //net.ActivationFunction = new NEAT_CSharp.ActivationFunctions.Threshold();
 
                         // Store "champion" of the generation in a file - for potential further use
                         if (i == 0 && j == 0 && ((run % numberOfRuns) == 0))
@@ -460,7 +461,8 @@ namespace NeuralEvolutionDemo
 
 			// Activate the neural network
 			this.Brain.setInput(input);
-			bool isActivated = this.Brain.activate();
+            //net.ActivationFunction = new NEAT_CSharp.ActivationFunctions.Threshold();
+            bool isActivated = this.Brain.activate();
 			if (!isActivated)
 			{
 				this.MarkAsDead();
