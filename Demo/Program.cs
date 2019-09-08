@@ -111,7 +111,7 @@ namespace NeuralEvolutionDemo
 		public void Update()
 		{
 			if (isSimulationStarted)
-				Sim();
+				Simulate();
 		}
 
 		private static void snakeMoveCallback(Snake snake, CountdownEvent evt)
@@ -122,7 +122,7 @@ namespace NeuralEvolutionDemo
 
 		public int GenerationID { get => generationID; }
 
-		void Sim()
+		void Simulate()
 		{
 			// Print the best result so far
 			if (bestFitnessEver > bestScore)
@@ -225,9 +225,10 @@ namespace NeuralEvolutionDemo
 							gen.Fitness = 0.0;
 
 						NeuralEvolution.Network net = gen.getNetwork();
+                        //net.ActivationFunction = new NeuralEvolution.ActivationFunctions.ReLU();
 
-						// Store "champion" of the generation in a file - for potential further use
-						if (i == 0 && j == 0 && ((run % numberOfRuns) == 0))
+                        // Store "champion" of the generation in a file - for potential further use
+                        if (i == 0 && j == 0 && ((run % numberOfRuns) == 0))
 						{
 							// Serialize the networks now
 							//net.SerializeBinary(string.Format("{0}/best_solution_gen_{1}", dirName, generationID));
@@ -973,6 +974,7 @@ namespace NeuralEvolutionDemo
 				foreach (Genome gen in sim.Genomes)
 				{
 					Network network = gen.getNetwork();
+                    //network.ActivationFunction = new NeuralEvolution.ActivationFunctions.ReLU();
 					bool couldActivate = true;
 					for (int inputIdx = 0; inputIdx < 4; ++inputIdx)
 					{

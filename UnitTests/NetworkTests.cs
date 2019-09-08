@@ -113,6 +113,14 @@ namespace NeuralEvolution.Tests
             Assert.AreEqual(2, net.Output.Count);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void addNodes_Null_Expected_Exception()
+        {
+            Network net = new Network();
+            net.addNodes(null);
+        }
+
         [TestMethod()]
         public void getNodeByIdTest_NonExisting_Expected_Null()
         {

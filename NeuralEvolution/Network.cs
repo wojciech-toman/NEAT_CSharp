@@ -74,6 +74,8 @@ namespace NeuralEvolution
 
         public void addNodes(IEnumerable<Node> nodesCollection)
         {
+            if(nodesCollection == null) throw new ArgumentNullException(nameof(nodesCollection));
+
             foreach(Node node in nodesCollection)
             {
                 this.addNode(node);
