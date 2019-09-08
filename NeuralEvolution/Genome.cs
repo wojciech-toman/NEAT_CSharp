@@ -287,20 +287,6 @@ namespace NEAT_CSharp
             return child;
         }
 
-        public static void GetMoreAndLessFit(Genome gen2, Genome gen1, out Genome moreFit, out Genome lessFit)
-        {
-            if (gen1.OriginalFitness >= gen2.OriginalFitness)
-            {
-                moreFit = gen1;
-                lessFit = gen2;
-            }
-            else
-            {
-                moreFit = gen2;
-                lessFit = gen1;
-            }
-        }
-
         // Performs crossover by averaging both genomes
         public Genome crossoverAverage(Genome gen2, Random rnd)
 		{
@@ -366,8 +352,22 @@ namespace NEAT_CSharp
 			return child;
 		}
 
-		// Mutation that creates new connection between 2 nodes.
-		public void addConnectionMutation(List<Innovation> innovations)
+        public static void GetMoreAndLessFit(Genome gen2, Genome gen1, out Genome moreFit, out Genome lessFit)
+        {
+            if (gen1.OriginalFitness >= gen2.OriginalFitness)
+            {
+                moreFit = gen1;
+                lessFit = gen2;
+            }
+            else
+            {
+                moreFit = gen2;
+                lessFit = gen1;
+            }
+        }
+
+        // Mutation that creates new connection between 2 nodes.
+        public void addConnectionMutation(List<Innovation> innovations)
 		{
 			if (innovations == null) throw new ArgumentNullException(nameof(innovations));
 
