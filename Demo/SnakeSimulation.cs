@@ -1,4 +1,4 @@
-﻿namespace NeuralEvolutionDemo
+﻿namespace NEAT_CSharp.Demo
 {
     using NEAT_CSharp;
     using System;

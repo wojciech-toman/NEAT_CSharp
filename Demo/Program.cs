@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using NEAT_CSharp;
 
-namespace NeuralEvolutionDemo
+namespace NEAT_CSharp.Demo
 {
     using NEAT_CSharp;
     using System;
