@@ -149,5 +149,55 @@ namespace NeuralEvolution.Tests
             Assert.AreEqual(outNode1, net.getNodeById(4));
             Assert.AreEqual(outNode2, net.getNodeById(5));
         }
+
+        [DataTestMethod()]
+        [DataRow(3.0f, 1.0f, 1.0f, 1.0f)]
+        [DataRow(3.0f, 1.0f, 1.0f, 0.0f)]
+        [DataRow(2.5f, 0.5f, 1.0f, 1.0f)]
+        [DataRow(2.0f, 1.0f, 0.5f, 1.0f)]
+        public void ComputeNodesActivationSumTest(float expectedOutput, float weight1, float weight2, float weight3)
+        {
+            Network net = new Network();
+
+            Node inNode1 = new Node(Node.ENodeType.SENSOR, 1);
+            Node inNode2 = new Node(Node.ENodeType.SENSOR, 2);
+            Node inNode3 = new Node(Node.ENodeType.OUTPUT, 3);
+            Node hiddenNode = new Node(Node.ENodeType.HIDDEN, 4);
+            Node outNode1 = new Node(Node.ENodeType.OUTPUT, 5);
+
+            net.addNodes(new Node[] { inNode1, inNode2, inNode3, hiddenNode, outNode1 });
+
+            inNode1.Activation = 1.0f; inNode1.ActivationCount = 1;
+            inNode2.Activation = 2.0f; inNode2.ActivationCount = 1;
+            inNode3.Activation = 4.0f; inNode3.ActivationCount = 1;
+
+            net.addLink(new Link(inNode1, hiddenNode, false, weight1));
+            net.addLink(new Link(inNode2, hiddenNode, false, weight2));
+            net.addLink(new Link(hiddenNode, outNode1, false, weight3));
+
+            net.ComputeNodesActivationSum();
+
+            Assert.AreEqual(expectedOutput, hiddenNode.ActivationSum);
+        }
+
+        [DataTestMethod()]
+        [DataRow(-10.0f, 0.0f)]
+        [DataRow(0.0f, 0.5f)]
+        [DataRow(0.5f, 0.9214f)]
+        [DataRow(3.0f, 1.0f)]
+        public void ComputeNodesActivationFunctionValueTest_DefaultFunction(float activationSum, float expected)
+        {
+            float epsilon = 0.0001f;
+
+            Network net = new Network();
+            Node hiddenNode = new Node(Node.ENodeType.HIDDEN, 1);
+            net.addNode(hiddenNode);
+
+            hiddenNode.ActivationSum = activationSum; hiddenNode.IsActive = true;
+
+            net.ComputeNodesActivationFunctionValue();
+
+            Assert.IsTrue(Math.Abs(hiddenNode.Activation - expected) < epsilon, $"Expected value <{expected}>. Actual <{hiddenNode.Activation}>");
+        }
     }
 }

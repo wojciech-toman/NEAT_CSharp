@@ -166,7 +166,7 @@ namespace NeuralEvolution
                 this.ComputeNodesActivationSum();
 
                 // Compute value of activation function (at the moment sigmoid)
-                this.ComputeActivationFunctionValue();
+                this.ComputeNodesActivationFunctionValue();
 
                 onetime = true;
             }
@@ -174,7 +174,24 @@ namespace NeuralEvolution
             return true;
 		}
 
-        private void ComputeActivationFunctionValue()
+        public void ComputeNodesActivationSum()
+        {
+            foreach (Node node in this.nodes)
+            {
+                if (node.NodeType == Node.ENodeType.SENSOR || node.NodeType == Node.ENodeType.BIAS) continue;
+
+                node.ActivationSum = 0.0f;
+                node.IsActive = false;
+                foreach (Link lnk in node.IncomingLinks)
+                {
+                    float toAdd = lnk.Weight * lnk.InNode.ActivationOut;
+                    if (lnk.InNode.NodeType == Node.ENodeType.SENSOR || lnk.InNode.NodeType == Node.ENodeType.BIAS || lnk.InNode.IsActive) node.IsActive = true;
+                    node.ActivationSum += toAdd;
+                }
+            }
+        }
+
+        public void ComputeNodesActivationFunctionValue()
         {
             foreach (Node node in this.nodes)
             {
@@ -190,23 +207,6 @@ namespace NeuralEvolution
                     //node.Activation = (float)(1.0f / (1.0f + (Math.Exp(-(constant * node.ActivationSum - 2.4621365)))));
 
                     node.ActivationCount++;
-                }
-            }
-        }
-
-        private void ComputeNodesActivationSum()
-        {
-            foreach (Node node in this.nodes)
-            {
-                if (node.NodeType == Node.ENodeType.SENSOR || node.NodeType == Node.ENodeType.BIAS) continue;
-
-                node.ActivationSum = 0.0f;
-                node.IsActive = false;
-                foreach (Link lnk in node.IncomingLinks)
-                {
-                    float toAdd = lnk.Weight * lnk.InNode.ActivationOut;
-                    if (lnk.InNode.NodeType == Node.ENodeType.SENSOR || lnk.InNode.NodeType == Node.ENodeType.BIAS || lnk.InNode.IsActive) node.IsActive = true;
-                    node.ActivationSum += toAdd;
                 }
             }
         }
