@@ -225,6 +225,84 @@ namespace NEAT_CSharp
 
 		#region Mutations
 		public Genome crossover(Genome gen2, Random rnd)
+        {
+            if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
+            if (rnd == null) throw new ArgumentNullException(nameof(rnd));
+
+            Genome gen1 = this;
+            Genome child = new Genome(rnd);
+            child.ParentSimulation = gen1.ParentSimulation;
+
+            Genome moreFit, lessFit;
+            GetMoreAndLessFit(gen2, gen1, out moreFit, out lessFit);
+
+            // Make sure all inputs and outputs are included in the child genome
+            foreach (Node n in gen1.Nodes)
+            {
+                if (n.NodeType == Node.ENodeType.SENSOR || n.NodeType == Node.ENodeType.BIAS || n.NodeType == Node.ENodeType.OUTPUT)
+                    child.addNode(n.copy());
+            }
+
+            foreach (ConnectionGene gene1 in moreFit.ConnectionGenes)
+            {
+                bool foundMatch = false;
+                bool skip = false;
+                ConnectionGene newGene = null;
+                foreach (ConnectionGene gene2 in lessFit.ConnectionGenes)
+                {
+                    // Found matching gene, so add it to the child by randomly selecting from one of the parents
+                    if (gene1.Innovation == gene2.Innovation)
+                    {
+                        foundMatch = true;
+                        newGene = rnd.Next(2) == 0 ? gene1.copy() : gene2.copy();
+                        // If one of the parent genes is disabled, there's big chance children's version will be too
+                        if (!gene1.IsEnabled || !gene2.IsEnabled)
+                            newGene.IsEnabled = rnd.NextDouble() > this.ParentSimulation.Parameters.DisableGeneProbability;
+                        break;
+                    }
+                }
+
+                // Disjoint or excess node
+                if (!foundMatch)
+                {
+                    newGene = gene1;
+                }
+
+                // Check if there aren't any conflicts with an existing connection
+                foreach (ConnectionGene g in child.ConnectionGenes)
+                {
+                    if ((g.InNodeGene.ID == newGene.InNodeGene.ID && g.OutNodeGene.ID == newGene.OutNodeGene.ID && g.IsRecurrent == newGene.IsRecurrent) ||
+                        (g.InNodeGene.ID == newGene.OutNodeGene.ID && g.OutNodeGene.ID == newGene.InNodeGene.ID && !g.IsRecurrent && !newGene.IsRecurrent))
+                    {
+                        skip = true;
+                        break;
+                    }
+                }
+
+                if (!skip)
+                    child.addConnection(newGene);
+            }
+
+
+            return child;
+        }
+
+        public static void GetMoreAndLessFit(Genome gen2, Genome gen1, out Genome moreFit, out Genome lessFit)
+        {
+            if (gen1.OriginalFitness >= gen2.OriginalFitness)
+            {
+                moreFit = gen1;
+                lessFit = gen2;
+            }
+            else
+            {
+                moreFit = gen2;
+                lessFit = gen1;
+            }
+        }
+
+        // Performs crossover by averaging both genomes
+        public Genome crossoverAverage(Genome gen2, Random rnd)
 		{
 			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
 			if (rnd == null) throw new ArgumentNullException(nameof(rnd));
@@ -234,89 +312,7 @@ namespace NEAT_CSharp
 			child.ParentSimulation = gen1.ParentSimulation;
 
 			Genome moreFit, lessFit;
-			if (gen1.OriginalFitness > gen2.OriginalFitness)
-			{
-				moreFit = gen1;
-				lessFit = gen2;
-			}
-			else
-			{
-				moreFit = gen2;
-				lessFit = gen1;
-			}
-
-			// Make sure all inputs and outputs are included in the child genome
-			foreach (Node n in gen1.Nodes)
-			{
-				if (n.NodeType == Node.ENodeType.SENSOR || n.NodeType == Node.ENodeType.BIAS || n.NodeType == Node.ENodeType.OUTPUT)
-					child.addNode(n.copy());
-			}
-
-			foreach (ConnectionGene gene1 in moreFit.ConnectionGenes)
-			{
-				bool foundMatch = false;
-				bool skip = false;
-				ConnectionGene newGene = null;
-				foreach (ConnectionGene gene2 in lessFit.ConnectionGenes)
-				{
-					// Found matching gene, so add it to the child by randomly selecting from one of the parents
-					if (gene1.Innovation == gene2.Innovation)
-					{
-						foundMatch = true;
-						newGene = rnd.Next(2) == 0 ? gene1.copy() : gene2.copy();
-						// If one of the parent genes is disabled, there's big chance children's version will be too
-						if (!gene1.IsEnabled || !gene2.IsEnabled)
-							newGene.IsEnabled = rnd.NextDouble() > this.ParentSimulation.Parameters.DisableGeneProbability;
-						break;
-					}
-				}
-
-				// Disjoint or excess node
-				if (!foundMatch)
-				{
-					newGene = gene1;
-				}
-
-				// Check if there aren't any conflicts with an existing connection
-				foreach (ConnectionGene g in child.ConnectionGenes)
-				{
-					if ((g.InNodeGene.ID == newGene.InNodeGene.ID && g.OutNodeGene.ID == newGene.OutNodeGene.ID && g.IsRecurrent == newGene.IsRecurrent) ||
-						(g.InNodeGene.ID == newGene.OutNodeGene.ID && g.OutNodeGene.ID == newGene.InNodeGene.ID && !g.IsRecurrent && !newGene.IsRecurrent))
-					{
-						skip = true;
-						break;
-					}
-				}
-
-				if (!skip)
-					child.addConnection(newGene);
-			}
-
-
-			return child;
-		}
-
-		// Performs crossover by averaging both genomes
-		public Genome crossoverAverage(Genome gen2, Random rnd)
-		{
-			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
-			if (rnd == null) throw new ArgumentNullException(nameof(rnd));
-
-			Genome gen1 = this;
-			Genome child = new Genome(rnd);
-			child.ParentSimulation = gen1.ParentSimulation;
-
-			Genome moreFit, lessFit;
-			if (gen1.OriginalFitness > gen2.OriginalFitness)
-			{
-				moreFit = gen1;
-				lessFit = gen2;
-			}
-			else
-			{
-				moreFit = gen2;
-				lessFit = gen1;
-			}
+			GetMoreAndLessFit(gen2, gen1, out moreFit, out lessFit);
 
 			// Make sure all inputs and outputs are included in the child genome
 			foreach (Node n in gen1.Nodes)

@@ -490,5 +490,29 @@ namespace NEAT_CSharp.Tests
             Assert.AreEqual(9, gen1.Nodes[gen1.Nodes.Count - 2].ID);
             Assert.AreEqual(10, gen1.Nodes[gen1.Nodes.Count - 1].ID);
         }
+
+        [TestMethod()]
+        public void GetMoreAndLessFitTest_SameFitness()
+        {
+            gen1.OriginalFitness = 1.0f;
+            gen2.OriginalFitness = 1.0f;
+
+            Genome moreFit, lessFit;
+            Genome.GetMoreAndLessFit(gen2, gen1, out moreFit, out lessFit);
+            Assert.AreEqual(gen1, moreFit);
+            Assert.AreEqual(gen2, lessFit);
+        }
+
+        [TestMethod()]
+        public void GetMoreAndLessFitTest_DifferentFitness()
+        {
+            gen1.OriginalFitness = 1.0f;
+            gen2.OriginalFitness = 2.0f;
+
+            Genome moreFit, lessFit;
+            Genome.GetMoreAndLessFit(gen2, gen1, out moreFit, out lessFit);
+            Assert.AreEqual(gen2, moreFit);
+            Assert.AreEqual(gen1, lessFit);
+        }
     }
 }
