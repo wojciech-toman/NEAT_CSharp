@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeuralEvolution
+namespace NEAT_CSharp
 {
 	[Serializable]
 	// An undirected edge in the network connecting two nodes

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeuralEvolution
+namespace NEAT_CSharp
 {
 	[Serializable]
 	// A node (neuron) in the network. It can be marked as SENSOR (input), BIAS, OUTPUT, HIDDEN (belonging to one of the hidden layers).

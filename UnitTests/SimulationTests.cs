@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeuralEvolution;
+using NEAT_CSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeuralEvolution.Tests
+namespace NEAT_CSharp.Tests
 {
     [TestClass]
     public class SimulationTests

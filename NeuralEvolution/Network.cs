@@ -5,9 +5,9 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
-using NeuralEvolution.ActivationFunctions;
+using NEAT_CSharp.ActivationFunctions;
 
-namespace NeuralEvolution
+namespace NEAT_CSharp
 {
 	[Serializable]
 	// Neural network with nodes and connections between them.

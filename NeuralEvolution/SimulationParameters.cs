@@ -1,4 +1,4 @@
-﻿namespace NeuralEvolution
+﻿namespace NEAT_CSharp
 {
 	// Parameters of Simulation object. Use it to tune behaviour of the simulation
 	public class SimulationParameters

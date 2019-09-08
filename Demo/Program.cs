@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using NeuralEvolution;
+using NEAT_CSharp;
 
 namespace NeuralEvolutionDemo
 {
-	using NeuralEvolution;
+	using NEAT_CSharp;
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
@@ -224,7 +224,7 @@ namespace NeuralEvolutionDemo
 						if ((run % numberOfRuns) == 0)
 							gen.Fitness = 0.0;
 
-						NeuralEvolution.Network net = gen.getNetwork();
+						NEAT_CSharp.Network net = gen.getNetwork();
                         //net.ActivationFunction = new NeuralEvolution.ActivationFunctions.ReLU();
 
                         // Store "champion" of the generation in a file - for potential further use
@@ -288,8 +288,8 @@ namespace NeuralEvolutionDemo
 		// Did the snake eat something?
 		private bool ate = false;
 
-		public NeuralEvolution.Network Brain { get; set; }
-		public NeuralEvolution.Genome Genome { get; set; }
+		public NEAT_CSharp.Network Brain { get; set; }
+		public NEAT_CSharp.Genome Genome { get; set; }
 		public bool IsDead { get; set; }
 
 		public System.Random rnd;

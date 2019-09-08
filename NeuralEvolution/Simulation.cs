@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeuralEvolution
+namespace NEAT_CSharp
 {
 	// Main class of the simulation.
 	// To set up a simulation you need to call constructor and pass it initial genome (initial neural network). Then you can

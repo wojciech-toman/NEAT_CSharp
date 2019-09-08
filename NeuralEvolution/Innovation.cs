@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeuralEvolution
+namespace NEAT_CSharp
 {
 	public class Innovation
 	{

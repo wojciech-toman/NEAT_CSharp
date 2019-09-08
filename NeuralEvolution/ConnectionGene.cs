@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeuralEvolution
+namespace NEAT_CSharp
 {
 	// ConnectionGene is equivalent of directed edge in the graph/network. It connects 2 nodes with a given weight.
 	// Additionally, it can be enabled or disabled.

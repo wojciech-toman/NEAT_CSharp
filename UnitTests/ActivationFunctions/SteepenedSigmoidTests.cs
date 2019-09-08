@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeuralEvolution.ActivationFunctions;
+using NEAT_CSharp.ActivationFunctions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeuralEvolution.ActivationFunctions.Tests
+namespace NEAT_CSharp.ActivationFunctions.Tests
 {
     [TestClass()]
     public class SteepenedSigmoidTests

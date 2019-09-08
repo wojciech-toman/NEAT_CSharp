@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeuralEvolution
+namespace NEAT_CSharp
 {
 	// TODO: add 'elitism' - option to move more than one of the best genomes of the species to the next generation unchanged
 	[Serializable]

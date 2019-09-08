@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using NeuralEvolution;
+using NEAT_CSharp;
 
-namespace NeuralEvolution.Tests
+namespace NEAT_CSharp.Tests
 {
     [TestClass]
     public class GenomeTests

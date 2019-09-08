@@ -7,7 +7,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace NeuralEvolution
+namespace NEAT_CSharp
 {
 	[Serializable]
 	// Genome represents a single Neural Network.

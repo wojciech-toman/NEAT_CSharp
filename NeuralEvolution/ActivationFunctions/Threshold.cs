@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeuralEvolution.ActivationFunctions
+namespace NEAT_CSharp.ActivationFunctions
 {
     [Serializable]
     public class Threshold : ActivationFunction
