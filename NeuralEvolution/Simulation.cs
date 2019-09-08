@@ -13,13 +13,13 @@ namespace NeuralEvolution
 	// random genomes?
 	public class Simulation
 	{
-		List<Species> species = new List<Species>();
-		List<Genome> nextGeneration = new List<Genome>();
-		List<Innovation> innovations = new List<Innovation>();
-		int populationSize;
+        private List<Species> species = new List<Species>();
+        private List<Genome> nextGeneration = new List<Genome>();
+        private List<Innovation> innovations = new List<Innovation>();
+        private int populationSize = 0;
 		private double highestFitness = 0.0;
 		private int generationsSinceLastUpdate;
-        Random random = null;
+        private Random random = null;
 
 
 		public SimulationParameters Parameters { get; set; } = new SimulationParameters();

@@ -69,6 +69,14 @@ namespace NeuralEvolution
 				this.outputNodes.Add(node);
 		}
 
+        public void addNodes(IEnumerable<Node> nodesCollection)
+        {
+            foreach(Node node in nodesCollection)
+            {
+                this.addNode(node);
+            }
+        }
+
 		// Call after adding all nodes
 		public void addLink(Link link)
 		{
@@ -149,50 +157,61 @@ namespace NeuralEvolution
 			const int maxTries = 20;
 
 			while (this.isOutputNotActivated() || !onetime)
-			{
-				// Too many failures - some outputs remain unactivated; exit
-				if (counter++ > maxTries)
-					return false;
+            {
+                // Too many failures - some outputs remain unactivated; exit
+                if (counter++ > maxTries)
+                    return false;
 
-				// For each non-sensor node compute incoming activation
-				foreach (Node node in this.nodes)
-				{
-					if (node.NodeType == Node.ENodeType.SENSOR || node.NodeType == Node.ENodeType.BIAS) continue;
+                // For each non-sensor node compute incoming activation
+                this.ComputeNodesActivationSum();
 
-					node.ActivationSum = 0.0f;
-					node.IsActive = false;
-					foreach (Link lnk in node.IncomingLinks)
-					{
-						float toAdd = lnk.Weight * lnk.InNode.ActivationOut;
-						if (lnk.InNode.NodeType == Node.ENodeType.SENSOR || lnk.InNode.NodeType == Node.ENodeType.BIAS || lnk.InNode.IsActive) node.IsActive = true;
-						node.ActivationSum += toAdd;
-					}
-				}
+                // Compute value of activation function (at the moment sigmoid)
+                this.ComputeActivationFunctionValue();
 
-				foreach (Node node in this.nodes)
-				{
-					if (node.NodeType == Node.ENodeType.SENSOR || node.NodeType == Node.ENodeType.BIAS) continue;
-					if (node.IsActive)
-					{
-						node.LastActivation2 = node.LastActivation;
-						node.LastActivation = node.Activation;
+                onetime = true;
+            }
 
-						// TODO: move activation function outside (maybe to the Program.cs) so it's more flexible
-						float constant = 4.924273f; // Used to steepen the function
-						node.Activation = (float)(1.0f / (1.0f + Math.Exp(-constant * node.ActivationSum)));
-						//node.Activation = (float)(1.0f / (1.0f + (Math.Exp(-(constant * node.ActivationSum - 2.4621365)))));
-
-						node.ActivationCount++;
-					}
-				}
-
-				onetime = true;
-			}
-
-			return true;
+            return true;
 		}
 
-		private bool isOutputNotActivated()
+        private void ComputeActivationFunctionValue()
+        {
+            foreach (Node node in this.nodes)
+            {
+                if (node.NodeType == Node.ENodeType.SENSOR || node.NodeType == Node.ENodeType.BIAS) continue;
+                if (node.IsActive)
+                {
+                    node.LastActivation2 = node.LastActivation;
+                    node.LastActivation = node.Activation;
+
+                    // TODO: move activation function outside (maybe to the Program.cs) so it's more flexible
+                    float constant = 4.924273f; // Used to steepen the function
+                    node.Activation = (float)(1.0f / (1.0f + Math.Exp(-constant * node.ActivationSum)));
+                    //node.Activation = (float)(1.0f / (1.0f + (Math.Exp(-(constant * node.ActivationSum - 2.4621365)))));
+
+                    node.ActivationCount++;
+                }
+            }
+        }
+
+        private void ComputeNodesActivationSum()
+        {
+            foreach (Node node in this.nodes)
+            {
+                if (node.NodeType == Node.ENodeType.SENSOR || node.NodeType == Node.ENodeType.BIAS) continue;
+
+                node.ActivationSum = 0.0f;
+                node.IsActive = false;
+                foreach (Link lnk in node.IncomingLinks)
+                {
+                    float toAdd = lnk.Weight * lnk.InNode.ActivationOut;
+                    if (lnk.InNode.NodeType == Node.ENodeType.SENSOR || lnk.InNode.NodeType == Node.ENodeType.BIAS || lnk.InNode.IsActive) node.IsActive = true;
+                    node.ActivationSum += toAdd;
+                }
+            }
+        }
+
+        private bool isOutputNotActivated()
 		{
 			foreach (Node output in this.outputNodes)
 			{
