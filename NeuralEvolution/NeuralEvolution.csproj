@@ -54,6 +54,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActivationFunctions\ActivationFunction.cs" />
+    <Compile Include="ActivationFunctions\SteepenedSigmoid.cs" />
     <Compile Include="ConnectionGene.cs" />
     <Compile Include="Genome.cs" />
     <Compile Include="Innovation.cs" />

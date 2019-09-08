@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using NeuralEvolution.ActivationFunctions;
 
 namespace NeuralEvolution
 {
@@ -18,8 +19,10 @@ namespace NeuralEvolution
 
 		private List<Link> links = new List<Link>();
 
+        public ActivationFunction ActivationFunction { get; set; } = new SteepenedSigmoid();
 
-		public void SerializeBinary(string fileName)
+
+        public void SerializeBinary(string fileName)
 		{
 			try
 			{
@@ -150,7 +153,7 @@ namespace NeuralEvolution
 			set { this.links = value; }
 		}
 
-		public bool activate()
+        public bool activate()
 		{
 			bool onetime = false;
 			int counter = 0;
@@ -201,9 +204,7 @@ namespace NeuralEvolution
                     node.LastActivation2 = node.LastActivation;
                     node.LastActivation = node.Activation;
 
-                    // TODO: move activation function outside (maybe to the Program.cs) so it's more flexible
-                    float constant = 4.924273f; // Used to steepen the function
-                    node.Activation = (float)(1.0f / (1.0f + Math.Exp(-constant * node.ActivationSum)));
+                    node.Activation = ActivationFunction.CalculateActivation(node.ActivationSum);
                     //node.Activation = (float)(1.0f / (1.0f + (Math.Exp(-(constant * node.ActivationSum - 2.4621365)))));
 
                     node.ActivationCount++;

@@ -199,5 +199,83 @@ namespace NeuralEvolution.Tests
 
             Assert.IsTrue(Math.Abs(hiddenNode.Activation - expected) < epsilon, $"Expected value <{expected}>. Actual <{hiddenNode.Activation}>");
         }
+
+        [TestMethod()]
+        [ExpectedException(typeof(NullReferenceException))]
+        public void ComputeNodesActivationFunctionValueTest_NoActivationFunction_Expected_Exception()
+        {
+            Network net = new Network();
+            Node hiddenNode = new Node(Node.ENodeType.HIDDEN, 1);
+            net.addNode(hiddenNode);
+
+            net.ActivationFunction = null;
+
+            hiddenNode.ActivationSum = 3.0f; hiddenNode.IsActive = true;
+
+            net.ComputeNodesActivationFunctionValue();
+        }
+
+        [Serializable]
+        class TestActivationFunction : ActivationFunctions.ActivationFunction
+        {
+            public override float CalculateActivation(float input)
+            {
+                throw new NotImplementedException();
+            }
+        };
+
+        [TestMethod()]
+        public void SerializeDeserializeBinaryTest()
+        {
+        Network net = new Network();
+
+            Node inNode1 = new Node(Node.ENodeType.SENSOR, 1);
+            Node inNode2 = new Node(Node.ENodeType.SENSOR, 2);
+            Node hiddenNode = new Node(Node.ENodeType.HIDDEN, 3);
+            Node outNode1 = new Node(Node.ENodeType.OUTPUT, 4);
+            Node outNode2 = new Node(Node.ENodeType.OUTPUT, 5);
+
+            net.addNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
+
+            net.addLink(new Link(inNode1, hiddenNode, false, 1.0f));
+            net.addLink(new Link(inNode2, hiddenNode, false, 2.0f));
+            net.addLink(new Link(hiddenNode, outNode1, false, 3.0f));
+            net.addLink(new Link(hiddenNode, outNode2, false, 4.0f));
+
+            net.ActivationFunction = new TestActivationFunction();
+
+            net.SerializeBinary("./test");
+
+            net = Network.DeserializeNetwork("./test");
+
+            // Check nodes
+            Assert.AreEqual(5, net.Nodes.Count);
+            Assert.AreEqual(2, net.Input.Count);
+            Assert.AreEqual(2, net.Output.Count);
+            for (int i = 0; i < 5; ++i)
+                Assert.AreEqual(i + 1, net.Nodes[i].ID);
+
+            // Check links
+            Assert.AreEqual(4, net.Links.Count);
+            for (int i = 0; i < 4; ++i)
+            {
+                Assert.AreEqual(i + 1, net.Links[i].Weight);
+                Assert.AreEqual(false, net.Links[i].IsRecurrent);
+            }
+
+            Assert.AreEqual(1, net.Links[0].InNode.ID);
+            Assert.AreEqual(3, net.Links[0].OutNode.ID);
+
+            Assert.AreEqual(2, net.Links[1].InNode.ID);
+            Assert.AreEqual(3, net.Links[1].OutNode.ID);
+
+            Assert.AreEqual(3, net.Links[2].InNode.ID);
+            Assert.AreEqual(4, net.Links[2].OutNode.ID);
+
+            Assert.AreEqual(3, net.Links[3].InNode.ID);
+            Assert.AreEqual(5, net.Links[3].OutNode.ID);
+
+            Assert.IsTrue(net.ActivationFunction is TestActivationFunction);
+        }
     }
 }
