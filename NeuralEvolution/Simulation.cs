@@ -27,33 +27,42 @@ namespace NEAT_CSharp
 
 		// Spawn population from a single genome (this will be initial state) and with positive populationSize number of organisms.
 		public Simulation(Random rnd, Genome basicGenome, int populationSize)
-		{
-			if (basicGenome == null) throw new ArgumentNullException(nameof(basicGenome));
+        {
+            if (basicGenome == null) throw new ArgumentNullException(nameof(basicGenome));
             if (populationSize <= 0) throw new ArgumentException("Population size has to be positive number");
 
-			this.populationSize = populationSize;
-			this.random = rnd;
+            this.populationSize = populationSize;
+            this.random = rnd;
 
-			for (int i = 0; i < populationSize; ++i)
-			{
-				Genome g = basicGenome.copy();
-				g.ParentSimulation = this;
-				g.mutateWeights(1.0f);
-				this.nextGeneration.Add(g);
-			}
-
-			if (basicGenome.ConnectionGenes.Count > 0)
-				Innovation.SetCurrentID(basicGenome.ConnectionGenes[basicGenome.ConnectionGenes.Count - 1].Innovation);
-			else
-				Innovation.SetCurrentID(0);
+            this.SpawnPopulation(basicGenome, populationSize);
+            this.InitInnovation(basicGenome);
 
 
-			// Add all new genomes to species
-			this.addGenomesToSpecies(nextGeneration);
-			this.orderSpecies();
-		}
+            // Add all new genomes to species
+            this.addGenomesToSpecies(nextGeneration);
+            this.orderSpecies();
+        }
 
-		public void orderSpecies()
+        private void InitInnovation(Genome basicGenome)
+        {
+            if (basicGenome.ConnectionGenes.Count > 0)
+                Innovation.SetCurrentID(basicGenome.ConnectionGenes[basicGenome.ConnectionGenes.Count - 1].Innovation);
+            else
+                Innovation.SetCurrentID(0);
+        }
+
+        private void SpawnPopulation(Genome basicGenome, int populationSize)
+        {
+            for (int i = 0; i < populationSize; ++i)
+            {
+                Genome g = basicGenome.copy();
+                g.ParentSimulation = this;
+                g.mutateWeights(1.0f);
+                this.nextGeneration.Add(g);
+            }
+        }
+
+        public void orderSpecies()
 		{
 			this.species.Sort((x, y) => (y.Genomes[0].OriginalFitness.CompareTo(x.Genomes[0].OriginalFitness)));
 		}
@@ -85,12 +94,7 @@ namespace NEAT_CSharp
 
 
             // Adjust fitness of each species and also sort genomes
-            foreach (Species s in this.species)
-            {
-                s.Age++;
-                s.adjustFitness();
-                s.Innovations = this.innovations;
-            }
+            this.AdjustSpeciesFitness();
 
             // Now order species - it's essential that genomes are sorted before that (what's done above)
             this.orderSpecies();
@@ -104,22 +108,120 @@ namespace NEAT_CSharp
             // Clear nextGeneration list -> new organisms will be added to it
             nextGeneration.Clear();
 
+            // Calculate number of offspring for each species proportionally to species adjusted fitness
+            this.CalculateSpeciesOffspring(totalPopulationFitness: this.CalculatePopulationTotalFitness());
+
+            // Check for population-level stagnation
+            double curBestFitness = this.species[0].Genomes[0].OriginalFitness;
+            this.species[0].Genomes[0].IsPopulationChampion = true;
+            if (curBestFitness > this.highestFitness)
+            {
+                this.highestFitness = curBestFitness;
+                this.generationsSinceLastUpdate = 0;
+            }
+            else
+                ++this.generationsSinceLastUpdate;
+
+            // If whole population is stagnant we let to reproduce just 2 best species. Also, we generate
+            // special children from both species champions
+            if (this.generationsSinceLastUpdate > this.Parameters.MaxGeneralGenerationsWithoutImprovement)
+            {
+                this.HandlePopulationLevelStagnation();
+            }
+
+
+            // Remove genomes that were marked for deletion so they won't reproduce
+            this.RemoveGenomesThatShouldNotReproduce(previousGeneration);
+
+            // Reproduce the species
+            this.ReproduceSpecies();
+
+            // Remove previous generation from the species
+            this.RemoveGenomesFromPreviousGeneration(previousGeneration);
+
+            // Remove all empty species (unless there is only 1 species left)
+            this.RemoveEmptySpecies();
+
+            foreach (Species s in this.species)
+                s.orderGenomes();
+            this.orderSpecies();
+
+            // Remove innovations of this generation
+            this.innovations.Clear();
+
+            // Finally increase epoch counter
+            ++this.EpochID;
+        }
+
+        private void RemoveGenomesFromPreviousGeneration(List<Genome> previousGeneration)
+        {
+            foreach (Genome gen in previousGeneration)
+            {
+                gen.Species.removeGenome(gen);
+            }
+        }
+
+        private void ReproduceSpecies()
+        {
+            foreach (Species s in this.species)
+            {
+                s.reproduce(nextGeneration, this.innovations);
+            }
+            this.addGenomesToSpecies(nextGeneration);
+        }
+
+        private void RemoveGenomesThatShouldNotReproduce(List<Genome> previousGeneration)
+        {
+            foreach (Genome g in previousGeneration)
+            {
+                if (g.ShouldBeEliminated)
+                {
+                    g.Species.removeGenome(g);
+                }
+            }
+        }
+
+        private double CalculatePopulationTotalFitness()
+        {
             double totalPopulationFitness = 0.0;
             foreach (Species s in this.species)
             {
                 totalPopulationFitness += s.getAverageFitness();
             }
 
-            // Remove all species that didn't improve for specified number of generations (but make sure to leave
-            // 1 species left)
-            /*int index = this.species.FindIndex(item => item.AgeWithoutImprovement >= maxSpeciesGenerationsWithoutImprovement);
-			while (this.species.Count > 1 && index != -1)
-			{
-				this.species.RemoveAt(index);
-				index = this.species.FindIndex(item => item.AgeWithoutImprovement >= maxSpeciesGenerationsWithoutImprovement);
-			}*/
+            return totalPopulationFitness;
+        }
 
-            // Calculate number of offspring for each species proportionally to species adjusted fitness
+        private void HandlePopulationLevelStagnation()
+        {
+            this.generationsSinceLastUpdate = 0;
+
+            int halfPopulationSize = this.populationSize / 2;
+            this.species[0].LastImprovementAge = this.species[0].Age;
+
+            if (this.species.Count > 1)
+            {
+                this.species[0].Offspring = halfPopulationSize;
+                this.species[0].ChampionOffspring = halfPopulationSize;
+
+                this.species[1].Offspring = this.populationSize - halfPopulationSize;
+                this.species[1].ChampionOffspring = halfPopulationSize;
+                this.species[1].LastImprovementAge = this.species[1].Age;
+
+                for (int i = 2; i < this.species.Count; ++i)
+                {
+                    this.species[i].Offspring = 0;
+                }
+            }
+            else
+            {
+                this.species[0].Offspring = this.populationSize;
+                this.species[0].ChampionOffspring = this.populationSize;
+            }
+        }
+
+        private void CalculateSpeciesOffspring(double totalPopulationFitness)
+        {
             int organismsLeft = this.populationSize;
             if (totalPopulationFitness > 0.0f)
             {
@@ -175,83 +277,16 @@ namespace NEAT_CSharp
                     }
                 }
             }
+        }
 
-            // Check for population-level stagnation
-            double curBestFitness = this.species[0].Genomes[0].OriginalFitness;
-            this.species[0].Genomes[0].IsPopulationChampion = true;
-            if (curBestFitness > this.highestFitness)
-            {
-                this.highestFitness = curBestFitness;
-                this.generationsSinceLastUpdate = 0;
-            }
-            else
-                ++this.generationsSinceLastUpdate;
-
-            // If whole population is stagnant we let to reproduce just 2 best species. Also, we generate
-            // special children from both species champions
-            if (this.generationsSinceLastUpdate > this.Parameters.MaxGeneralGenerationsWithoutImprovement)
-            {
-                this.generationsSinceLastUpdate = 0;
-
-                int halfPopulationSize = this.populationSize / 2;
-                this.species[0].LastImprovementAge = this.species[0].Age;
-
-                if (this.species.Count > 1)
-                {
-                    this.species[0].Offspring = halfPopulationSize;
-                    this.species[0].ChampionOffspring = halfPopulationSize;
-
-                    this.species[1].Offspring = this.populationSize - halfPopulationSize;
-                    this.species[1].ChampionOffspring = halfPopulationSize;
-                    this.species[1].LastImprovementAge = this.species[1].Age;
-
-                    for (int i = 2; i < this.species.Count; ++i)
-                    {
-                        this.species[i].Offspring = 0;
-                    }
-                }
-                else
-                {
-                    this.species[0].Offspring = this.populationSize;
-                    this.species[0].ChampionOffspring = this.populationSize;
-                }
-            }
-
-
-            // Remove genomes that were marked for deletion so they won't reproduce
-            foreach (Genome g in previousGeneration)
-            {
-                if (g.ShouldBeEliminated)
-                {
-                    g.Species.removeGenome(g);
-                }
-            }
-
-            // Reproduce the species
+        private void AdjustSpeciesFitness()
+        {
             foreach (Species s in this.species)
             {
-                s.reproduce(nextGeneration, this.innovations);
+                s.Age++;
+                s.adjustFitness();
+                s.Innovations = this.innovations;
             }
-            this.addGenomesToSpecies(nextGeneration);
-
-            // Remove previous generation from the species
-            foreach (Genome gen in previousGeneration)
-            {
-                gen.Species.removeGenome(gen);
-            }
-
-            // Remove all empty species (unless there is only 1 species left)
-            this.RemoveEmptySpecies();
-
-            foreach (Species s in this.species)
-                s.orderGenomes();
-            this.orderSpecies();
-
-            // Remove innovations of this generation
-            this.innovations.Clear();
-
-            // Finally increase epoch counter
-            ++this.EpochID;
         }
 
         public void RemoveEmptySpecies()
