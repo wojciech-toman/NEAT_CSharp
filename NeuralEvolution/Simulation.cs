@@ -221,10 +221,11 @@ namespace NEAT_CSharp
             }
         }
 
-        private void CalculateSpeciesOffspring(double totalPopulationFitness)
+        public void CalculateSpeciesOffspring(double totalPopulationFitness)
         {
+            float epsilon = 0.0001f;
             int organismsLeft = this.populationSize;
-            if (totalPopulationFitness > 0.0f)
+            if (totalPopulationFitness > epsilon)
             {
                 foreach (Species s in this.species)
                 {

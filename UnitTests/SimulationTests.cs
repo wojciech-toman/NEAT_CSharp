@@ -346,5 +346,129 @@ namespace NEAT_CSharp.Tests
 
             Assert.AreEqual(0, sim.GenerationsSinceLastUpdate);
         }
+
+        [TestMethod()]
+        public void CalculateSpeciesOffspringTest_TotalFitnessZero_Expected_AllSpeciesHaveSameOffspring()
+        {
+            UnitTests.RandomStub randomStub = new UnitTests.RandomStub();
+            Simulation sim = new Simulation(randomStub, gen, 20);
+
+            // Create some fake species and genomes
+            Species species1 = new Species(randomStub);
+            Species species2 = new Species(randomStub);
+            Species species3 = new Species(randomStub);
+            Species species4 = new Species(randomStub);
+
+            Genome gen1 = new Genome(randomStub);
+            gen1.OriginalFitness = 10;
+            species1.addGenome(gen1);
+
+            Genome gen2 = new Genome(randomStub);
+            gen2.OriginalFitness = 0;
+            species2.addGenome(gen2);
+
+            Genome gen3 = new Genome(randomStub);
+            gen3.OriginalFitness = 20;
+            species3.addGenome(gen3);
+
+            Genome gen4 = new Genome(randomStub);
+            gen4.OriginalFitness = 1;
+            species4.addGenome(gen4);
+
+            // Remove default species/genomes and add fake ones
+            sim.Species.Clear();
+            sim.Species.AddRange(new Species[] { species1, species2, species3, species4 });
+
+            sim.orderSpeciesByOriginalFitness();
+            sim.CalculateSpeciesOffspring(0.0f);
+
+            foreach (Species species in sim.Species)
+                Assert.AreEqual(5, species.Offspring);
+        }
+
+        [TestMethod()]
+        public void CalculateSpeciesOffspringTest_TotalFitnessZero_Expected_AllSpeciesHaveSameOffspring_ButOne()
+        {
+            UnitTests.RandomStub randomStub = new UnitTests.RandomStub();
+            Simulation sim = new Simulation(randomStub, gen, 22);
+
+            // Create some fake species and genomes
+            Species species1 = new Species(randomStub);
+            Species species2 = new Species(randomStub);
+            Species species3 = new Species(randomStub);
+            Species species4 = new Species(randomStub);
+
+            Genome gen1 = new Genome(randomStub);
+            gen1.OriginalFitness = 10;
+            species1.addGenome(gen1);
+
+            Genome gen2 = new Genome(randomStub);
+            gen2.OriginalFitness = 0;
+            species2.addGenome(gen2);
+
+            Genome gen3 = new Genome(randomStub);
+            gen3.OriginalFitness = 20;
+            species3.addGenome(gen3);
+
+            Genome gen4 = new Genome(randomStub);
+            gen4.OriginalFitness = 1;
+            species4.addGenome(gen4);
+
+            // Remove default species/genomes and add fake ones
+            sim.Species.Clear();
+            sim.Species.AddRange(new Species[] { species1, species2, species3, species4 });
+
+            sim.orderSpeciesByOriginalFitness();
+            sim.CalculateSpeciesOffspring(0.0f);
+
+            Assert.AreEqual(7, sim.Species[0].Offspring);
+            for(int i = 1; i < sim.Species.Count; ++i)
+                Assert.AreEqual(5, sim.Species[i].Offspring);
+        }
+
+        [TestMethod()]
+        public void CalculateSpeciesOffspringTest_TotalFitnessGreaterThanZero()
+        {
+            UnitTests.RandomStub randomStub = new UnitTests.RandomStub();
+            Simulation sim = new Simulation(randomStub, gen, 21);
+
+            // Create some fake species and genomes
+            Species species1 = new Species(randomStub);
+            Species species2 = new Species(randomStub);
+            Species species3 = new Species(randomStub);
+            Species species4 = new Species(randomStub);
+
+            Genome gen1 = new Genome(randomStub);
+            gen1.OriginalFitness = 5;
+            gen1.Fitness = 5;
+            species1.addGenome(gen1);
+
+            Genome gen2 = new Genome(randomStub);
+            gen2.OriginalFitness = 10;
+            gen2.Fitness = 10;
+            species2.addGenome(gen2);
+
+            Genome gen3 = new Genome(randomStub);
+            gen3.OriginalFitness = 15;
+            gen3.Fitness = 15;
+            species3.addGenome(gen3);
+
+            Genome gen4 = new Genome(randomStub);
+            gen4.OriginalFitness = 20;
+            gen4.Fitness = 20;
+            species4.addGenome(gen4);
+
+            // Remove default species/genomes and add fake ones
+            sim.Species.Clear();
+            sim.Species.AddRange(new Species[] { species1, species2, species3, species4 });
+
+            sim.orderSpeciesByOriginalFitness();
+            sim.CalculateSpeciesOffspring(50.0f);
+
+            Assert.AreEqual(2, species1.Offspring);
+            Assert.AreEqual(4, species2.Offspring);
+            Assert.AreEqual(6, species3.Offspring);
+            Assert.AreEqual(9, species4.Offspring);
+        }
     }
 }
