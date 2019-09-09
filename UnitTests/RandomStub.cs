@@ -8,7 +8,7 @@ namespace UnitTests
 {
     class RandomStub : Random
     {
-        public int NextDoubleValue { get; set; }
+        public double NextDoubleValue { get; set; }
         public int NextIntValue { get; set; }
 
         public override double NextDouble()

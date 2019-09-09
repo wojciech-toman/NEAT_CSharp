@@ -507,81 +507,95 @@ namespace NEAT_CSharp
 
 		// Mutation that creates new node in the genome.
 		public void addNodeMutation(List<Innovation> innovations)
-		{
-			if (innovations == null) throw new ArgumentNullException(nameof(innovations));
+        {
+            if (innovations == null) throw new ArgumentNullException(nameof(innovations));
 
-			// If there are no genes at all, return
-			if (connectionGenes.Count == 0)
-				return;
+            // If there are no genes at all, return
+            if (connectionGenes.Count == 0)
+                return;
 
-			bool found = false;
-			int connectionIndex = -1;
-			int counter = 0;
-			while (!found && counter++ < 20)
-			{
-				connectionIndex = this.random.Next(connectionGenes.Count);
-				if (this.connectionGenes[connectionIndex].IsEnabled)
-				{
-					found = true;
-					break;
-				}
-			}
+            bool found = false;
+            int connectionIndex = -1;
+            found = this.FindConnectionGeneToSplit(out connectionIndex);
 
-			// We haven't found any proper gene to split, so exit
-			if (!found)
-				return;
+            // We haven't found any proper gene to split, so exit
+            if (!found)
+                return;
 
-			ConnectionGene oldConnection = this.connectionGenes[connectionIndex];
-			oldConnection.IsEnabled = false;
+            ConnectionGene oldConnection = this.connectionGenes[connectionIndex];
+            oldConnection.IsEnabled = false;
 
-			// Check if this is new innovation, or whether it already exists somewhere in the population
-			bool innovationFound = false;
-			Node newNode = null;
-			ConnectionGene newGene1 = null;
-			ConnectionGene newGene2 = null;
-			foreach (Innovation innov in innovations)
-			{
-				if (innov.InnovationType == Innovation.EInnovationType.NEWNODE &&
-					innov.InNode.ID == oldConnection.InNodeGene.ID &&
-					innov.OutNode.ID == oldConnection.OutNodeGene.ID &&
-					oldConnection.Innovation == innov.OldID)
-				{
-					innovationFound = true;
+            // Check if this is new innovation, or whether it already exists somewhere in the population
+            bool innovationFound = false;
+            Node newNode = null;
+            ConnectionGene newGene1 = null;
+            ConnectionGene newGene2 = null;
+            foreach (Innovation innov in innovations)
+            {
+                if (innov.InnovationType == Innovation.EInnovationType.NEWNODE &&
+                    innov.InNode.ID == oldConnection.InNodeGene.ID &&
+                    innov.OutNode.ID == oldConnection.OutNodeGene.ID &&
+                    oldConnection.Innovation == innov.OldID)
+                {
+                    innovationFound = true;
 
-					newNode = new Node(Node.ENodeType.HIDDEN, innov.NewNode.ID);
+                    newNode = new Node(Node.ENodeType.HIDDEN, innov.NewNode.ID);
 
-					newGene1 = new ConnectionGene(oldConnection.InNodeGene, newNode, oldConnection.IsRecurrent, 1.0f, true, innov.ID);
-					newGene2 = new ConnectionGene(newNode, oldConnection.OutNodeGene, false, oldConnection.Weight, true, innov.ID2);
+                    newGene1 = new ConnectionGene(oldConnection.InNodeGene, newNode, oldConnection.IsRecurrent, 1.0f, true, innov.ID);
+                    newGene2 = new ConnectionGene(newNode, oldConnection.OutNodeGene, false, oldConnection.Weight, true, innov.ID2);
 
-					break;
-				}
-			}
+                    break;
+                }
+            }
 
-			// Create new hidden node between old nodes and link it with the network
-			if (!innovationFound)
-			{
-				newNode = new Node(Node.ENodeType.HIDDEN, this.nodes.Count + 1);
-				int id1 = Innovation.GetNextID();
-				int id2 = Innovation.GetNextID();
+            // Create new hidden node between old nodes and link it with the network
+            if (!innovationFound)
+            {
+                newNode = new Node(Node.ENodeType.HIDDEN, this.nodes.Count + 1);
+                int id1 = Innovation.GetNextID();
+                int id2 = Innovation.GetNextID();
 
-				Innovation newInnov = new Innovation(Innovation.EInnovationType.NEWNODE, oldConnection.InNodeGene, oldConnection.OutNodeGene, newNode, id1, id2, 0.0f, oldConnection.Innovation);
-				innovations.Add(newInnov);
+                Innovation newInnov = new Innovation(Innovation.EInnovationType.NEWNODE, oldConnection.InNodeGene, oldConnection.OutNodeGene, newNode, id1, id2, 0.0f, oldConnection.Innovation);
+                innovations.Add(newInnov);
 
-				newGene1 = new ConnectionGene(oldConnection.InNodeGene, newNode, oldConnection.IsRecurrent, 1.0f, true, id1);
-				newGene2 = new ConnectionGene(newNode, oldConnection.OutNodeGene, false, oldConnection.Weight, true, id2);
-			}
+                newGene1 = new ConnectionGene(oldConnection.InNodeGene, newNode, oldConnection.IsRecurrent, 1.0f, true, id1);
+                newGene2 = new ConnectionGene(newNode, oldConnection.OutNodeGene, false, oldConnection.Weight, true, id2);
+            }
 
-			/*this.connectionGenes.Add(new ConnectionGene(oldConnection.InNodeGene, newNode, 1.0f, true, this.NextInnovationNumber()));
+            /*this.connectionGenes.Add(new ConnectionGene(oldConnection.InNodeGene, newNode, 1.0f, true, this.NextInnovationNumber()));
 			this.connectionGenes.Add(new ConnectionGene(newNode, oldConnection.OutNodeGene, oldConnection.Weight, true, this.NextInnovationNumber()));*/
-			this.addNode(newNode);
-			this.addConnection(newGene1);
-			this.addConnection(newGene2);
+            this.addNode(newNode);
+            this.addConnection(newGene1);
+            this.addConnection(newGene2);
 
-			this.phenotypeChanged = true;
-		}
+            this.phenotypeChanged = true;
+        }
 
-		// Mutation that changes connection weights.
-		public void mutateWeights(float mutationPower)
+        public bool FindConnectionGeneToSplit(out int connectionIndex)
+        {
+            bool found = false;
+            connectionIndex = -1;
+
+            if (connectionGenes.Count == 0)
+                return false;
+
+            int counter = 0;
+            while (!found && counter++ < 20)
+            {
+                int candidateIndex = this.random.Next(connectionGenes.Count);
+                if (this.connectionGenes[candidateIndex].IsEnabled)
+                {
+                    connectionIndex = candidateIndex;
+                    found = true;
+                    break;
+                }
+            }
+
+            return found;
+        }
+
+        // Mutation that changes connection weights.
+        public void mutateWeights(float mutationPower)
 		{
 			bool severeMutation = false;
 			if (this.random.NextDouble() > 0.5) severeMutation = true;

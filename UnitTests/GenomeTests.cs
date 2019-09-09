@@ -514,5 +514,54 @@ namespace NEAT_CSharp.Tests
             Assert.AreEqual(gen2, moreFit);
             Assert.AreEqual(gen1, lessFit);
         }
+
+        [TestMethod()]
+        public void FindConnectionGeneToSplitTest_NoGenes_Expected_False()
+        {
+            Genome genome = new Genome(r);
+            genome.addNode(new Node(Node.ENodeType.SENSOR, 1));
+            genome.addNode(new Node(Node.ENodeType.OUTPUT, 2));
+
+            int connectionIndex = -1;
+            bool found = genome.FindConnectionGeneToSplit(out connectionIndex);
+
+            Assert.AreEqual(false, found);
+            Assert.AreEqual(-1, connectionIndex);
+        }
+
+        [TestMethod()]
+        public void FindConnectionGeneToSplitTest_NoEnabledGenes_Expected_False()
+        {
+            Genome genome = new Genome(r);
+            genome.addNode(new Node(Node.ENodeType.SENSOR, 1));
+            genome.addNode(new Node(Node.ENodeType.OUTPUT, 2));
+
+            genome.addConnection(1, 2, false);
+
+            int connectionIndex = -1;
+            bool found = genome.FindConnectionGeneToSplit(out connectionIndex);
+
+            Assert.AreEqual(false, found);
+            Assert.AreEqual(-1, connectionIndex);
+        }
+
+        [TestMethod()]
+        public void FindConnectionGeneToSplitTest_Correct_Expected_True()
+        {
+            UnitTests.RandomStub randomStub = new UnitTests.RandomStub();
+            randomStub.NextIntValue = 0; randomStub.NextDoubleValue = 0.0;
+
+            Genome genome = new Genome(randomStub);
+            genome.addNode(new Node(Node.ENodeType.SENSOR, 1));
+            genome.addNode(new Node(Node.ENodeType.OUTPUT, 2));
+
+            genome.addConnection(1, 2, true);
+
+            int connectionIndex = -1;
+            bool found = genome.FindConnectionGeneToSplit(out connectionIndex);
+
+            Assert.AreEqual(true, found);
+            Assert.AreEqual(0, connectionIndex);
+        }
     }
 }
