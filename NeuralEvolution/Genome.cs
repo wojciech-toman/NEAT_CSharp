@@ -799,9 +799,9 @@ namespace NEAT_CSharp
 
 			float avgWeightDiff = Genome.getAverageWeightDifference(this, gen2);
 
-			float c1 = this.ParentSimulation.Parameters.c1;
-			float c2 = this.ParentSimulation.Parameters.c2;
-			float c3 = this.ParentSimulation.Parameters.c3;
+			float c1 = this.ParentSimulation.Parameters.ExcessGenessCoeff;
+			float c2 = this.ParentSimulation.Parameters.DisjointGenesCoeff;
+			float c3 = this.ParentSimulation.Parameters.WeightDiffCoeff;
 
 			return (c1 * Genome.excessGenesCount(this, gen2) / N) + (c2 * Genome.disjointGenesCount(this, gen2) / N) + (c3 * avgWeightDiff);
 		}

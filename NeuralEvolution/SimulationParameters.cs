@@ -19,9 +19,9 @@
 		public float RecurrencyProbability { get; set; } = 0.0f;                // Probability of adding recurrent link
 
 		// Coefficients used by the compatibility function
-		public float c1 { get; set; } = 1.0f;
-		public float c2 { get; set; } = 1.0f;
-		public float c3 { get; set; } = 0.4f;
+		public float ExcessGenessCoeff { get; set; } = 1.0f;
+		public float DisjointGenesCoeff { get; set; } = 1.0f;
+		public float WeightDiffCoeff { get; set; } = 0.4f;
 
 
 		//const float uniformPerturbProbability = 0.9f;
