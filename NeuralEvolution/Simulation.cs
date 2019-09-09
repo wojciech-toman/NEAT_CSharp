@@ -18,7 +18,6 @@ namespace NEAT_CSharp
         private List<Innovation> innovations = new List<Innovation>();
         private int populationSize = 0;
 		private double highestFitness = 0.0;
-		private int generationsSinceLastUpdate;
         private Random random = null;
 
 
@@ -40,7 +39,7 @@ namespace NEAT_CSharp
 
             // Add all new genomes to species
             this.addGenomesToSpecies(nextGeneration);
-            this.orderSpecies();
+            this.orderSpeciesByOriginalFitness();
         }
 
         private void InitInnovation(Genome basicGenome)
@@ -62,7 +61,7 @@ namespace NEAT_CSharp
             }
         }
 
-        public void orderSpecies()
+        public void orderSpeciesByOriginalFitness()
 		{
 			this.species.Sort((x, y) => (y.Genomes[0].OriginalFitness.CompareTo(x.Genomes[0].OriginalFitness)));
 		}
@@ -79,11 +78,13 @@ namespace NEAT_CSharp
 			}
 		}
 
-		// Advances the NEAT simulation to the next step. This involves several steps:
-		// 1. Penalize the species that didn't improve for a long time - the idea is to minimize their chances of getting offspring
-		// 2. Remove genomes marked for deletion (stagnant)
-		// 3. Reproduce the species (genome's offspring count is based on its fitness function result)
-		public void epoch()
+        public int GenerationsSinceLastUpdate { get; set; } = 0;
+
+        // Advances the NEAT simulation to the next step. This involves several steps:
+        // 1. Penalize the species that didn't improve for a long time - the idea is to minimize their chances of getting offspring
+        // 2. Remove genomes marked for deletion (stagnant)
+        // 3. Reproduce the species (genome's offspring count is based on its fitness function result)
+        public void epoch()
         {
             if (this.Genomes.Count > this.populationSize)
             {
@@ -97,7 +98,7 @@ namespace NEAT_CSharp
             this.AdjustSpeciesFitness();
 
             // Now order species - it's essential that genomes are sorted before that (what's done above)
-            this.orderSpecies();
+            this.orderSpeciesByOriginalFitness();
 
 
             // Once in 30 epochs, flag the worst performing species with age over 20 to be obliterated (its genomes will
@@ -117,14 +118,14 @@ namespace NEAT_CSharp
             if (curBestFitness > this.highestFitness)
             {
                 this.highestFitness = curBestFitness;
-                this.generationsSinceLastUpdate = 0;
+                this.GenerationsSinceLastUpdate = 0;
             }
             else
-                ++this.generationsSinceLastUpdate;
+                ++this.GenerationsSinceLastUpdate;
 
             // If whole population is stagnant we let to reproduce just 2 best species. Also, we generate
             // special children from both species champions
-            if (this.generationsSinceLastUpdate > this.Parameters.MaxGeneralGenerationsWithoutImprovement)
+            if (this.GenerationsSinceLastUpdate > this.Parameters.MaxGeneralGenerationsWithoutImprovement)
             {
                 this.HandlePopulationLevelStagnation();
             }
@@ -144,7 +145,7 @@ namespace NEAT_CSharp
 
             foreach (Species s in this.species)
                 s.orderGenomes();
-            this.orderSpecies();
+            this.orderSpeciesByOriginalFitness();
 
             // Remove innovations of this generation
             this.innovations.Clear();
@@ -192,19 +193,19 @@ namespace NEAT_CSharp
             return totalPopulationFitness;
         }
 
-        private void HandlePopulationLevelStagnation()
+        public void HandlePopulationLevelStagnation()
         {
-            this.generationsSinceLastUpdate = 0;
+            this.GenerationsSinceLastUpdate = 0;
 
             int halfPopulationSize = this.populationSize / 2;
             this.species[0].LastImprovementAge = this.species[0].Age;
 
             if (this.species.Count > 1)
             {
-                this.species[0].Offspring = halfPopulationSize;
-                this.species[0].ChampionOffspring = halfPopulationSize;
+                this.species[0].Offspring = this.populationSize - halfPopulationSize;
+                this.species[0].ChampionOffspring = this.populationSize - halfPopulationSize;
 
-                this.species[1].Offspring = this.populationSize - halfPopulationSize;
+                this.species[1].Offspring = halfPopulationSize;
                 this.species[1].ChampionOffspring = halfPopulationSize;
                 this.species[1].LastImprovementAge = this.species[1].Age;
 

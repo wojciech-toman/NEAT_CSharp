@@ -101,12 +101,10 @@ namespace NEAT_CSharp.Tests
 
             // Remove default species/genomes and add fake ones
             sim.Species.Clear();
-            sim.Species.Add(species1);
-            sim.Species.Add(species2);
-            sim.Species.Add(species3);
+            sim.Species.AddRange(new Species[] { species1, species2, species3 });
 
 
-            sim.orderSpecies();
+            sim.orderSpeciesByOriginalFitness();
 
             Assert.IsTrue(sim.Species[0] == species1);
             Assert.IsTrue(sim.Species[1] == species2);
@@ -137,12 +135,10 @@ namespace NEAT_CSharp.Tests
 
             // Remove default species/genomes and add fake ones
             sim.Species.Clear();
-            sim.Species.Add(species1);
-            sim.Species.Add(species2);
-            sim.Species.Add(species3);
+            sim.Species.AddRange(new Species[] { species1, species2, species3 });
 
 
-            sim.orderSpecies();
+            sim.orderSpeciesByOriginalFitness();
 
             Assert.IsTrue(sim.Species[0] == species3);
             Assert.IsTrue(sim.Species[1] == species2);
@@ -176,11 +172,9 @@ namespace NEAT_CSharp.Tests
 
             // Remove default species/genomes and add fake ones
             sim.Species.Clear();
-            sim.Species.Add(species1);
-            sim.Species.Add(species2);
-            sim.Species.Add(species3);
+            sim.Species.AddRange(new Species[] { species1, species2, species3 });
 
-            sim.orderSpecies();
+            sim.orderSpeciesByOriginalFitness();
 
             sim.EpochID = 30;
 
@@ -220,10 +214,7 @@ namespace NEAT_CSharp.Tests
 
             // Remove default species/genomes and add fake ones
             sim.Species.Clear();
-            sim.Species.Add(species1);
-            sim.Species.Add(species2);
-            sim.Species.Add(species3);
-            sim.Species.Add(species4);
+            sim.Species.AddRange(new Species[] { species1, species2, species3, species4 });
 
             Assert.AreEqual(4, sim.Species.Count);
             sim.RemoveEmptySpecies();
@@ -232,6 +223,128 @@ namespace NEAT_CSharp.Tests
             Assert.AreEqual(species1, sim.Species[0]);
             Assert.AreEqual(species2, sim.Species[1]);
             Assert.AreEqual(species3, sim.Species[2]);
+        }
+
+        [TestMethod()]
+        public void HandlePopulationLevelStagnationTest_EvenPopulationSize()
+        {
+            UnitTests.RandomStub randomStub = new UnitTests.RandomStub();
+            Simulation sim = new Simulation(randomStub, gen, 20);
+
+            // Create some fake species and genomes
+            Species species1 = new Species(randomStub);
+            Species species2 = new Species(randomStub);
+            Species species3 = new Species(randomStub);
+            Species species4 = new Species(randomStub);
+
+            Genome gen1 = new Genome(randomStub);
+            gen1.OriginalFitness = 10;
+            species1.addGenome(gen1);
+
+            Genome gen2 = new Genome(randomStub);
+            gen2.OriginalFitness = 0;
+            species2.addGenome(gen2);
+
+            Genome gen3 = new Genome(randomStub);
+            gen3.OriginalFitness = 20;
+            species3.addGenome(gen3);
+
+            Genome gen4 = new Genome(randomStub);
+            gen4.OriginalFitness = 1;
+            species4.addGenome(gen4);
+
+            // Remove default species/genomes and add fake ones
+            sim.Species.Clear();
+            sim.Species.AddRange(new Species[] { species1, species2, species3, species4 });
+
+            sim.orderSpeciesByOriginalFitness();
+            sim.HandlePopulationLevelStagnation();
+
+            Assert.AreEqual(10, species1.Offspring);
+            Assert.AreEqual(10, species1.ChampionOffspring);
+
+            Assert.AreEqual(0, species2.Offspring);
+
+            Assert.AreEqual(10, species3.Offspring);
+            Assert.AreEqual(10, species3.ChampionOffspring);
+
+            Assert.AreEqual(0, species4.Offspring);
+
+            Assert.AreEqual(0, sim.GenerationsSinceLastUpdate);
+        }
+
+        [TestMethod()]
+        public void HandlePopulationLevelStagnationTest_OddPopulationSize()
+        {
+            UnitTests.RandomStub randomStub = new UnitTests.RandomStub();
+            Simulation sim = new Simulation(randomStub, gen, 21);
+
+            // Create some fake species and genomes
+            Species species1 = new Species(randomStub);
+            Species species2 = new Species(randomStub);
+            Species species3 = new Species(randomStub);
+            Species species4 = new Species(randomStub);
+
+            Genome gen1 = new Genome(randomStub);
+            gen1.OriginalFitness = 10;
+            species1.addGenome(gen1);
+
+            Genome gen2 = new Genome(randomStub);
+            gen2.OriginalFitness = 0;
+            species2.addGenome(gen2);
+
+            Genome gen3 = new Genome(randomStub);
+            gen3.OriginalFitness = 20;
+            species3.addGenome(gen3);
+
+            Genome gen4 = new Genome(randomStub);
+            gen4.OriginalFitness = 1;
+            species4.addGenome(gen4);
+
+            // Remove default species/genomes and add fake ones
+            sim.Species.Clear();
+            sim.Species.AddRange(new Species[] { species1, species2, species3, species4 });
+
+            sim.orderSpeciesByOriginalFitness();
+            sim.HandlePopulationLevelStagnation();
+
+            Assert.AreEqual(10, species1.Offspring);
+            Assert.AreEqual(10, species1.ChampionOffspring);
+
+            Assert.AreEqual(0, species2.Offspring);
+
+            Assert.AreEqual(11, species3.Offspring);
+            Assert.AreEqual(11, species3.ChampionOffspring);
+
+            Assert.AreEqual(0, species4.Offspring);
+
+            Assert.AreEqual(0, sim.GenerationsSinceLastUpdate);
+        }
+
+        [TestMethod()]
+        public void HandlePopulationLevelStagnationTest_SingleSpecies()
+        {
+            UnitTests.RandomStub randomStub = new UnitTests.RandomStub();
+            Simulation sim = new Simulation(randomStub, gen, 20);
+
+            // Create some fake species and genomes
+            Species species1 = new Species(randomStub);
+
+            Genome gen1 = new Genome(randomStub);
+            gen1.OriginalFitness = 10;
+            species1.addGenome(gen1);
+
+            // Remove default species/genomes and add fake ones
+            sim.Species.Clear();
+            sim.Species.Add(species1);
+
+            sim.orderSpeciesByOriginalFitness();
+            sim.HandlePopulationLevelStagnation();
+
+            Assert.AreEqual(20, species1.Offspring);
+            Assert.AreEqual(20, species1.ChampionOffspring);
+
+            Assert.AreEqual(0, sim.GenerationsSinceLastUpdate);
         }
     }
 }
