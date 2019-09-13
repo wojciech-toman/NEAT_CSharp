@@ -24,18 +24,18 @@ namespace NEAT_CSharp.Tests
             gen = new Genome(r);
 
             // Create 3 sensors
-            gen.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            gen.addNode(new Node(Node.ENodeType.SENSOR, 2));
-            gen.addNode(new Node(Node.ENodeType.SENSOR, 3));
+            gen.AddNode(new Node(Node.ENodeType.SENSOR, 1));
+            gen.AddNode(new Node(Node.ENodeType.SENSOR, 2));
+            gen.AddNode(new Node(Node.ENodeType.SENSOR, 3));
 
             // Create 1 output
-            gen.addNode(new Node(Node.ENodeType.OUTPUT, 4));
+            gen.AddNode(new Node(Node.ENodeType.OUTPUT, 4));
 
             // Create 1 hidden node
-            gen.addNode(new Node(Node.ENodeType.HIDDEN, 5));
+            gen.AddNode(new Node(Node.ENodeType.HIDDEN, 5));
 
             // Add connections from the paper
-            gen.addConnection(1, 4, 0.5f);
+            gen.AddConnection(1, 4, 0.5f);
             gen.addConnection(2, 4, false);
             gen.addConnection(3, 4);
             gen.addConnection(2, 5);
@@ -89,22 +89,22 @@ namespace NEAT_CSharp.Tests
 
             Genome gen1 = new Genome(r);
             gen1.OriginalFitness = fitness1;
-            species1.addGenome(gen1);
+            species1.AddGenome(gen1);
 
             Genome gen2 = new Genome(r);
             gen2.OriginalFitness = fitness2;
-            species2.addGenome(gen2);
+            species2.AddGenome(gen2);
 
             Genome gen3 = new Genome(r);
             gen3.OriginalFitness = fitness3;
-            species3.addGenome(gen3);
+            species3.AddGenome(gen3);
 
             // Remove default species/genomes and add fake ones
             sim.Species.Clear();
             sim.Species.AddRange(new Species[] { species1, species2, species3 });
 
 
-            sim.orderSpeciesByOriginalFitness();
+            sim.OrderSpeciesByOriginalFitness();
 
             Assert.IsTrue(sim.Species[0] == species1);
             Assert.IsTrue(sim.Species[1] == species2);
@@ -123,22 +123,22 @@ namespace NEAT_CSharp.Tests
 
             Genome gen1 = new Genome(r);
             gen1.OriginalFitness = 0;
-            species1.addGenome(gen1);
+            species1.AddGenome(gen1);
 
             Genome gen2 = new Genome(r);
             gen2.OriginalFitness = 1;
-            species2.addGenome(gen2);
+            species2.AddGenome(gen2);
 
             Genome gen3 = new Genome(r);
             gen3.OriginalFitness = 2;
-            species3.addGenome(gen3);
+            species3.AddGenome(gen3);
 
             // Remove default species/genomes and add fake ones
             sim.Species.Clear();
             sim.Species.AddRange(new Species[] { species1, species2, species3 });
 
 
-            sim.orderSpeciesByOriginalFitness();
+            sim.OrderSpeciesByOriginalFitness();
 
             Assert.IsTrue(sim.Species[0] == species3);
             Assert.IsTrue(sim.Species[1] == species2);
@@ -157,24 +157,24 @@ namespace NEAT_CSharp.Tests
 
             Genome gen1 = new Genome(r);
             gen1.OriginalFitness = 0;
-            species1.addGenome(gen1);
+            species1.AddGenome(gen1);
             species1.Age = 14;
 
             Genome gen2 = new Genome(r);
             gen2.OriginalFitness = 0;
-            species2.addGenome(gen2);
+            species2.AddGenome(gen2);
             species2.Age = 30;
 
             Genome gen3 = new Genome(r);
             gen3.OriginalFitness = 2;
-            species3.addGenome(gen3);
+            species3.AddGenome(gen3);
             species3.Age = 30;
 
             // Remove default species/genomes and add fake ones
             sim.Species.Clear();
             sim.Species.AddRange(new Species[] { species1, species2, species3 });
 
-            sim.orderSpeciesByOriginalFitness();
+            sim.OrderSpeciesByOriginalFitness();
 
             sim.EpochID = 30;
 
@@ -199,17 +199,17 @@ namespace NEAT_CSharp.Tests
 
             Genome gen1 = new Genome(r);
             gen1.OriginalFitness = 0;
-            species1.addGenome(gen1);
+            species1.AddGenome(gen1);
             species1.Age = 14;
 
             Genome gen2 = new Genome(r);
             gen2.OriginalFitness = 0;
-            species2.addGenome(gen2);
+            species2.AddGenome(gen2);
             species2.Age = 30;
 
             Genome gen3 = new Genome(r);
             gen3.OriginalFitness = 2;
-            species3.addGenome(gen3);
+            species3.AddGenome(gen3);
             species3.Age = 30;
 
             // Remove default species/genomes and add fake ones
@@ -239,25 +239,25 @@ namespace NEAT_CSharp.Tests
 
             Genome gen1 = new Genome(randomStub);
             gen1.OriginalFitness = 10;
-            species1.addGenome(gen1);
+            species1.AddGenome(gen1);
 
             Genome gen2 = new Genome(randomStub);
             gen2.OriginalFitness = 0;
-            species2.addGenome(gen2);
+            species2.AddGenome(gen2);
 
             Genome gen3 = new Genome(randomStub);
             gen3.OriginalFitness = 20;
-            species3.addGenome(gen3);
+            species3.AddGenome(gen3);
 
             Genome gen4 = new Genome(randomStub);
             gen4.OriginalFitness = 1;
-            species4.addGenome(gen4);
+            species4.AddGenome(gen4);
 
             // Remove default species/genomes and add fake ones
             sim.Species.Clear();
             sim.Species.AddRange(new Species[] { species1, species2, species3, species4 });
 
-            sim.orderSpeciesByOriginalFitness();
+            sim.OrderSpeciesByOriginalFitness();
             sim.HandlePopulationLevelStagnation();
 
             Assert.AreEqual(10, species1.Offspring);
@@ -287,25 +287,25 @@ namespace NEAT_CSharp.Tests
 
             Genome gen1 = new Genome(randomStub);
             gen1.OriginalFitness = 10;
-            species1.addGenome(gen1);
+            species1.AddGenome(gen1);
 
             Genome gen2 = new Genome(randomStub);
             gen2.OriginalFitness = 0;
-            species2.addGenome(gen2);
+            species2.AddGenome(gen2);
 
             Genome gen3 = new Genome(randomStub);
             gen3.OriginalFitness = 20;
-            species3.addGenome(gen3);
+            species3.AddGenome(gen3);
 
             Genome gen4 = new Genome(randomStub);
             gen4.OriginalFitness = 1;
-            species4.addGenome(gen4);
+            species4.AddGenome(gen4);
 
             // Remove default species/genomes and add fake ones
             sim.Species.Clear();
             sim.Species.AddRange(new Species[] { species1, species2, species3, species4 });
 
-            sim.orderSpeciesByOriginalFitness();
+            sim.OrderSpeciesByOriginalFitness();
             sim.HandlePopulationLevelStagnation();
 
             Assert.AreEqual(10, species1.Offspring);
@@ -332,13 +332,13 @@ namespace NEAT_CSharp.Tests
 
             Genome gen1 = new Genome(randomStub);
             gen1.OriginalFitness = 10;
-            species1.addGenome(gen1);
+            species1.AddGenome(gen1);
 
             // Remove default species/genomes and add fake ones
             sim.Species.Clear();
             sim.Species.Add(species1);
 
-            sim.orderSpeciesByOriginalFitness();
+            sim.OrderSpeciesByOriginalFitness();
             sim.HandlePopulationLevelStagnation();
 
             Assert.AreEqual(20, species1.Offspring);
@@ -361,25 +361,25 @@ namespace NEAT_CSharp.Tests
 
             Genome gen1 = new Genome(randomStub);
             gen1.OriginalFitness = 10;
-            species1.addGenome(gen1);
+            species1.AddGenome(gen1);
 
             Genome gen2 = new Genome(randomStub);
             gen2.OriginalFitness = 0;
-            species2.addGenome(gen2);
+            species2.AddGenome(gen2);
 
             Genome gen3 = new Genome(randomStub);
             gen3.OriginalFitness = 20;
-            species3.addGenome(gen3);
+            species3.AddGenome(gen3);
 
             Genome gen4 = new Genome(randomStub);
             gen4.OriginalFitness = 1;
-            species4.addGenome(gen4);
+            species4.AddGenome(gen4);
 
             // Remove default species/genomes and add fake ones
             sim.Species.Clear();
             sim.Species.AddRange(new Species[] { species1, species2, species3, species4 });
 
-            sim.orderSpeciesByOriginalFitness();
+            sim.OrderSpeciesByOriginalFitness();
             sim.CalculateSpeciesOffspring(0.0f);
 
             foreach (Species species in sim.Species)
@@ -400,25 +400,25 @@ namespace NEAT_CSharp.Tests
 
             Genome gen1 = new Genome(randomStub);
             gen1.OriginalFitness = 10;
-            species1.addGenome(gen1);
+            species1.AddGenome(gen1);
 
             Genome gen2 = new Genome(randomStub);
             gen2.OriginalFitness = 0;
-            species2.addGenome(gen2);
+            species2.AddGenome(gen2);
 
             Genome gen3 = new Genome(randomStub);
             gen3.OriginalFitness = 20;
-            species3.addGenome(gen3);
+            species3.AddGenome(gen3);
 
             Genome gen4 = new Genome(randomStub);
             gen4.OriginalFitness = 1;
-            species4.addGenome(gen4);
+            species4.AddGenome(gen4);
 
             // Remove default species/genomes and add fake ones
             sim.Species.Clear();
             sim.Species.AddRange(new Species[] { species1, species2, species3, species4 });
 
-            sim.orderSpeciesByOriginalFitness();
+            sim.OrderSpeciesByOriginalFitness();
             sim.CalculateSpeciesOffspring(0.0f);
 
             Assert.AreEqual(7, sim.Species[0].Offspring);
@@ -441,28 +441,28 @@ namespace NEAT_CSharp.Tests
             Genome gen1 = new Genome(randomStub);
             gen1.OriginalFitness = 5;
             gen1.Fitness = 5;
-            species1.addGenome(gen1);
+            species1.AddGenome(gen1);
 
             Genome gen2 = new Genome(randomStub);
             gen2.OriginalFitness = 10;
             gen2.Fitness = 10;
-            species2.addGenome(gen2);
+            species2.AddGenome(gen2);
 
             Genome gen3 = new Genome(randomStub);
             gen3.OriginalFitness = 15;
             gen3.Fitness = 15;
-            species3.addGenome(gen3);
+            species3.AddGenome(gen3);
 
             Genome gen4 = new Genome(randomStub);
             gen4.OriginalFitness = 20;
             gen4.Fitness = 20;
-            species4.addGenome(gen4);
+            species4.AddGenome(gen4);
 
             // Remove default species/genomes and add fake ones
             sim.Species.Clear();
             sim.Species.AddRange(new Species[] { species1, species2, species3, species4 });
 
-            sim.orderSpeciesByOriginalFitness();
+            sim.OrderSpeciesByOriginalFitness();
             sim.CalculateSpeciesOffspring(50.0f);
 
             Assert.AreEqual(2, species1.Offspring);

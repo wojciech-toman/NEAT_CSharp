@@ -22,18 +22,18 @@ namespace NEAT_CSharp.Tests
             gen1 = new Genome(r);
 
             // Create 3 sensors
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 2));
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 3));
+            gen1.AddNode(new Node(Node.ENodeType.SENSOR, 1));
+            gen1.AddNode(new Node(Node.ENodeType.SENSOR, 2));
+            gen1.AddNode(new Node(Node.ENodeType.SENSOR, 3));
 
             // Create 1 output
-            gen1.addNode(new Node(Node.ENodeType.OUTPUT, 4));
+            gen1.AddNode(new Node(Node.ENodeType.OUTPUT, 4));
 
             // Create 1 hidden node
-            gen1.addNode(new Node(Node.ENodeType.HIDDEN, 5));
+            gen1.AddNode(new Node(Node.ENodeType.HIDDEN, 5));
 
             // Add connections from the paper
-            gen1.addConnection(1, 4, 0.5f);
+            gen1.AddConnection(1, 4, 0.5f);
             gen1.addConnection(2, 4, false);
             gen1.addConnection(3, 4);
             gen1.addConnection(2, 5);
@@ -46,16 +46,16 @@ namespace NEAT_CSharp.Tests
             gen2 = new Genome(r);
 
             // Create 3 sensors
-            gen2.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            gen2.addNode(new Node(Node.ENodeType.SENSOR, 2));
-            gen2.addNode(new Node(Node.ENodeType.SENSOR, 3));
+            gen2.AddNode(new Node(Node.ENodeType.SENSOR, 1));
+            gen2.AddNode(new Node(Node.ENodeType.SENSOR, 2));
+            gen2.AddNode(new Node(Node.ENodeType.SENSOR, 3));
 
             // Create 1 output
-            gen2.addNode(new Node(Node.ENodeType.OUTPUT, 4));
+            gen2.AddNode(new Node(Node.ENodeType.OUTPUT, 4));
 
             // Create 2 hidden nodes
-            gen2.addNode(new Node(Node.ENodeType.HIDDEN, 5));
-            gen2.addNode(new Node(Node.ENodeType.HIDDEN, 6));
+            gen2.AddNode(new Node(Node.ENodeType.HIDDEN, 5));
+            gen2.AddNode(new Node(Node.ENodeType.HIDDEN, 6));
 
             // Add connections from the paper
             gen2.addConnection(1, 4);
@@ -95,7 +95,7 @@ namespace NEAT_CSharp.Tests
         [TestMethod]
         public void TestGenomeConstruction_ByCopying()
         {
-            Genome genCopied = gen1.copy();
+            Genome genCopied = gen1.Copy();
 
 
             Assert.IsTrue(genCopied.Nodes.Count == gen1.Nodes.Count);
@@ -125,12 +125,12 @@ namespace NEAT_CSharp.Tests
             Genome gen3 = new Genome(r);
             gen3.ParentSimulation = tmpSim;
 
-            gen3.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            gen3.addNode(new Node(Node.ENodeType.SENSOR, 2));
-            gen3.addNode(new Node(Node.ENodeType.OUTPUT, 3));
+            gen3.AddNode(new Node(Node.ENodeType.SENSOR, 1));
+            gen3.AddNode(new Node(Node.ENodeType.SENSOR, 2));
+            gen3.AddNode(new Node(Node.ENodeType.OUTPUT, 3));
 
-            gen3.addConnection(1, 3, 0.5f);
-            gen3.addConnection(2, 3, 1.0f);
+            gen3.AddConnection(1, 3, 0.5f);
+            gen3.AddConnection(2, 3, 1.0f);
 
             Assert.IsTrue(gen3.Nodes.Count == 3);
             gen3.addNodeMutation(innovations);
@@ -147,7 +147,7 @@ namespace NEAT_CSharp.Tests
 
             float epsilon = 0.0001f;
 
-            Assert.IsTrue(Math.Abs(gen1.compatibilityDistance(gen2) - 5.04) < epsilon);
+            Assert.IsTrue(Math.Abs(gen1.CompatibilityDistance(gen2) - 5.04) < epsilon);
             Assert.AreEqual(5, Genome.matchingGenesCount(gen1, gen2));
             Assert.AreEqual(2, Genome.excessGenesCount(gen1, gen2));
             Assert.AreEqual(3, Genome.disjointGenesCount(gen1, gen2));
@@ -173,15 +173,15 @@ namespace NEAT_CSharp.Tests
             gen4.ParentSimulation = tmpSim;
 
             // Create 3 sensors
-            gen4.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            gen4.addNode(new Node(Node.ENodeType.SENSOR, 2));
-            gen4.addNode(new Node(Node.ENodeType.SENSOR, 3));
+            gen4.AddNode(new Node(Node.ENodeType.SENSOR, 1));
+            gen4.AddNode(new Node(Node.ENodeType.SENSOR, 2));
+            gen4.AddNode(new Node(Node.ENodeType.SENSOR, 3));
 
             // Create 1 output
-            gen4.addNode(new Node(Node.ENodeType.OUTPUT, 4));
+            gen4.AddNode(new Node(Node.ENodeType.OUTPUT, 4));
 
             // Create 1 hidden node
-            gen4.addNode(new Node(Node.ENodeType.HIDDEN, 5));
+            gen4.AddNode(new Node(Node.ENodeType.HIDDEN, 5));
 
             // Add connections from the paper
             gen4.addConnection(1, 4);
@@ -198,12 +198,12 @@ namespace NEAT_CSharp.Tests
         [TestMethod]
         public void TestToggleConnectionEnabilityMutation()
         {
-            Genome gen5 = gen2.copy();
+            Genome gen5 = gen2.Copy();
             Assert.IsTrue(gen5.ConnectionGenes[7].IsEnabled == true);
             gen5.toggleEnabledMutation();
             Assert.IsTrue(gen5.ConnectionGenes[7].IsEnabled == false);
 
-            gen5 = gen2.copy();
+            gen5 = gen2.Copy();
             Assert.IsTrue(gen5.ConnectionGenes[1].IsEnabled == false);
             gen5.reenableMutation();
 
@@ -239,7 +239,7 @@ namespace NEAT_CSharp.Tests
             gen2.ConnectionGenes[4].IsEnabled = true;
 
 
-            Network net = gen2.getNetwork();
+            Network net = gen2.GetNetwork();
 
 
             Assert.IsTrue(net.Nodes.Count == gen2.Nodes.Count);
@@ -263,7 +263,7 @@ namespace NEAT_CSharp.Tests
             gen2.ConnectionGenes[8].IsEnabled = false;
 
 
-            Network net = gen2.getNetwork();
+            Network net = gen2.GetNetwork();
 
 
             Assert.IsTrue(net.Nodes.Count == gen2.Nodes.Count);
@@ -293,18 +293,18 @@ namespace NEAT_CSharp.Tests
             Assert.IsTrue(gen1.GetInnovationNumber() == 0);
 
             // Create 3 sensors
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 2));
-            gen1.addNode(new Node(Node.ENodeType.SENSOR, 3));
+            gen1.AddNode(new Node(Node.ENodeType.SENSOR, 1));
+            gen1.AddNode(new Node(Node.ENodeType.SENSOR, 2));
+            gen1.AddNode(new Node(Node.ENodeType.SENSOR, 3));
 
             // Create 1 output
-            gen1.addNode(new Node(Node.ENodeType.OUTPUT, 4));
+            gen1.AddNode(new Node(Node.ENodeType.OUTPUT, 4));
 
             // Create 1 hidden node
-            gen1.addNode(new Node(Node.ENodeType.HIDDEN, 5));
+            gen1.AddNode(new Node(Node.ENodeType.HIDDEN, 5));
 
             // Add connections from the paper
-            gen1.addConnection(1, 4, 0.5f);
+            gen1.AddConnection(1, 4, 0.5f);
             Assert.IsTrue(gen1.GetInnovationNumber() == 1);
 
             gen1.addConnection(2, 4, false);
@@ -331,8 +331,8 @@ namespace NEAT_CSharp.Tests
             gen2.ParentSimulation = tmpSim;
 
             float epsilon = 0.0001f;
-            Assert.IsTrue(gen1.compatibilityDistance(gen2) < epsilon);
-            Assert.IsTrue(gen2.compatibilityDistance(gen1) < epsilon);
+            Assert.IsTrue(gen1.CompatibilityDistance(gen2) < epsilon);
+            Assert.IsTrue(gen2.CompatibilityDistance(gen1) < epsilon);
         }
 
         [TestMethod]
@@ -342,7 +342,7 @@ namespace NEAT_CSharp.Tests
             Simulation tmpSim = new Simulation(r, gen1, 1);
             gen1.ParentSimulation = tmpSim;
 
-            Assert.IsTrue(gen1.compatibilityDistance(gen1) < epsilon);
+            Assert.IsTrue(gen1.CompatibilityDistance(gen1) < epsilon);
         }
 
         [TestMethod]
@@ -352,11 +352,11 @@ namespace NEAT_CSharp.Tests
             Simulation tmpSim = new Simulation(r, gen1, 1);
             gen1.ParentSimulation = tmpSim;
 
-            Genome genCopy = gen1.copy();
+            Genome genCopy = gen1.Copy();
             genCopy.ParentSimulation = tmpSim;
 
-            Assert.IsTrue(gen1.compatibilityDistance(genCopy) < epsilon);
-            Assert.IsTrue(genCopy.compatibilityDistance(gen1) < epsilon);
+            Assert.IsTrue(gen1.CompatibilityDistance(genCopy) < epsilon);
+            Assert.IsTrue(genCopy.CompatibilityDistance(gen1) < epsilon);
         }
 
         [TestMethod]
@@ -369,7 +369,7 @@ namespace NEAT_CSharp.Tests
 
             float epsilon = 0.0001f;
 
-            Assert.IsTrue(Math.Abs(gen1.compatibilityDistance(gen2) - 5.04) < epsilon);
+            Assert.IsTrue(Math.Abs(gen1.CompatibilityDistance(gen2) - 5.04) < epsilon);
         }
 
         [TestMethod]
@@ -377,17 +377,17 @@ namespace NEAT_CSharp.Tests
         {
             Simulation tmpSim = new Simulation(r, gen1, 1);
 
-            Genome genCopy = gen1.copy();
+            Genome genCopy = gen1.Copy();
 
             gen1.ParentSimulation = tmpSim;
             genCopy.ParentSimulation = tmpSim;
 
-            genCopy.addConnection(1, 2, 0.0f);
+            genCopy.AddConnection(1, 2, 0.0f);
 
             float epsilon = 0.0001f;
 
             Assert.IsTrue(Genome.disjointGenesCount(gen1, genCopy) == 1);
-            float distance = Math.Abs(gen1.compatibilityDistance(genCopy));
+            float distance = Math.Abs(gen1.CompatibilityDistance(genCopy));
             Assert.IsTrue(Math.Abs(distance - 1.0f) < epsilon, String.Format("Expected {0}, got {1}", 1.0f, distance));
         }
 
@@ -396,7 +396,7 @@ namespace NEAT_CSharp.Tests
         {
             Simulation tmpSim = new Simulation(r, gen1, 1);
 
-            Genome genCopy = gen1.copy();
+            Genome genCopy = gen1.Copy();
 
             gen1.ParentSimulation = tmpSim;
             genCopy.ParentSimulation = tmpSim;
@@ -404,14 +404,14 @@ namespace NEAT_CSharp.Tests
             // Change some weights and add connections
             genCopy.ConnectionGenes[0].Weight = 0.0f;
             genCopy.ConnectionGenes[1].Weight = 0.0f;
-            genCopy.addConnection(1, 2, 0.0f);
-            genCopy.addConnection(1, 3, 0.0f);
+            genCopy.AddConnection(1, 2, 0.0f);
+            genCopy.AddConnection(1, 3, 0.0f);
 
             float epsilon = 0.0001f;
 
             Assert.IsTrue(Genome.disjointGenesCount(gen1, genCopy) == 2);
 
-            float distance = Math.Abs(gen1.compatibilityDistance(genCopy));
+            float distance = Math.Abs(gen1.CompatibilityDistance(genCopy));
             float weightDiff = 0.4f * (0.5f + 1.0f) / 6.0f;
             float expected = 2.0f + weightDiff; // -> 2 new genes (2 x 1.0) + average weight difference
             Assert.IsTrue(Math.Abs(distance - expected) < epsilon, String.Format("Expected {0}, got {1}", expected, distance));
@@ -424,7 +424,7 @@ namespace NEAT_CSharp.Tests
             Simulation tmpSim = new Simulation(r, gen1, 1);
             gen1.ParentSimulation = tmpSim;
 
-            gen1.compatibilityDistance(null);
+            gen1.CompatibilityDistance(null);
         }
 
         [TestMethod]
@@ -519,8 +519,8 @@ namespace NEAT_CSharp.Tests
         public void FindConnectionGeneToSplitTest_NoGenes_Expected_False()
         {
             Genome genome = new Genome(r);
-            genome.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            genome.addNode(new Node(Node.ENodeType.OUTPUT, 2));
+            genome.AddNode(new Node(Node.ENodeType.SENSOR, 1));
+            genome.AddNode(new Node(Node.ENodeType.OUTPUT, 2));
 
             int connectionIndex = -1;
             bool found = genome.FindConnectionGeneToSplit(out connectionIndex);
@@ -533,8 +533,8 @@ namespace NEAT_CSharp.Tests
         public void FindConnectionGeneToSplitTest_NoEnabledGenes_Expected_False()
         {
             Genome genome = new Genome(r);
-            genome.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            genome.addNode(new Node(Node.ENodeType.OUTPUT, 2));
+            genome.AddNode(new Node(Node.ENodeType.SENSOR, 1));
+            genome.AddNode(new Node(Node.ENodeType.OUTPUT, 2));
 
             genome.addConnection(1, 2, false);
 
@@ -552,8 +552,8 @@ namespace NEAT_CSharp.Tests
             randomStub.NextIntValue = 0; randomStub.NextDoubleValue = 0.0;
 
             Genome genome = new Genome(randomStub);
-            genome.addNode(new Node(Node.ENodeType.SENSOR, 1));
-            genome.addNode(new Node(Node.ENodeType.OUTPUT, 2));
+            genome.AddNode(new Node(Node.ENodeType.SENSOR, 1));
+            genome.AddNode(new Node(Node.ENodeType.OUTPUT, 2));
 
             genome.addConnection(1, 2, true);
 

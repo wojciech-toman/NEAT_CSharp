@@ -36,13 +36,13 @@ namespace NEAT_CSharp
 			random = rnd;
 		}
 
-		public void addGenome(Genome gen)
+		public void AddGenome(Genome gen)
 		{
 			genomes.Add(gen);
 		}
 
 		// Remove given genome
-		public void removeGenome(Genome gen)
+		public void RemoveGenome(Genome gen)
 		{
 			genomes.Remove(gen);
 		}
@@ -52,7 +52,7 @@ namespace NEAT_CSharp
 			return (this.genomes[genomeIdx].Fitness / this.genomes.Count);
 		}*/
 
-		public double getAverageFitness()
+		public double GetAverageFitness()
 		{
 			double totalFitness = 0.0;
 			for (int i = 0; i < this.genomes.Count; ++i)
@@ -70,7 +70,7 @@ namespace NEAT_CSharp
 			return totalFitness;
 		}*/
 
-		public Genome getSampleGenome()
+		public Genome GetSampleGenome()
 		{
 			return this.genomes[0];
 		}
@@ -78,7 +78,7 @@ namespace NEAT_CSharp
         public List<Genome> Genomes => this.genomes;
 
         // Looks for a best performing genome in the genomes list
-        public Genome getChampion()
+        public Genome GetChampion()
 		{
 			double maxFitness = -1.0;
 			this.champion = null;
@@ -96,7 +96,7 @@ namespace NEAT_CSharp
 		}
 
 		// Performs reproduction of organisms in the genomes list
-		public void reproduce(List<Genome> nextGeneration, List<Innovation> innovations)
+		public void Reproduce(List<Genome> nextGeneration, List<Innovation> innovations)
 		{
 			if (nextGeneration == null) throw new ArgumentNullException(nameof(nextGeneration));
 
@@ -109,7 +109,7 @@ namespace NEAT_CSharp
 				Genome child = null;
 				if (this.ChampionOffspring > 0)
 				{
-					child = this.getChampion().copy();
+					child = this.GetChampion().Copy();
 					child.ParentSimulation = this.ParentSimulation;
 					if (this.ChampionOffspring > 1)
 					{
@@ -117,7 +117,7 @@ namespace NEAT_CSharp
 						child.Fitness = 0.0;
 						child.OriginalFitness = 0.0;
 						if (this.random.NextDouble() < this.ParentSimulation.Parameters.MutateConnectionWeightsProbability)
-							child.mutateWeights(this.ParentSimulation.Parameters.WeightMutationPower);
+							child.MutateWeights(this.ParentSimulation.Parameters.WeightMutationPower);
 						else
 						{
 							child.addConnectionMutation(innovations);
@@ -130,7 +130,7 @@ namespace NEAT_CSharp
 				}
 				else if (!championCloned && this.Offspring > 5)
 				{
-					child = this.getChampion().copy();
+					child = this.GetChampion().Copy();
 					child.ParentSimulation = this.ParentSimulation;
 					child.IsPopulationChampion = true;
 					championCloned = true;
@@ -141,12 +141,12 @@ namespace NEAT_CSharp
 					if (this.random.NextDouble() < this.ParentSimulation.Parameters.MutateWithoutCrossover)
 					{
 						// Select random genome to mutate
-						child = this.genomes[this.random.Next(this.genomes.Count)].copy();
+						child = this.genomes[this.random.Next(this.genomes.Count)].Copy();
 						child.ParentSimulation = this.ParentSimulation;
 						child.Fitness = 0.0;
 						child.OriginalFitness = 0.0;
 						child.IsPopulationChampion = false;
-						this.mutateChild(child);
+						this.MutateChild(child);
 					}
 					// Perform crossover
 					else
@@ -181,9 +181,9 @@ namespace NEAT_CSharp
 							child = parent2.crossoverAverage(parent2, this.random);
 
 						// Mutate child
-						if (this.random.NextDouble() > this.ParentSimulation.Parameters.MateWithoutMutatingProbability || parent1 == parent2 || parent1.compatibilityDistance(parent2) < 0.00001f)
+						if (this.random.NextDouble() > this.ParentSimulation.Parameters.MateWithoutMutatingProbability || parent1 == parent2 || parent1.CompatibilityDistance(parent2) < 0.00001f)
 						{
-							this.mutateChild(child);
+							this.MutateChild(child);
 						}
 					}
 				}
@@ -193,7 +193,7 @@ namespace NEAT_CSharp
 			}
 		}
 
-		private void mutateChild(Genome child)
+		private void MutateChild(Genome child)
 		{
 			if (this.random.NextDouble() < this.ParentSimulation.Parameters.AddNodeProbability)
 			{
@@ -207,7 +207,7 @@ namespace NEAT_CSharp
 			{
 				if (this.random.NextDouble() < this.ParentSimulation.Parameters.MutateConnectionWeightsProbability)
 				{
-					child.mutateWeights(this.ParentSimulation.Parameters.WeightMutationPower);
+					child.MutateWeights(this.ParentSimulation.Parameters.WeightMutationPower);
 				}
 				if (this.random.NextDouble() < this.ParentSimulation.Parameters.MutateToggleEnabledProbability)
 				{
@@ -220,7 +220,7 @@ namespace NEAT_CSharp
 			}
 		}
 
-		public void adjustFitness()
+		public void AdjustFitness()
 		{
 			// First adjust fitness
 			int ageDebt = (this.Age - this.LastImprovementAge + 1) - this.ParentSimulation.Parameters.MaxSpeciesGenerationsWithoutImprovement;
@@ -246,7 +246,7 @@ namespace NEAT_CSharp
 				gen.Fitness /= this.genomes.Count;
 			}
 
-			this.orderGenomes();
+			this.OrderGenomes();
 
 			// If current best fitness is greater than maximum fitness ever found, there's improvement
 			if (this.genomes[0].OriginalFitness > MaxFitnessEver)
@@ -262,7 +262,7 @@ namespace NEAT_CSharp
 				this.genomes[i].ShouldBeEliminated = true;
 		}
 
-		public void orderGenomes()
+		public void OrderGenomes()
 		{
 			// Order genomes by decreasing fitness
 			this.genomes.Sort((x, y) => (y.Fitness.CompareTo(x.Fitness)));

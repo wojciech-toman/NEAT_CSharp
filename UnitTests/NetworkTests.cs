@@ -23,13 +23,13 @@ namespace NEAT_CSharp.Tests
             Node outNode1 = new Node(Node.ENodeType.OUTPUT, 4);
             Node outNode2 = new Node(Node.ENodeType.OUTPUT, 5);
 
-            net.addNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
+            net.AddNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
 
-            net.addLink(new Link(inNode1, hiddenNode, false, 1.0f));
-            net.addLink(new Link(inNode2, hiddenNode, false, 1.0f));
-            net.addLink(new Link(hiddenNode, outNode1, false, 1.0f));
+            net.AddLink(new Link(inNode1, hiddenNode, false, 1.0f));
+            net.AddLink(new Link(inNode2, hiddenNode, false, 1.0f));
+            net.AddLink(new Link(hiddenNode, outNode1, false, 1.0f));
 
-            Assert.AreEqual(false, net.activate());
+            Assert.AreEqual(false, net.Activate());
         }
 
         [TestMethod]
@@ -44,14 +44,14 @@ namespace NEAT_CSharp.Tests
             Node outNode1 = new Node(Node.ENodeType.OUTPUT, 4);
             Node outNode2 = new Node(Node.ENodeType.OUTPUT, 5);
 
-            net.addNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
+            net.AddNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
 
-            net.addLink(new Link(inNode1, hiddenNode, false, 1.0f));
-            net.addLink(new Link(inNode2, hiddenNode, false, 1.0f));
-            net.addLink(new Link(hiddenNode, outNode1, false, 1.0f));
-            net.addLink(new Link(hiddenNode, outNode2, false, 1.0f));
+            net.AddLink(new Link(inNode1, hiddenNode, false, 1.0f));
+            net.AddLink(new Link(inNode2, hiddenNode, false, 1.0f));
+            net.AddLink(new Link(hiddenNode, outNode1, false, 1.0f));
+            net.AddLink(new Link(hiddenNode, outNode2, false, 1.0f));
 
-            Assert.AreEqual(true, net.activate());
+            Assert.AreEqual(true, net.Activate());
         }
 
         [TestMethod]
@@ -66,13 +66,13 @@ namespace NEAT_CSharp.Tests
             Node outNode1 = new Node(Node.ENodeType.OUTPUT, 4);
             Node outNode2 = new Node(Node.ENodeType.OUTPUT, 5);
 
-            net.addNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
+            net.AddNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
 
-            net.addLink(new Link(inNode2, hiddenNode, false, 1.0f));
-            net.addLink(new Link(hiddenNode, outNode1, false, 1.0f));
-            net.addLink(new Link(hiddenNode, outNode2, false, 1.0f));
+            net.AddLink(new Link(inNode2, hiddenNode, false, 1.0f));
+            net.AddLink(new Link(hiddenNode, outNode1, false, 1.0f));
+            net.AddLink(new Link(hiddenNode, outNode2, false, 1.0f));
 
-            Assert.AreEqual(true, net.activate());
+            Assert.AreEqual(true, net.Activate());
         }
 
         [TestMethod]
@@ -87,12 +87,12 @@ namespace NEAT_CSharp.Tests
             Node outNode1 = new Node(Node.ENodeType.OUTPUT, 4);
             Node outNode2 = new Node(Node.ENodeType.OUTPUT, 5);
 
-            net.addNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
+            net.AddNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
 
-            net.addLink(new Link(inNode1, outNode1, false, 1.0f));
-            net.addLink(new Link(inNode2, outNode2, false, 1.0f));
+            net.AddLink(new Link(inNode1, outNode1, false, 1.0f));
+            net.AddLink(new Link(inNode2, outNode2, false, 1.0f));
 
-            Assert.AreEqual(true, net.activate());
+            Assert.AreEqual(true, net.Activate());
         }
 
         [TestMethod]
@@ -106,7 +106,7 @@ namespace NEAT_CSharp.Tests
             Node outNode1 = new Node(Node.ENodeType.OUTPUT, 4);
             Node outNode2 = new Node(Node.ENodeType.OUTPUT, 5);
 
-            net.addNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
+            net.AddNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
 
             Assert.AreEqual(5, net.Nodes.Count);
             Assert.AreEqual(2, net.Input.Count);
@@ -118,7 +118,7 @@ namespace NEAT_CSharp.Tests
         public void addNodes_Null_Expected_Exception()
         {
             Network net = new Network();
-            net.addNodes(null);
+            net.AddNodes(null);
         }
 
         [TestMethod()]
@@ -132,10 +132,10 @@ namespace NEAT_CSharp.Tests
             Node outNode1 = new Node(Node.ENodeType.OUTPUT, 4);
             Node outNode2 = new Node(Node.ENodeType.OUTPUT, 5);
 
-            net.addNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
+            net.AddNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
 
-            Assert.AreEqual(null, net.getNodeById(0));
-            Assert.AreEqual(null, net.getNodeById(6));
+            Assert.AreEqual(null, net.GetNodeById(0));
+            Assert.AreEqual(null, net.GetNodeById(6));
         }
 
         [TestMethod()]
@@ -149,13 +149,13 @@ namespace NEAT_CSharp.Tests
             Node outNode1 = new Node(Node.ENodeType.OUTPUT, 4);
             Node outNode2 = new Node(Node.ENodeType.OUTPUT, 5);
 
-            net.addNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
+            net.AddNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
 
-            Assert.AreEqual(inNode1, net.getNodeById(1));
-            Assert.AreEqual(inNode2, net.getNodeById(2));
-            Assert.AreEqual(hiddenNode, net.getNodeById(3));
-            Assert.AreEqual(outNode1, net.getNodeById(4));
-            Assert.AreEqual(outNode2, net.getNodeById(5));
+            Assert.AreEqual(inNode1, net.GetNodeById(1));
+            Assert.AreEqual(inNode2, net.GetNodeById(2));
+            Assert.AreEqual(hiddenNode, net.GetNodeById(3));
+            Assert.AreEqual(outNode1, net.GetNodeById(4));
+            Assert.AreEqual(outNode2, net.GetNodeById(5));
         }
 
         [DataTestMethod()]
@@ -173,15 +173,15 @@ namespace NEAT_CSharp.Tests
             Node hiddenNode = new Node(Node.ENodeType.HIDDEN, 4);
             Node outNode1 = new Node(Node.ENodeType.OUTPUT, 5);
 
-            net.addNodes(new Node[] { inNode1, inNode2, inNode3, hiddenNode, outNode1 });
+            net.AddNodes(new Node[] { inNode1, inNode2, inNode3, hiddenNode, outNode1 });
 
             inNode1.Activation = 1.0f; inNode1.ActivationCount = 1;
             inNode2.Activation = 2.0f; inNode2.ActivationCount = 1;
             inNode3.Activation = 4.0f; inNode3.ActivationCount = 1;
 
-            net.addLink(new Link(inNode1, hiddenNode, false, weight1));
-            net.addLink(new Link(inNode2, hiddenNode, false, weight2));
-            net.addLink(new Link(hiddenNode, outNode1, false, weight3));
+            net.AddLink(new Link(inNode1, hiddenNode, false, weight1));
+            net.AddLink(new Link(inNode2, hiddenNode, false, weight2));
+            net.AddLink(new Link(hiddenNode, outNode1, false, weight3));
 
             net.ComputeNodesActivationSum();
 
@@ -199,7 +199,7 @@ namespace NEAT_CSharp.Tests
 
             Network net = new Network();
             Node hiddenNode = new Node(Node.ENodeType.HIDDEN, 1);
-            net.addNode(hiddenNode);
+            net.AddNode(hiddenNode);
 
             hiddenNode.ActivationSum = activationSum; hiddenNode.IsActive = true;
 
@@ -214,7 +214,7 @@ namespace NEAT_CSharp.Tests
         {
             Network net = new Network();
             Node hiddenNode = new Node(Node.ENodeType.HIDDEN, 1);
-            net.addNode(hiddenNode);
+            net.AddNode(hiddenNode);
 
             net.ActivationFunction = null;
 
@@ -243,12 +243,12 @@ namespace NEAT_CSharp.Tests
             Node outNode1 = new Node(Node.ENodeType.OUTPUT, 4);
             Node outNode2 = new Node(Node.ENodeType.OUTPUT, 5);
 
-            net.addNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
+            net.AddNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
 
-            net.addLink(new Link(inNode1, hiddenNode, false, 1.0f));
-            net.addLink(new Link(inNode2, hiddenNode, false, 2.0f));
-            net.addLink(new Link(hiddenNode, outNode1, false, 3.0f));
-            net.addLink(new Link(hiddenNode, outNode2, false, 4.0f));
+            net.AddLink(new Link(inNode1, hiddenNode, false, 1.0f));
+            net.AddLink(new Link(inNode2, hiddenNode, false, 2.0f));
+            net.AddLink(new Link(hiddenNode, outNode1, false, 3.0f));
+            net.AddLink(new Link(hiddenNode, outNode2, false, 4.0f));
 
             net.ActivationFunction = new TestActivationFunction();
 

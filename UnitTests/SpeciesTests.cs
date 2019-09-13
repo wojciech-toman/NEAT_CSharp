@@ -45,7 +45,7 @@ namespace NEAT_CSharp.Tests
 
             species.Genomes.AddRange(new Genome[] { gen1, gen2, gen3 });
 
-            Assert.IsTrue(species.getChampion() == gen3);
+            Assert.IsTrue(species.GetChampion() == gen3);
         }
 
         [TestMethod]
@@ -57,7 +57,7 @@ namespace NEAT_CSharp.Tests
 
             species.Genomes.AddRange(new Genome[] { gen1, gen2, gen3 });
 
-            Assert.IsTrue(species.getChampion() == gen1);
+            Assert.IsTrue(species.GetChampion() == gen1);
         }
 
         [TestMethod]
@@ -68,9 +68,9 @@ namespace NEAT_CSharp.Tests
             Genome gen3 = new Genome(r); gen3.ParentSimulation = sim; gen3.Fitness = 3.0f;
 
             species.Genomes.AddRange(new Genome[] { gen1, gen2, gen3 });
-            species.adjustFitness();
+            species.AdjustFitness();
 
-            Assert.IsTrue(species.getChampion() == gen3);
+            Assert.IsTrue(species.GetChampion() == gen3);
         }
 
         [TestMethod]
@@ -84,10 +84,10 @@ namespace NEAT_CSharp.Tests
 
             float epsilon = 0.0001f;
 
-            double avgFitness = species.getAverageFitness();
-            Assert.IsTrue(Math.Abs(species.getAverageFitness() - 2.0f) < epsilon, String.Format("Expected {0}, got {1}", 2.0f, avgFitness));
+            double avgFitness = species.GetAverageFitness();
+            Assert.IsTrue(Math.Abs(species.GetAverageFitness() - 2.0f) < epsilon, String.Format("Expected {0}, got {1}", 2.0f, avgFitness));
 
-            species.adjustFitness();
+            species.AdjustFitness();
 
             // Check if Fitness has correct values after adjustment
             Assert.IsTrue(Math.Abs(gen1.Fitness - 1.0f / 3.0f) < epsilon);
@@ -99,8 +99,8 @@ namespace NEAT_CSharp.Tests
             Assert.IsTrue(species.Genomes[1] == gen2);
             Assert.IsTrue(species.Genomes[2] == gen1);
 
-            avgFitness = species.getAverageFitness();
-            Assert.IsTrue(Math.Abs(species.getAverageFitness() - 2.0f / 3.0f) < epsilon, String.Format("Expected {0}, got {1}", 2.0f / 3.0f, avgFitness));
+            avgFitness = species.GetAverageFitness();
+            Assert.IsTrue(Math.Abs(species.GetAverageFitness() - 2.0f / 3.0f) < epsilon, String.Format("Expected {0}, got {1}", 2.0f / 3.0f, avgFitness));
         }
 
         [TestMethod]
@@ -112,7 +112,7 @@ namespace NEAT_CSharp.Tests
 
             species.Genomes.AddRange(new Genome[] { gen1, gen2, gen3 });
 
-            Assert.IsTrue(species.getSampleGenome() == gen1);
+            Assert.IsTrue(species.GetSampleGenome() == gen1);
         }
 
         [DataTestMethod]
@@ -130,7 +130,7 @@ namespace NEAT_CSharp.Tests
 
             List<Genome> nextGeneration = new List<Genome>();
             List<Innovation> innovations = new List<Innovation>();
-            species.reproduce(nextGeneration, innovations);
+            species.Reproduce(nextGeneration, innovations);
 
             Assert.AreEqual(offspring, nextGeneration.Count);
         }

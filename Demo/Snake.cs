@@ -208,9 +208,9 @@ namespace NEAT_CSharp.Demo
 
 
 			// Activate the neural network
-			this.Brain.setInput(input);
+			this.Brain.SetInput(input);
             //net.ActivationFunction = new NEAT_CSharp.ActivationFunctions.Threshold();
-            bool isActivated = this.Brain.activate();
+            bool isActivated = this.Brain.Activate();
 			if (!isActivated)
 			{
 				this.MarkAsDead();

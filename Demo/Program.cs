@@ -169,24 +169,24 @@ namespace NEAT_CSharp.Demo
 		private static void PoleBalanceSingleTest(Random r)
 		{
 			Genome startGenome = new Genome(r);
-			startGenome.addNode(new Node(Node.ENodeType.SENSOR, 1));
-			startGenome.addNode(new Node(Node.ENodeType.SENSOR, 2));
-			startGenome.addNode(new Node(Node.ENodeType.SENSOR, 3));
-			startGenome.addNode(new Node(Node.ENodeType.SENSOR, 4));
-			startGenome.addNode(new Node(Node.ENodeType.SENSOR, 5));
-			startGenome.addNode(new Node(Node.ENodeType.OUTPUT, 6));
-			startGenome.addNode(new Node(Node.ENodeType.OUTPUT, 7));
+			startGenome.AddNode(new Node(Node.ENodeType.SENSOR, 1));
+			startGenome.AddNode(new Node(Node.ENodeType.SENSOR, 2));
+			startGenome.AddNode(new Node(Node.ENodeType.SENSOR, 3));
+			startGenome.AddNode(new Node(Node.ENodeType.SENSOR, 4));
+			startGenome.AddNode(new Node(Node.ENodeType.SENSOR, 5));
+			startGenome.AddNode(new Node(Node.ENodeType.OUTPUT, 6));
+			startGenome.AddNode(new Node(Node.ENodeType.OUTPUT, 7));
 
-			startGenome.addConnection(1, 6, 0.0f);
-			startGenome.addConnection(2, 6, 0.0f);
-			startGenome.addConnection(3, 6, 0.0f);
-			startGenome.addConnection(4, 6, 0.0f);
-			startGenome.addConnection(5, 6, 0.0f);
-			startGenome.addConnection(1, 7, 0.0f);
-			startGenome.addConnection(2, 7, 0.0f);
-			startGenome.addConnection(3, 7, 0.0f);
-			startGenome.addConnection(4, 7, 0.0f);
-			startGenome.addConnection(5, 7, 0.0f);
+			startGenome.AddConnection(1, 6, 0.0f);
+			startGenome.AddConnection(2, 6, 0.0f);
+			startGenome.AddConnection(3, 6, 0.0f);
+			startGenome.AddConnection(4, 6, 0.0f);
+			startGenome.AddConnection(5, 6, 0.0f);
+			startGenome.AddConnection(1, 7, 0.0f);
+			startGenome.AddConnection(2, 7, 0.0f);
+			startGenome.AddConnection(3, 7, 0.0f);
+			startGenome.AddConnection(4, 7, 0.0f);
+			startGenome.AddConnection(5, 7, 0.0f);
 
 			// Run simulation
 			Simulation sim = new Simulation(r, startGenome, 150);
@@ -205,11 +205,11 @@ namespace NEAT_CSharp.Demo
 				// Evaluate all genomes
 				foreach (Genome gen in sim.Genomes)
 				{
-					Network network = gen.getNetwork();
+					Network network = gen.GetNetwork();
 					numnodes = gen.Nodes.Count;
 					thresh = numnodes * 2;
 
-					gen.Fitness = go_cart(network, MAX_STEPS, thresh, r);
+					gen.Fitness = Go_cart(network, MAX_STEPS, thresh, r);
 					if (gen.Fitness > epochBestFitness)
 					{
 						epochBestFitness = gen.Fitness;
@@ -231,7 +231,7 @@ namespace NEAT_CSharp.Demo
 				if (solutionFound)
 					break;
 
-				sim.epoch();
+				sim.Epoch();
 			}
 
 			if (solutionFound)
@@ -242,7 +242,7 @@ namespace NEAT_CSharp.Demo
 
 		//     cart_and_pole() was take directly from the pole simulator written
 		//     by Richard Sutton and Charles Anderson.
-		private static int go_cart(Network net, int max_steps, int thresh, Random rnd)
+		private static int Go_cart(Network net, int max_steps, int thresh, Random rnd)
 		{
 			float x,                /* cart position, meters */
 				  x_dot,            /* cart velocity */
@@ -280,11 +280,11 @@ namespace NEAT_CSharp.Demo
 				input[2] = (x_dot + 0.75f) / 1.5f;
 				input[3] = (theta + twelve_degrees) / 0.41f;
 				input[4] = (theta_dot + 1.0f) / 2.0f;
-				net.setInput(input);
+				net.SetInput(input);
 
 				// Activate the net
 				// If it loops, exit returning only fitness of 1 step
-				if (!(net.activate())) return 1;
+				if (!(net.Activate())) return 1;
 
 				/*-- Decide which way to push via which output unit is greater --*/
 				List<Node> outputs = net.Output;
@@ -296,7 +296,7 @@ namespace NEAT_CSharp.Demo
 					y = 1;
 
 				/*--- Apply action to the simulated cart-pole ---*/
-				cart_pole(y, ref x, ref x_dot, ref theta, ref theta_dot);
+				Cart_pole(y, ref x, ref x_dot, ref theta, ref theta_dot);
 
 				/*--- Check for failure.  If so, return steps ---*/
 				if (x < -2.4 || x > 2.4 || theta < -twelve_degrees || theta > twelve_degrees)
@@ -316,7 +316,7 @@ namespace NEAT_CSharp.Demo
 		 four state variables and updates their values by estimating the state
 		 TAU seconds later.
 		----------------------------------------------------------------------*/
-		static void cart_pole(int action, ref float x, ref float x_dot, ref float theta, ref float theta_dot)
+		static void Cart_pole(int action, ref float x, ref float x_dot, ref float theta, ref float theta_dot)
 		{
 			float xacc, thetaacc, force, costheta, sintheta, temp;
 
@@ -354,14 +354,14 @@ namespace NEAT_CSharp.Demo
 		private static void XorTest(Random r)
 		{
 			Genome xorGene = new Genome(r);
-			xorGene.addNode(new Node(Node.ENodeType.SENSOR, 1));
-			xorGene.addNode(new Node(Node.ENodeType.SENSOR, 2));
-			xorGene.addNode(new Node(Node.ENodeType.SENSOR, 3));
-			xorGene.addNode(new Node(Node.ENodeType.OUTPUT, 4));
+			xorGene.AddNode(new Node(Node.ENodeType.SENSOR, 1));
+			xorGene.AddNode(new Node(Node.ENodeType.SENSOR, 2));
+			xorGene.AddNode(new Node(Node.ENodeType.SENSOR, 3));
+			xorGene.AddNode(new Node(Node.ENodeType.OUTPUT, 4));
 
-			xorGene.addConnection(1, 4, 0.0f);
-			xorGene.addConnection(2, 4, 0.0f);
-			xorGene.addConnection(3, 4, 0.0f);
+			xorGene.AddConnection(1, 4, 0.0f);
+			xorGene.AddConnection(2, 4, 0.0f);
+			xorGene.AddConnection(3, 4, 0.0f);
 
 			// Run simulation
 			Simulation sim = new Simulation(r, xorGene, 150);
@@ -388,7 +388,7 @@ namespace NEAT_CSharp.Demo
 				// Evaluate all genomes
 				foreach (Genome gen in sim.Genomes)
 				{
-					Network network = gen.getNetwork();
+					Network network = gen.GetNetwork();
                     //network.ActivationFunction = new NeuralEvolution.ActivationFunctions.ReLU();
 					bool couldActivate = true;
 					for (int inputIdx = 0; inputIdx < 4; ++inputIdx)
@@ -396,20 +396,20 @@ namespace NEAT_CSharp.Demo
 						float[] inputRow = new float[3];
 						for (int k = 0; k < 3; ++k)
 							inputRow[k] = input[inputIdx, k];
-						network.setInput(inputRow);
-						if (!network.activate())
+						network.SetInput(inputRow);
+						if (!network.Activate())
 							couldActivate = false;
 
 						// Relax network
-						int networkDepth = network.getMaxDepth();
+						int networkDepth = network.GetMaxDepth();
 						for (int relax = 0; relax <= networkDepth; ++relax)
 						{
-							network.activate();
+							network.Activate();
 						}
 
 						output[inputIdx] = network.Output[0].Activation;
 
-						network.reset();
+						network.Reset();
 					}
 
 					float errorsum = (float)(Math.Abs(output[0]) + Math.Abs(1.0 - output[1]) + Math.Abs(1.0 - output[2]) + Math.Abs(output[3]));
@@ -444,7 +444,7 @@ namespace NEAT_CSharp.Demo
 					break;
 
 				// Advance to the next step of simulation
-				sim.epoch();
+				sim.Epoch();
 			}
 
 			if (solutionFound)

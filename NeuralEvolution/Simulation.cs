@@ -38,8 +38,8 @@ namespace NEAT_CSharp
 
 
             // Add all new genomes to species
-            this.addGenomesToSpecies(nextGeneration);
-            this.orderSpeciesByOriginalFitness();
+            this.AddGenomesToSpecies(nextGeneration);
+            this.OrderSpeciesByOriginalFitness();
         }
 
         private void InitInnovation(Genome basicGenome)
@@ -54,14 +54,14 @@ namespace NEAT_CSharp
         {
             for (int i = 0; i < populationSize; ++i)
             {
-                Genome g = basicGenome.copy();
+                Genome g = basicGenome.Copy();
                 g.ParentSimulation = this;
-                g.mutateWeights(1.0f);
+                g.MutateWeights(1.0f);
                 this.nextGeneration.Add(g);
             }
         }
 
-        public void orderSpeciesByOriginalFitness()
+        public void OrderSpeciesByOriginalFitness()
 		{
 			this.species.Sort((x, y) => (y.Genomes[0].OriginalFitness.CompareTo(x.Genomes[0].OriginalFitness)));
 		}
@@ -84,7 +84,7 @@ namespace NEAT_CSharp
         // 1. Penalize the species that didn't improve for a long time - the idea is to minimize their chances of getting offspring
         // 2. Remove genomes marked for deletion (stagnant)
         // 3. Reproduce the species (genome's offspring count is based on its fitness function result)
-        public void epoch()
+        public void Epoch()
         {
             if (this.Genomes.Count > this.populationSize)
             {
@@ -98,7 +98,7 @@ namespace NEAT_CSharp
             this.AdjustSpeciesFitness();
 
             // Now order species - it's essential that genomes are sorted before that (what's done above)
-            this.orderSpeciesByOriginalFitness();
+            this.OrderSpeciesByOriginalFitness();
 
 
             // Once in 30 epochs, flag the worst performing species with age over 20 to be obliterated (its genomes will
@@ -144,8 +144,8 @@ namespace NEAT_CSharp
             this.RemoveEmptySpecies();
 
             foreach (Species s in this.species)
-                s.orderGenomes();
-            this.orderSpeciesByOriginalFitness();
+                s.OrderGenomes();
+            this.OrderSpeciesByOriginalFitness();
 
             // Remove innovations of this generation
             this.innovations.Clear();
@@ -158,7 +158,7 @@ namespace NEAT_CSharp
         {
             foreach (Genome gen in previousGeneration)
             {
-                gen.Species.removeGenome(gen);
+                gen.Species.RemoveGenome(gen);
             }
         }
 
@@ -166,9 +166,9 @@ namespace NEAT_CSharp
         {
             foreach (Species s in this.species)
             {
-                s.reproduce(nextGeneration, this.innovations);
+                s.Reproduce(nextGeneration, this.innovations);
             }
-            this.addGenomesToSpecies(nextGeneration);
+            this.AddGenomesToSpecies(nextGeneration);
         }
 
         private void RemoveGenomesThatShouldNotReproduce(List<Genome> previousGeneration)
@@ -177,7 +177,7 @@ namespace NEAT_CSharp
             {
                 if (g.ShouldBeEliminated)
                 {
-                    g.Species.removeGenome(g);
+                    g.Species.RemoveGenome(g);
                 }
             }
         }
@@ -187,7 +187,7 @@ namespace NEAT_CSharp
             double totalPopulationFitness = 0.0;
             foreach (Species s in this.species)
             {
-                totalPopulationFitness += s.getAverageFitness();
+                totalPopulationFitness += s.GetAverageFitness();
             }
 
             return totalPopulationFitness;
@@ -229,7 +229,7 @@ namespace NEAT_CSharp
             {
                 foreach (Species s in this.species)
                 {
-                    s.Offspring = (int)(s.getAverageFitness() / totalPopulationFitness * populationSize);
+                    s.Offspring = (int)(s.GetAverageFitness() / totalPopulationFitness * populationSize);
                     organismsLeft -= s.Offspring;
                 }
                 // If we have some offspring left, then add it to the best performing species
@@ -286,7 +286,7 @@ namespace NEAT_CSharp
             foreach (Species s in this.species)
             {
                 s.Age++;
-                s.adjustFitness();
+                s.AdjustFitness();
                 s.Innovations = this.innovations;
             }
         }
@@ -309,16 +309,16 @@ namespace NEAT_CSharp
             }
         }
 
-        private void addGenomesToSpecies(List<Genome> genomes)
+        private void AddGenomesToSpecies(List<Genome> genomes)
 		{
 			foreach (Genome gen in genomes)
 			{
 				bool compatibleSpeciesFound = false;
 				foreach (Species s in this.species)
 				{
-					if (gen.compatibilityDistance(s.getSampleGenome()) < this.Parameters.CompatibilityThreshold)
+					if (gen.CompatibilityDistance(s.GetSampleGenome()) < this.Parameters.CompatibilityThreshold)
 					{
-						s.addGenome(gen);
+						s.AddGenome(gen);
 						gen.Species = s;
 						compatibleSpeciesFound = true;
 						break;
@@ -328,7 +328,7 @@ namespace NEAT_CSharp
 				{
 					Species newSpecies = new Species(this.random);
 					newSpecies.ParentSimulation = this;
-					newSpecies.addGenome(gen);
+					newSpecies.AddGenome(gen);
 					gen.Species = newSpecies;
 					this.species.Add(newSpecies);
 				}

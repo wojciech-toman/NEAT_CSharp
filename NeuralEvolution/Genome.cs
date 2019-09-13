@@ -58,7 +58,7 @@ namespace NEAT_CSharp
 			// First add all nodes
 			foreach (Node n in net.Nodes)
 			{
-				this.addNode(n.copy());
+				this.AddNode(n.copy());
 			}
 
 			// And now create connections based on the links
@@ -68,7 +68,7 @@ namespace NEAT_CSharp
 
 		public Species Species { get { return this.species; } set { this.species = value; } }
 
-		public Genome copy()
+		public Genome Copy()
 		{
 			if (!typeof(Genome).IsSerializable)
 			{
@@ -116,7 +116,7 @@ namespace NEAT_CSharp
 			return null;
 		}
 
-		public Network getNetwork()
+		public Network GetNetwork()
 		{
 			if (this.phenotypeChanged || this.network == null)
 			{
@@ -124,13 +124,13 @@ namespace NEAT_CSharp
 				this.network = new Network();
 				foreach (Node n in this.nodes)
 				{
-					this.network.addNode(n.copy());
+					this.network.AddNode(n.copy());
 				}
 
 				foreach (ConnectionGene gene in this.connectionGenes)
 				{
 					if (gene.IsEnabled)
-						this.network.addLink(new Link(gene.InNodeGene, gene.OutNodeGene, gene.IsRecurrent, gene.Weight));
+						this.network.AddLink(new Link(gene.InNodeGene, gene.OutNodeGene, gene.IsRecurrent, gene.Weight));
 				}
 
 				this.phenotypeChanged = false;
@@ -140,7 +140,7 @@ namespace NEAT_CSharp
 		}
 
 		// Adds a new node to the genome
-		public void addNode(Node node)
+		public void AddNode(Node node)
 		{
 			this.nodes.Add(node);
 			// Order nodes by ID
@@ -177,15 +177,15 @@ namespace NEAT_CSharp
 				if (foundNode1 && foundNode2) break;
 			}
 
-			if (!foundNode1) this.addNode(gene.InNodeGene.copy());
-			if (!foundNode2) this.addNode(gene.OutNodeGene.copy());
+			if (!foundNode1) this.AddNode(gene.InNodeGene.copy());
+			if (!foundNode2) this.AddNode(gene.OutNodeGene.copy());
 
 			this.phenotypeChanged = true;
 		}
 
 		// Adds a connection gene to the genome by connecting nodes with inNode and outNode indices and setting the weight.
 		// Connection gene is equivalent of an edge in the network (it connects two nodes)
-		public void addConnection(int inNode, int outNode, float weight)
+		public void AddConnection(int inNode, int outNode, float weight)
 		{
 			this.addConnection(inNode, outNode, true, this.NextInnovationNumber(), weight);
 		}
@@ -240,7 +240,7 @@ namespace NEAT_CSharp
             foreach (Node n in gen1.Nodes)
             {
                 if (n.NodeType == Node.ENodeType.SENSOR || n.NodeType == Node.ENodeType.BIAS || n.NodeType == Node.ENodeType.OUTPUT)
-                    child.addNode(n.copy());
+                    child.AddNode(n.copy());
             }
 
             foreach (ConnectionGene gene1 in moreFit.ConnectionGenes)
@@ -304,7 +304,7 @@ namespace NEAT_CSharp
 			foreach (Node n in gen1.Nodes)
 			{
 				if (n.NodeType == Node.ENodeType.SENSOR || n.NodeType == Node.ENodeType.BIAS || n.NodeType == Node.ENodeType.OUTPUT)
-					child.addNode(n.copy());
+					child.AddNode(n.copy());
 			}
 
 			foreach (ConnectionGene gene1 in moreFit.ConnectionGenes)
@@ -408,11 +408,11 @@ namespace NEAT_CSharp
 					}
 					if (i == this.connectionGenes.Count)
 					{
-						Network net = this.getNetwork();
-						Node netNode1 = net.getNodeById(node1.ID);
-						Node netNode2 = net.getNodeById(node2.ID);
+						Network net = this.GetNetwork();
+						Node netNode1 = net.GetNodeById(node1.ID);
+						Node netNode2 = net.GetNodeById(node2.ID);
 						if (netNode1 != null && netNode2 != null)
-							recurFlag = (parentSimulation.Parameters.RecurrencyProbability > 0.0f && net.isRecurrentConnection(netNode1, netNode2, 0, this.nodes.Count * this.nodes.Count));
+							recurFlag = (parentSimulation.Parameters.RecurrencyProbability > 0.0f && net.IsRecurrentConnection(netNode1, netNode2, 0, this.nodes.Count * this.nodes.Count));
 						// Connections outgoing from Output nodes are considered recurrent
 						if (node1.NodeType == Node.ENodeType.OUTPUT)
 							recurFlag = true;
@@ -450,11 +450,11 @@ namespace NEAT_CSharp
 						}
 						if (i == this.connectionGenes.Count)
 						{
-							Network net = this.getNetwork();
-							Node netNode1 = net.getNodeById(node1.ID);
-							Node netNode2 = net.getNodeById(node2.ID);
+							Network net = this.GetNetwork();
+							Node netNode1 = net.GetNodeById(node1.ID);
+							Node netNode2 = net.GetNodeById(node2.ID);
 							if(netNode1 != null && netNode2 != null)
-								recurFlag = (parentSimulation.Parameters.RecurrencyProbability > 0.0f && net.isRecurrentConnection(netNode1, netNode2, 0, this.nodes.Count * this.nodes.Count));
+								recurFlag = (parentSimulation.Parameters.RecurrencyProbability > 0.0f && net.IsRecurrentConnection(netNode1, netNode2, 0, this.nodes.Count * this.nodes.Count));
 							// Connections outgoing from Output nodes are considered recurrent
 							if (node1.NodeType == Node.ENodeType.OUTPUT)
 								recurFlag = true;
@@ -564,7 +564,7 @@ namespace NEAT_CSharp
 
             /*this.connectionGenes.Add(new ConnectionGene(oldConnection.InNodeGene, newNode, 1.0f, true, this.NextInnovationNumber()));
 			this.connectionGenes.Add(new ConnectionGene(newNode, oldConnection.OutNodeGene, oldConnection.Weight, true, this.NextInnovationNumber()));*/
-            this.addNode(newNode);
+            this.AddNode(newNode);
             this.addConnection(newGene1);
             this.addConnection(newGene2);
 
@@ -595,7 +595,7 @@ namespace NEAT_CSharp
         }
 
         // Mutation that changes connection weights.
-        public void mutateWeights(float mutationPower)
+        public void MutateWeights(float mutationPower)
 		{
 			bool severeMutation = false;
 			if (this.random.NextDouble() > 0.5) severeMutation = true;
@@ -799,7 +799,7 @@ namespace NEAT_CSharp
 		// number of disjoint and excess nodes as well as on an average connection weight difference
 		// TODO: compatibility distance should calculate everything in one place to avoid too many 'while' loops for
 		// performance reasons
-		public float compatibilityDistance(Genome gen2)
+		public float CompatibilityDistance(Genome gen2)
 		{
 			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
 

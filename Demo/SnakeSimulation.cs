@@ -50,34 +50,34 @@
 			// 3 nodes are used to store distance to the snake itself (to avoid collisions with self - hopefully),
 			// 3 nodes are used to store distance to the walls
 			for (int i = 0; i < inputs; ++i)
-				startGenome.addNode(new Node(i != 3 ? Node.ENodeType.SENSOR : Node.ENodeType.BIAS, i + 1));
+				startGenome.AddNode(new Node(i != 3 ? Node.ENodeType.SENSOR : Node.ENodeType.BIAS, i + 1));
 
 			// Output: Move left, straight, right
 			int outputStart = inputs + 1;
-			startGenome.addNode(new Node(Node.ENodeType.OUTPUT, outputStart + 0));
-			startGenome.addNode(new Node(Node.ENodeType.OUTPUT, outputStart + 1));
-			startGenome.addNode(new Node(Node.ENodeType.OUTPUT, outputStart + 2));
+			startGenome.AddNode(new Node(Node.ENodeType.OUTPUT, outputStart + 0));
+			startGenome.AddNode(new Node(Node.ENodeType.OUTPUT, outputStart + 1));
+			startGenome.AddNode(new Node(Node.ENodeType.OUTPUT, outputStart + 2));
 
 
 			// Food distance
-			startGenome.addConnection(1, outputStart + 0, 0.0f);
-			startGenome.addConnection(2, outputStart + 1, 0.0f);
-			startGenome.addConnection(3, outputStart + 2, 0.0f);
+			startGenome.AddConnection(1, outputStart + 0, 0.0f);
+			startGenome.AddConnection(2, outputStart + 1, 0.0f);
+			startGenome.AddConnection(3, outputStart + 2, 0.0f);
 
 			// Tails distance
-			startGenome.addConnection(5, outputStart + 0, 0.0f);
-			startGenome.addConnection(6, outputStart + 1, 0.0f);
-			startGenome.addConnection(7, outputStart + 2, 0.0f);
+			startGenome.AddConnection(5, outputStart + 0, 0.0f);
+			startGenome.AddConnection(6, outputStart + 1, 0.0f);
+			startGenome.AddConnection(7, outputStart + 2, 0.0f);
 
 			// Walls distance
-			startGenome.addConnection(8, outputStart + 0, 0.0f);
-			startGenome.addConnection(9, outputStart + 1, 0.0f);
-			startGenome.addConnection(10, outputStart + 2, 0.0f);
+			startGenome.AddConnection(8, outputStart + 0, 0.0f);
+			startGenome.AddConnection(9, outputStart + 1, 0.0f);
+			startGenome.AddConnection(10, outputStart + 2, 0.0f);
 
 			// Connect bias node to every output
-			startGenome.addConnection(4, outputStart + 0, 0.0f);
-			startGenome.addConnection(4, outputStart + 1, 0.0f);
-			startGenome.addConnection(4, outputStart + 2, 0.0f);
+			startGenome.AddConnection(4, outputStart + 0, 0.0f);
+			startGenome.AddConnection(4, outputStart + 1, 0.0f);
+			startGenome.AddConnection(4, outputStart + 2, 0.0f);
 
 
 			// Set up simulation - but don't start it
@@ -101,7 +101,7 @@
 				Simulate();
 		}
 
-		private static void snakeMoveCallback(Snake snake, CountdownEvent evt)
+		private static void SnakeMoveCallback(Snake snake, CountdownEvent evt)
 		{
 			snake.Move();
 			evt.Signal();
@@ -139,7 +139,7 @@
 				{
 					if (!s.IsDead)
 					{
-						ThreadPool.QueueUserWorkItem(_ => snakeMoveCallback(s, threadCounter));
+						ThreadPool.QueueUserWorkItem(_ => SnakeMoveCallback(s, threadCounter));
 					}
 				}
 				threadCounter.Wait();
@@ -196,7 +196,7 @@
 				// Go to the next epoch of the simulation
 				if (!firstTime && ((run % numberOfRuns) == 0))
 				{
-					sim.epoch();
+					sim.Epoch();
 					++generationID;
 				}
 
@@ -211,7 +211,7 @@
 						if ((run % numberOfRuns) == 0)
 							gen.Fitness = 0.0;
 
-						NEAT_CSharp.Network net = gen.getNetwork();
+						NEAT_CSharp.Network net = gen.GetNetwork();
                         //net.ActivationFunction = new NEAT_CSharp.ActivationFunctions.ReLU();
                         //net.ActivationFunction = new NEAT_CSharp.ActivationFunctions.Threshold();
 

@@ -61,7 +61,7 @@ namespace NEAT_CSharp
 		}
 
 
-		public void addNode(Node node)
+		public void AddNode(Node node)
 		{
 			if (node == null) throw new ArgumentNullException(nameof(node));
 
@@ -72,18 +72,18 @@ namespace NEAT_CSharp
 				this.outputNodes.Add(node);
 		}
 
-        public void addNodes(IEnumerable<Node> nodesCollection)
+        public void AddNodes(IEnumerable<Node> nodesCollection)
         {
             if(nodesCollection == null) throw new ArgumentNullException(nameof(nodesCollection));
 
             foreach(Node node in nodesCollection)
             {
-                this.addNode(node);
+                this.AddNode(node);
             }
         }
 
 		// Call after adding all nodes
-		public void addLink(Link link)
+		public void AddLink(Link link)
 		{
 			if (link == null) throw new ArgumentNullException(nameof(link));
 
@@ -111,7 +111,7 @@ namespace NEAT_CSharp
 			}
 		}
 
-		public void setInput(float[] input)
+		public void SetInput(float[] input)
 		{
 			if (input == null) throw new ArgumentNullException(nameof(input));
 
@@ -141,7 +141,7 @@ namespace NEAT_CSharp
 			set { this.nodes = value; }
 		}
 
-		public Node getNodeById(int id)
+		public Node GetNodeById(int id)
 		{
 			foreach (Node n in this.nodes)
 				if (n.ID == id) return n;
@@ -155,13 +155,13 @@ namespace NEAT_CSharp
 			set { this.links = value; }
 		}
 
-        public bool activate()
+        public bool Activate()
 		{
 			bool onetime = false;
 			int counter = 0;
 			const int maxTries = 20;
 
-			while (this.isOutputNotActivated() || !onetime)
+			while (this.IsOutputNotActivated() || !onetime)
             {
                 // Too many failures - some outputs remain unactivated; exit
                 if (counter++ > maxTries)
@@ -214,7 +214,7 @@ namespace NEAT_CSharp
             }
         }
 
-        private bool isOutputNotActivated()
+        private bool IsOutputNotActivated()
 		{
 			foreach (Node output in this.outputNodes)
 			{
@@ -224,13 +224,13 @@ namespace NEAT_CSharp
 			return false;
 		}
 
-		public void reset()
+		public void Reset()
 		{
 			foreach (Node n in this.nodes)
 				n.reset();
 		}
 
-		public int getMaxDepth()
+		public int GetMaxDepth()
 		{
 			int maxDepth = 0;
 			foreach (Node n in this.outputNodes)
@@ -242,7 +242,7 @@ namespace NEAT_CSharp
 			return maxDepth;
 		}
 
-		public bool isRecurrentConnection(Node inNode, Node outNode, int count, int thresh)
+		public bool IsRecurrentConnection(Node inNode, Node outNode, int count, int thresh)
 		{
 			if (++count > thresh)
 				return false;
@@ -255,7 +255,7 @@ namespace NEAT_CSharp
 				foreach(Link lnk in inNode.IncomingLinks)
 				{
 					if(!lnk.IsRecurrent)
-						if (this.isRecurrentConnection(lnk.InNode, outNode, count, thresh)) return true;
+						if (this.IsRecurrentConnection(lnk.InNode, outNode, count, thresh)) return true;
 				}
 			}
 			return false;
