@@ -63,7 +63,7 @@ namespace NEAT_CSharp
 
 			// And now create connections based on the links
 			foreach (Link lnk in net.Links)
-				this.AddConnection(lnk.InNode.ID, lnk.OutNode.ID, true, this.NextInnovationNumber(), lnk.Weight);
+				this.AddConnectionGene(lnk.InNode.ID, lnk.OutNode.ID, this.NextInnovationNumber(), true, lnk.Weight);
 		}
 
 		public Species Species { get { return this.species; } set { this.species = value; } }
@@ -120,7 +120,8 @@ namespace NEAT_CSharp
 		{
 			if (this.phenotypeChanged || this.network == null)
 			{
-				// Recreate network
+				// Network wasn't generated yet, or genome changed since last time,
+                // so we need to recreate the network first
 				this.network = new Network();
 				foreach (Node n in this.nodes)
 				{
@@ -148,13 +149,13 @@ namespace NEAT_CSharp
 			this.phenotypeChanged = true;
 		}
 
-		public void InsertGene(ConnectionGene gene)
+		public void InsertConnectionGene(ConnectionGene gene)
 		{
 			if (gene == null) throw new ArgumentNullException(nameof(gene));
 
 			int innovation = gene.Innovation;
-			int i = 0;
-			for(i = 0; i < this.connectionGenes.Count; ++i)
+            int i;
+            for (i = 0; i < this.connectionGenes.Count; ++i)
 			{
 				if (this.connectionGenes[i].Innovation >= innovation)
 					break;
@@ -163,9 +164,9 @@ namespace NEAT_CSharp
 		}
 
 		// Adds a connection gene to the genome. Connection gene is equivalent of an edge in the network (it connects two nodes)
-		public void AddConnection(ConnectionGene gene)
+		public void AddConnectionGene(ConnectionGene gene)
 		{
-			this.InsertGene(gene);
+			this.InsertConnectionGene(gene);
 
 			// Add nodes if necessary
 			bool foundNode1 = false, foundNode2 = false;
@@ -185,28 +186,21 @@ namespace NEAT_CSharp
 
 		// Adds a connection gene to the genome by connecting nodes with inNode and outNode indices and setting the weight.
 		// Connection gene is equivalent of an edge in the network (it connects two nodes)
-		public void AddConnection(int inNode, int outNode, float weight)
+		public void AddConnectionGene(int inNode, int outNode, float weight)
 		{
-			this.AddConnection(inNode, outNode, true, this.NextInnovationNumber(), weight);
+			this.AddConnectionGene(inNode, outNode, this.NextInnovationNumber(), true, weight);
 		}
 
 		// Adds a connection gene to the genome. Connection gene is equivalent of an edge in the network (it connects two nodes)
-		public void AddConnection(int inNode, int outNode, bool isEnabled=true)
+		public void AddConnectionGene(int inNode, int outNode, bool isEnabled=true)
 		{
-			//this.connectionGenes.Add(new ConnectionGene(this.getNode(inNode), this.getNode(outNode), 1.0f, isEnabled, this.NextInnovationNumber()));
-			this.InsertGene(new ConnectionGene(this.GetNodeById(inNode), this.GetNodeById(outNode), false, 1.0f, isEnabled, this.NextInnovationNumber()));
+			this.InsertConnectionGene(new ConnectionGene(this.GetNodeById(inNode), this.GetNodeById(outNode), false, 1.0f, isEnabled, this.NextInnovationNumber()));
 			this.phenotypeChanged = true;
 		}
 
-		public void AddConnection(int inNode, int outNode, bool isEnabled, int innovation)
-		{
-			this.AddConnection(this.GetNodeById(inNode).ID, this.GetNodeById(outNode).ID, isEnabled, innovation, 1.0f);
-		}
-
-		public void AddConnection(int inNode, int outNode, bool isEnabled, int innovation, float weight)
-		{
-			//this.connectionGenes.Add(new ConnectionGene(this.getNode(inNode), this.getNode(outNode), weight, isEnabled, innovation));
-			this.InsertGene(new ConnectionGene(this.GetNodeById(inNode), this.GetNodeById(outNode), false, weight, isEnabled, innovation));
+		public void AddConnectionGene(int inNode, int outNode, int innovation, bool isEnabled=true, float weight=0.0f)
+        {
+			this.InsertConnectionGene(new ConnectionGene(this.GetNodeById(inNode), this.GetNodeById(outNode), false, weight, isEnabled, innovation));
 			this.phenotypeChanged = true;
 		}
 
@@ -280,7 +274,7 @@ namespace NEAT_CSharp
                 }
 
                 if (!skip)
-                    child.AddConnection(newGene);
+                    child.AddConnectionGene(newGene);
             }
 
 
@@ -345,7 +339,7 @@ namespace NEAT_CSharp
 				}
 
 				if (!skip)
-					child.AddConnection(newGene);
+					child.AddConnectionGene(newGene);
 			}
 
 
@@ -499,7 +493,7 @@ namespace NEAT_CSharp
 					newGene = new ConnectionGene(node1, node2, recurFlag, newRandomWeight, true, newInnov.ID);
 				}
 
-				this.AddConnection(newGene);
+				this.AddConnectionGene(newGene);
 
 				this.phenotypeChanged = true;
 			}
@@ -562,11 +556,9 @@ namespace NEAT_CSharp
                 newGene2 = new ConnectionGene(newNode, oldConnection.OutNodeGene, false, oldConnection.Weight, true, id2);
             }
 
-            /*this.connectionGenes.Add(new ConnectionGene(oldConnection.InNodeGene, newNode, 1.0f, true, this.NextInnovationNumber()));
-			this.connectionGenes.Add(new ConnectionGene(newNode, oldConnection.OutNodeGene, oldConnection.Weight, true, this.NextInnovationNumber()));*/
             this.AddNode(newNode);
-            this.AddConnection(newGene1);
-            this.AddConnection(newGene2);
+            this.AddConnectionGene(newGene1);
+            this.AddConnectionGene(newGene2);
 
             this.phenotypeChanged = true;
         }
@@ -616,12 +608,12 @@ namespace NEAT_CSharp
 				}
 				else if ((genesCount >= 10.0) && (counter > endpart))
 				{
-					gausspoint = 0.5;  //Mutate by modification % of connections
-					coldgausspoint = 0.3; //Mutate the rest by replacement % of the time
+					gausspoint = 0.5;       // Mutate by modification % of connections
+					coldgausspoint = 0.3;   // Mutate the rest by replacement % of the time
 				}
 				else
 				{
-					//Half the time don't do any cold mutations
+					// Half the time don't do any cold mutations
 					if (this.random.NextDouble() > 0.5)
 					{
 						gausspoint = 1.0 - rate;

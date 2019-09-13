@@ -167,24 +167,24 @@
 
 
 			// Food distance
-			startGenome.AddConnection(1, outputStart + 0, 0.0f);
-			startGenome.AddConnection(2, outputStart + 1, 0.0f);
-			startGenome.AddConnection(3, outputStart + 2, 0.0f);
+			startGenome.AddConnectionGene(1, outputStart + 0, 0.0f);
+			startGenome.AddConnectionGene(2, outputStart + 1, 0.0f);
+			startGenome.AddConnectionGene(3, outputStart + 2, 0.0f);
 
 			// Tails distance
-			startGenome.AddConnection(5, outputStart + 0, 0.0f);
-			startGenome.AddConnection(6, outputStart + 1, 0.0f);
-			startGenome.AddConnection(7, outputStart + 2, 0.0f);
+			startGenome.AddConnectionGene(5, outputStart + 0, 0.0f);
+			startGenome.AddConnectionGene(6, outputStart + 1, 0.0f);
+			startGenome.AddConnectionGene(7, outputStart + 2, 0.0f);
 
 			// Walls distance
-			startGenome.AddConnection(8, outputStart + 0, 0.0f);
-			startGenome.AddConnection(9, outputStart + 1, 0.0f);
-			startGenome.AddConnection(10, outputStart + 2, 0.0f);
+			startGenome.AddConnectionGene(8, outputStart + 0, 0.0f);
+			startGenome.AddConnectionGene(9, outputStart + 1, 0.0f);
+			startGenome.AddConnectionGene(10, outputStart + 2, 0.0f);
 
 			// Connect bias node to every output
-			startGenome.AddConnection(4, outputStart + 0, 0.0f);
-			startGenome.AddConnection(4, outputStart + 1, 0.0f);
-			startGenome.AddConnection(4, outputStart + 2, 0.0f);
+			startGenome.AddConnectionGene(4, outputStart + 0, 0.0f);
+			startGenome.AddConnectionGene(4, outputStart + 1, 0.0f);
+			startGenome.AddConnectionGene(4, outputStart + 2, 0.0f);
 
 
 			// Set up simulation - but don't start it

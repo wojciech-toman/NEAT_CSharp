@@ -81,16 +81,16 @@ namespace NEAT_CSharp.Demo
 			startGenome.AddNode(new Node(Node.ENodeType.OUTPUT, 6));
 			startGenome.AddNode(new Node(Node.ENodeType.OUTPUT, 7));
 
-			startGenome.AddConnection(1, 6, 0.0f);
-			startGenome.AddConnection(2, 6, 0.0f);
-			startGenome.AddConnection(3, 6, 0.0f);
-			startGenome.AddConnection(4, 6, 0.0f);
-			startGenome.AddConnection(5, 6, 0.0f);
-			startGenome.AddConnection(1, 7, 0.0f);
-			startGenome.AddConnection(2, 7, 0.0f);
-			startGenome.AddConnection(3, 7, 0.0f);
-			startGenome.AddConnection(4, 7, 0.0f);
-			startGenome.AddConnection(5, 7, 0.0f);
+			startGenome.AddConnectionGene(1, 6, 0.0f);
+			startGenome.AddConnectionGene(2, 6, 0.0f);
+			startGenome.AddConnectionGene(3, 6, 0.0f);
+			startGenome.AddConnectionGene(4, 6, 0.0f);
+			startGenome.AddConnectionGene(5, 6, 0.0f);
+			startGenome.AddConnectionGene(1, 7, 0.0f);
+			startGenome.AddConnectionGene(2, 7, 0.0f);
+			startGenome.AddConnectionGene(3, 7, 0.0f);
+			startGenome.AddConnectionGene(4, 7, 0.0f);
+			startGenome.AddConnectionGene(5, 7, 0.0f);
 
 			// Run simulation
 			Simulation sim = new Simulation(r, startGenome, 150);
@@ -263,9 +263,9 @@ namespace NEAT_CSharp.Demo
 			xorGene.AddNode(new Node(Node.ENodeType.SENSOR, 3));
 			xorGene.AddNode(new Node(Node.ENodeType.OUTPUT, 4));
 
-			xorGene.AddConnection(1, 4, 0.0f);
-			xorGene.AddConnection(2, 4, 0.0f);
-			xorGene.AddConnection(3, 4, 0.0f);
+			xorGene.AddConnectionGene(1, 4, 0.0f);
+			xorGene.AddConnectionGene(2, 4, 0.0f);
+			xorGene.AddConnectionGene(3, 4, 0.0f);
 
 			// Run simulation
 			Simulation sim = new Simulation(r, xorGene, 150);

@@ -35,12 +35,12 @@ namespace NEAT_CSharp.Tests
             gen.AddNode(new Node(Node.ENodeType.HIDDEN, 5));
 
             // Add connections from the paper
-            gen.AddConnection(1, 4, 0.5f);
-            gen.AddConnection(2, 4, false);
-            gen.AddConnection(3, 4);
-            gen.AddConnection(2, 5);
-            gen.AddConnection(5, 4);
-            gen.AddConnection(1, 5, true, 8);
+            gen.AddConnectionGene(1, 4, 0.5f);
+            gen.AddConnectionGene(2, 4, false);
+            gen.AddConnectionGene(3, 4);
+            gen.AddConnectionGene(2, 5);
+            gen.AddConnectionGene(5, 4);
+            gen.AddConnectionGene(1, 5, 8, true);
         }
 
         [TestCleanup]

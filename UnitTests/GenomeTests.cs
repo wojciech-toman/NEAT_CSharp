@@ -33,12 +33,12 @@ namespace NEAT_CSharp.Tests
             gen1.AddNode(new Node(Node.ENodeType.HIDDEN, 5));
 
             // Add connections from the paper
-            gen1.AddConnection(1, 4, 0.5f);
-            gen1.AddConnection(2, 4, false);
-            gen1.AddConnection(3, 4);
-            gen1.AddConnection(2, 5);
-            gen1.AddConnection(5, 4);
-            gen1.AddConnection(1, 5, true, 8);
+            gen1.AddConnectionGene(1, 4, 0.5f);
+            gen1.AddConnectionGene(2, 4, false);
+            gen1.AddConnectionGene(3, 4);
+            gen1.AddConnectionGene(2, 5);
+            gen1.AddConnectionGene(5, 4);
+            gen1.AddConnectionGene(1, 5, 8, true);
 
 
 
@@ -58,15 +58,15 @@ namespace NEAT_CSharp.Tests
             gen2.AddNode(new Node(Node.ENodeType.HIDDEN, 6));
 
             // Add connections from the paper
-            gen2.AddConnection(1, 4);
-            gen2.AddConnection(2, 4, false);
-            gen2.AddConnection(3, 4);
-            gen2.AddConnection(2, 5);
-            gen2.AddConnection(5, 4, false);
-            gen2.AddConnection(5, 6);
-            gen2.AddConnection(6, 4);
-            gen2.AddConnection(3, 5, true, 9);
-            gen2.AddConnection(1, 6, true, 10);
+            gen2.AddConnectionGene(1, 4);
+            gen2.AddConnectionGene(2, 4, false);
+            gen2.AddConnectionGene(3, 4);
+            gen2.AddConnectionGene(2, 5);
+            gen2.AddConnectionGene(5, 4, false);
+            gen2.AddConnectionGene(5, 6);
+            gen2.AddConnectionGene(6, 4);
+            gen2.AddConnectionGene(3, 5, 9, true);
+            gen2.AddConnectionGene(1, 6, 10, true);
         }
 
         [TestCleanup]
@@ -129,8 +129,8 @@ namespace NEAT_CSharp.Tests
             gen3.AddNode(new Node(Node.ENodeType.SENSOR, 2));
             gen3.AddNode(new Node(Node.ENodeType.OUTPUT, 3));
 
-            gen3.AddConnection(1, 3, 0.5f);
-            gen3.AddConnection(2, 3, 1.0f);
+            gen3.AddConnectionGene(1, 3, 0.5f);
+            gen3.AddConnectionGene(2, 3, 1.0f);
 
             Assert.IsTrue(gen3.Nodes.Count == 3);
             gen3.AddNodeMutation(innovations);
@@ -184,11 +184,11 @@ namespace NEAT_CSharp.Tests
             gen4.AddNode(new Node(Node.ENodeType.HIDDEN, 5));
 
             // Add connections from the paper
-            gen4.AddConnection(1, 4);
-            gen4.AddConnection(2, 4);
-            gen4.AddConnection(3, 4);
-            gen4.AddConnection(2, 5);
-            gen4.AddConnection(5, 4);
+            gen4.AddConnectionGene(1, 4);
+            gen4.AddConnectionGene(2, 4);
+            gen4.AddConnectionGene(3, 4);
+            gen4.AddConnectionGene(2, 5);
+            gen4.AddConnectionGene(5, 4);
 
             Assert.IsTrue(gen4.ConnectionGenes.Count == 5);
             gen4.AddConnectionMutation(innovations);
@@ -202,8 +202,12 @@ namespace NEAT_CSharp.Tests
             Assert.IsTrue(gen5.ConnectionGenes[7].IsEnabled == true);
             gen5.ToggleEnabledMutation();
             Assert.IsTrue(gen5.ConnectionGenes[7].IsEnabled == false);
+        }
 
-            gen5 = gen2.Copy();
+        [TestMethod]
+        public void TestReenableMutation()
+        {
+            Genome gen5 = gen2.Copy();
             Assert.IsTrue(gen5.ConnectionGenes[1].IsEnabled == false);
             gen5.ReenableMutation();
 
@@ -304,18 +308,18 @@ namespace NEAT_CSharp.Tests
             gen1.AddNode(new Node(Node.ENodeType.HIDDEN, 5));
 
             // Add connections from the paper
-            gen1.AddConnection(1, 4, 0.5f);
+            gen1.AddConnectionGene(1, 4, 0.5f);
             Assert.IsTrue(gen1.GetInnovationNumber() == 1);
 
-            gen1.AddConnection(2, 4, false);
+            gen1.AddConnectionGene(2, 4, false);
             Assert.IsTrue(gen1.GetInnovationNumber() == 2);
-            gen1.AddConnection(3, 4);
+            gen1.AddConnectionGene(3, 4);
             Assert.IsTrue(gen1.GetInnovationNumber() == 3);
-            gen1.AddConnection(2, 5);
+            gen1.AddConnectionGene(2, 5);
             Assert.IsTrue(gen1.GetInnovationNumber() == 4);
-            gen1.AddConnection(5, 4);
+            gen1.AddConnectionGene(5, 4);
             Assert.IsTrue(gen1.GetInnovationNumber() == 5);
-            gen1.AddConnection(1, 5, true);
+            gen1.AddConnectionGene(1, 5, true);
             Assert.IsTrue(gen1.GetInnovationNumber() == 6);
         }
 
@@ -382,7 +386,7 @@ namespace NEAT_CSharp.Tests
             gen1.ParentSimulation = tmpSim;
             genCopy.ParentSimulation = tmpSim;
 
-            genCopy.AddConnection(1, 2, 0.0f);
+            genCopy.AddConnectionGene(1, 2, 0.0f);
 
             float epsilon = 0.0001f;
 
@@ -404,8 +408,8 @@ namespace NEAT_CSharp.Tests
             // Change some weights and add connections
             genCopy.ConnectionGenes[0].Weight = 0.0f;
             genCopy.ConnectionGenes[1].Weight = 0.0f;
-            genCopy.AddConnection(1, 2, 0.0f);
-            genCopy.AddConnection(1, 3, 0.0f);
+            genCopy.AddConnectionGene(1, 2, 0.0f);
+            genCopy.AddConnectionGene(1, 3, 0.0f);
 
             float epsilon = 0.0001f;
 
@@ -443,7 +447,7 @@ namespace NEAT_CSharp.Tests
             Simulation tmpSim = new Simulation(r, gen1, 1);
             gen1.ParentSimulation = tmpSim;
 
-            gen1.AddConnection(null);
+            gen1.AddConnectionGene(null);
         }
 
         [TestMethod]
@@ -454,7 +458,7 @@ namespace NEAT_CSharp.Tests
 
             ConnectionGene connection = new ConnectionGene(gen1.GetNodeById(1), gen1.GetNodeById(3), false, 1.0f, true, 1);
 
-            gen1.AddConnection(connection);
+            gen1.AddConnectionGene(connection);
 
             Assert.AreEqual(7, gen1.ConnectionGenes.Count);
             Assert.AreEqual(5, gen1.Nodes.Count);
@@ -468,7 +472,7 @@ namespace NEAT_CSharp.Tests
 
             ConnectionGene connection = new ConnectionGene(gen1.GetNodeById(1), new Node(Node.ENodeType.HIDDEN, 10, 0.0f), false, 1.0f, true, 1);
 
-            gen1.AddConnection(connection);
+            gen1.AddConnectionGene(connection);
 
             Assert.AreEqual(7, gen1.ConnectionGenes.Count);
             Assert.AreEqual(6, gen1.Nodes.Count);
@@ -483,7 +487,7 @@ namespace NEAT_CSharp.Tests
 
             ConnectionGene connection = new ConnectionGene(new Node(Node.ENodeType.HIDDEN, 9, 0.0f), new Node(Node.ENodeType.HIDDEN, 10, 0.0f), false, 1.0f, true, 1);
 
-            gen1.AddConnection(connection);
+            gen1.AddConnectionGene(connection);
 
             Assert.AreEqual(7, gen1.ConnectionGenes.Count);
             Assert.AreEqual(7, gen1.Nodes.Count);
@@ -536,7 +540,7 @@ namespace NEAT_CSharp.Tests
             genome.AddNode(new Node(Node.ENodeType.SENSOR, 1));
             genome.AddNode(new Node(Node.ENodeType.OUTPUT, 2));
 
-            genome.AddConnection(1, 2, false);
+            genome.AddConnectionGene(1, 2, false);
 
             int connectionIndex = -1;
             bool found = genome.FindConnectionGeneToSplit(out connectionIndex);
@@ -555,13 +559,37 @@ namespace NEAT_CSharp.Tests
             genome.AddNode(new Node(Node.ENodeType.SENSOR, 1));
             genome.AddNode(new Node(Node.ENodeType.OUTPUT, 2));
 
-            genome.AddConnection(1, 2, true);
+            genome.AddConnectionGene(1, 2, true);
 
             int connectionIndex = -1;
             bool found = genome.FindConnectionGeneToSplit(out connectionIndex);
 
             Assert.AreEqual(true, found);
             Assert.AreEqual(0, connectionIndex);
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void InsertGeneTest_Null_ExpectedException()
+        {
+            UnitTests.RandomStub randomStub = new UnitTests.RandomStub();
+            randomStub.NextIntValue = 0; randomStub.NextDoubleValue = 0.0;
+
+            Genome genome = new Genome(randomStub);
+            genome.AddNode(new Node(Node.ENodeType.SENSOR, 1));
+            genome.AddNode(new Node(Node.ENodeType.OUTPUT, 2));
+
+            genome.InsertConnectionGene(null);
+        }
+
+        [TestMethod()]
+        public void InsertGeneTest_Correct()
+        {
+            ConnectionGene newGene = new ConnectionGene(gen1.GetNodeById(1), gen1.GetNodeById(2), false, 1.0f, true, 2);
+            gen1.InsertConnectionGene(newGene);
+
+            Assert.AreEqual(7, gen1.ConnectionGenes.Count);
+            Assert.AreEqual(newGene, gen1.ConnectionGenes[1]);
         }
     }
 }
