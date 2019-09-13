@@ -120,7 +120,7 @@ namespace NEAT_CSharp
 							child.MutateWeights(this.ParentSimulation.Parameters.WeightMutationPower);
 						else
 						{
-							child.addConnectionMutation(innovations);
+							child.AddConnectionMutation(innovations);
 						}
 					}
 					else
@@ -176,9 +176,9 @@ namespace NEAT_CSharp
 						}
 
 						if (this.random.NextDouble() > this.ParentSimulation.Parameters.AverageCrossoverProbability)
-							child = parent1.crossover(parent2, this.random);
+							child = parent1.Crossover(parent2, this.random);
 						else
-							child = parent2.crossoverAverage(parent2, this.random);
+							child = parent2.CrossoverAverage(parent2, this.random);
 
 						// Mutate child
 						if (this.random.NextDouble() > this.ParentSimulation.Parameters.MateWithoutMutatingProbability || parent1 == parent2 || parent1.CompatibilityDistance(parent2) < 0.00001f)
@@ -197,11 +197,11 @@ namespace NEAT_CSharp
 		{
 			if (this.random.NextDouble() < this.ParentSimulation.Parameters.AddNodeProbability)
 			{
-				child.addNodeMutation(this.Innovations);
+				child.AddNodeMutation(this.Innovations);
 			}
 			else if (this.random.NextDouble() < this.ParentSimulation.Parameters.AddConnectionProbability)
 			{
-				child.addConnectionMutation(this.Innovations);
+				child.AddConnectionMutation(this.Innovations);
 			}
 			else
 			{

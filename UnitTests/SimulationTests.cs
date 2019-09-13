@@ -36,11 +36,11 @@ namespace NEAT_CSharp.Tests
 
             // Add connections from the paper
             gen.AddConnection(1, 4, 0.5f);
-            gen.addConnection(2, 4, false);
-            gen.addConnection(3, 4);
-            gen.addConnection(2, 5);
-            gen.addConnection(5, 4);
-            gen.addConnection(1, 5, true, 8);
+            gen.AddConnection(2, 4, false);
+            gen.AddConnection(3, 4);
+            gen.AddConnection(2, 5);
+            gen.AddConnection(5, 4);
+            gen.AddConnection(1, 5, true, 8);
         }
 
         [TestCleanup]

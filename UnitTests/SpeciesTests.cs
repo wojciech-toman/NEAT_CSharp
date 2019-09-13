@@ -37,7 +37,7 @@ namespace NEAT_CSharp.Tests
         }
 
         [TestMethod]
-        public void getChampionTest_BeforeFitnessAdjustment()
+        public void GetChampionTest_BeforeFitnessAdjustment()
         {
             Genome gen1 = new Genome(r); gen1.ParentSimulation = sim; gen1.Fitness = 1.0f;
             Genome gen2 = new Genome(r); gen2.ParentSimulation = sim; gen2.Fitness = 2.0f;
@@ -49,7 +49,7 @@ namespace NEAT_CSharp.Tests
         }
 
         [TestMethod]
-        public void getChampionTest_BeforeFitnessAdjustment_TwoGenomesWithSameFitness()
+        public void GetChampionTest_BeforeFitnessAdjustment_TwoGenomesWithSameFitness()
         {
             Genome gen1 = new Genome(r); gen1.ParentSimulation = sim; gen1.Fitness = 3.0f;
             Genome gen2 = new Genome(r); gen2.ParentSimulation = sim; gen2.Fitness = 2.0f;
@@ -61,7 +61,7 @@ namespace NEAT_CSharp.Tests
         }
 
         [TestMethod]
-        public void getChampionTest_AfterFitnessAdjustment()
+        public void GetChampionTest_AfterFitnessAdjustment()
         {
             Genome gen1 = new Genome(r); gen1.ParentSimulation = sim; gen1.Fitness = 1.0f;
             Genome gen2 = new Genome(r); gen2.ParentSimulation = sim; gen2.Fitness = 2.0f;
@@ -74,7 +74,7 @@ namespace NEAT_CSharp.Tests
         }
 
         [TestMethod]
-        public void adjustFitnessTest()
+        public void AdjustFitnessTest()
         {
             Genome gen1 = new Genome(r); gen1.ParentSimulation = sim; gen1.Fitness = 1.0f;
             Genome gen2 = new Genome(r); gen2.ParentSimulation = sim; gen2.Fitness = 2.0f;
@@ -104,7 +104,7 @@ namespace NEAT_CSharp.Tests
         }
 
         [TestMethod]
-        public void getSampleGenomeTest()
+        public void GetSampleGenomeTest()
         {
             Genome gen1 = new Genome(r); gen1.ParentSimulation = sim; gen1.Fitness = 1.0f;
             Genome gen2 = new Genome(r); gen2.ParentSimulation = sim; gen2.Fitness = 2.0f;
@@ -119,7 +119,7 @@ namespace NEAT_CSharp.Tests
         [DataRow(0)]
         [DataRow(3)]
         [DataRow(10)]
-        public void reproduceTest(int offspring)
+        public void ReproduceTest(int offspring)
         {
             Genome gen1 = new Genome(r); gen1.ParentSimulation = sim; gen1.Fitness = 1.0f;
             Genome gen2 = new Genome(r); gen2.ParentSimulation = sim; gen2.Fitness = 2.0f;

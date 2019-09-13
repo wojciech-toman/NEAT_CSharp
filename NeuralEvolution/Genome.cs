@@ -63,7 +63,7 @@ namespace NEAT_CSharp
 
 			// And now create connections based on the links
 			foreach (Link lnk in net.Links)
-				this.addConnection(lnk.InNode.ID, lnk.OutNode.ID, true, this.NextInnovationNumber(), lnk.Weight);
+				this.AddConnection(lnk.InNode.ID, lnk.OutNode.ID, true, this.NextInnovationNumber(), lnk.Weight);
 		}
 
 		public Species Species { get { return this.species; } set { this.species = value; } }
@@ -108,7 +108,7 @@ namespace NEAT_CSharp
 
 		public Simulation ParentSimulation { get { return this.parentSimulation; } set { this.parentSimulation = value; } }
 
-		public Node getNodeById(int id)
+		public Node GetNodeById(int id)
 		{
 			foreach (Node n in this.nodes)
 				if (n.ID == id) return n;
@@ -148,7 +148,7 @@ namespace NEAT_CSharp
 			this.phenotypeChanged = true;
 		}
 
-		public void insertGene(ConnectionGene gene)
+		public void InsertGene(ConnectionGene gene)
 		{
 			if (gene == null) throw new ArgumentNullException(nameof(gene));
 
@@ -163,9 +163,9 @@ namespace NEAT_CSharp
 		}
 
 		// Adds a connection gene to the genome. Connection gene is equivalent of an edge in the network (it connects two nodes)
-		public void addConnection(ConnectionGene gene)
+		public void AddConnection(ConnectionGene gene)
 		{
-			this.insertGene(gene);
+			this.InsertGene(gene);
 
 			// Add nodes if necessary
 			bool foundNode1 = false, foundNode2 = false;
@@ -187,33 +187,33 @@ namespace NEAT_CSharp
 		// Connection gene is equivalent of an edge in the network (it connects two nodes)
 		public void AddConnection(int inNode, int outNode, float weight)
 		{
-			this.addConnection(inNode, outNode, true, this.NextInnovationNumber(), weight);
+			this.AddConnection(inNode, outNode, true, this.NextInnovationNumber(), weight);
 		}
 
 		// Adds a connection gene to the genome. Connection gene is equivalent of an edge in the network (it connects two nodes)
-		public void addConnection(int inNode, int outNode, bool isEnabled=true)
+		public void AddConnection(int inNode, int outNode, bool isEnabled=true)
 		{
 			//this.connectionGenes.Add(new ConnectionGene(this.getNode(inNode), this.getNode(outNode), 1.0f, isEnabled, this.NextInnovationNumber()));
-			this.insertGene(new ConnectionGene(this.getNodeById(inNode), this.getNodeById(outNode), false, 1.0f, isEnabled, this.NextInnovationNumber()));
+			this.InsertGene(new ConnectionGene(this.GetNodeById(inNode), this.GetNodeById(outNode), false, 1.0f, isEnabled, this.NextInnovationNumber()));
 			this.phenotypeChanged = true;
 		}
 
-		public void addConnection(int inNode, int outNode, bool isEnabled, int innovation)
+		public void AddConnection(int inNode, int outNode, bool isEnabled, int innovation)
 		{
-			this.addConnection(this.getNodeById(inNode).ID, this.getNodeById(outNode).ID, isEnabled, innovation, 1.0f);
+			this.AddConnection(this.GetNodeById(inNode).ID, this.GetNodeById(outNode).ID, isEnabled, innovation, 1.0f);
 		}
 
-		public void addConnection(int inNode, int outNode, bool isEnabled, int innovation, float weight)
+		public void AddConnection(int inNode, int outNode, bool isEnabled, int innovation, float weight)
 		{
 			//this.connectionGenes.Add(new ConnectionGene(this.getNode(inNode), this.getNode(outNode), weight, isEnabled, innovation));
-			this.insertGene(new ConnectionGene(this.getNodeById(inNode), this.getNodeById(outNode), false, weight, isEnabled, innovation));
+			this.InsertGene(new ConnectionGene(this.GetNodeById(inNode), this.GetNodeById(outNode), false, weight, isEnabled, innovation));
 			this.phenotypeChanged = true;
 		}
 
         public List<ConnectionGene> ConnectionGenes => this.connectionGenes;
 
         // Helper method printing basic information about the genome
-        public void debugPrint()
+        public void DebugPrint()
 		{
 			for (int i = 0; i < this.connectionGenes.Count; ++i)
 			{
@@ -224,7 +224,7 @@ namespace NEAT_CSharp
 		}
 
 		#region Mutations
-		public Genome crossover(Genome gen2, Random rnd)
+		public Genome Crossover(Genome gen2, Random rnd)
         {
             if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
             if (rnd == null) throw new ArgumentNullException(nameof(rnd));
@@ -280,7 +280,7 @@ namespace NEAT_CSharp
                 }
 
                 if (!skip)
-                    child.addConnection(newGene);
+                    child.AddConnection(newGene);
             }
 
 
@@ -288,7 +288,7 @@ namespace NEAT_CSharp
         }
 
         // Performs crossover by averaging both genomes
-        public Genome crossoverAverage(Genome gen2, Random rnd)
+        public Genome CrossoverAverage(Genome gen2, Random rnd)
 		{
 			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
 			if (rnd == null) throw new ArgumentNullException(nameof(rnd));
@@ -345,7 +345,7 @@ namespace NEAT_CSharp
 				}
 
 				if (!skip)
-					child.addConnection(newGene);
+					child.AddConnection(newGene);
 			}
 
 
@@ -367,7 +367,7 @@ namespace NEAT_CSharp
         }
 
         // Mutation that creates new connection between 2 nodes.
-        public void addConnectionMutation(List<Innovation> innovations)
+        public void AddConnectionMutation(List<Innovation> innovations)
 		{
 			if (innovations == null) throw new ArgumentNullException(nameof(innovations));
 
@@ -499,14 +499,14 @@ namespace NEAT_CSharp
 					newGene = new ConnectionGene(node1, node2, recurFlag, newRandomWeight, true, newInnov.ID);
 				}
 
-				this.addConnection(newGene);
+				this.AddConnection(newGene);
 
 				this.phenotypeChanged = true;
 			}
 		}
 
 		// Mutation that creates new node in the genome.
-		public void addNodeMutation(List<Innovation> innovations)
+		public void AddNodeMutation(List<Innovation> innovations)
         {
             if (innovations == null) throw new ArgumentNullException(nameof(innovations));
 
@@ -565,8 +565,8 @@ namespace NEAT_CSharp
             /*this.connectionGenes.Add(new ConnectionGene(oldConnection.InNodeGene, newNode, 1.0f, true, this.NextInnovationNumber()));
 			this.connectionGenes.Add(new ConnectionGene(newNode, oldConnection.OutNodeGene, oldConnection.Weight, true, this.NextInnovationNumber()));*/
             this.AddNode(newNode);
-            this.addConnection(newGene1);
-            this.addConnection(newGene2);
+            this.AddConnection(newGene1);
+            this.AddConnection(newGene2);
 
             this.phenotypeChanged = true;
         }
@@ -672,7 +672,7 @@ namespace NEAT_CSharp
 
 		#endregion
 
-		public static int excessGenesCount(Genome gen1, Genome gen2)
+		public static int ExcessGenesCount(Genome gen1, Genome gen2)
 		{
 			if (gen1 == null) throw new ArgumentNullException(nameof(gen1));
 			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
@@ -705,7 +705,7 @@ namespace NEAT_CSharp
 			return excessCount;
 		}
 
-		public static int disjointGenesCount(Genome gen1, Genome gen2)
+		public static int DisjointGenesCount(Genome gen1, Genome gen2)
 		{
 			if (gen1 == null) throw new ArgumentNullException(nameof(gen1));
 			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
@@ -733,7 +733,7 @@ namespace NEAT_CSharp
 			return disjointCount;
 		}
 
-		public static int matchingGenesCount(Genome gen1, Genome gen2)
+		public static int MatchingGenesCount(Genome gen1, Genome gen2)
 		{
 			if (gen1 == null) throw new ArgumentNullException(nameof(gen1));
 			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
@@ -761,7 +761,7 @@ namespace NEAT_CSharp
 			return matchingCount;
 		}
 
-		public static float getAverageWeightDifference(Genome gen1, Genome gen2)
+		public static float GetAverageWeightDifference(Genome gen1, Genome gen2)
 		{
 			if (gen1 == null) throw new ArgumentNullException(nameof(gen1));
 			if (gen2 == null) throw new ArgumentNullException(nameof(gen2));
@@ -770,7 +770,7 @@ namespace NEAT_CSharp
 			if (gen1.ConnectionGenes.Count == 0 || gen2.ConnectionGenes.Count == 0)
 				return 0.0f;
 
-			int matchingCount = Genome.matchingGenesCount(gen1, gen2);
+			int matchingCount = Genome.MatchingGenesCount(gen1, gen2);
 
 			float difference = 0.0f;
 
@@ -811,13 +811,13 @@ namespace NEAT_CSharp
 			N = 1;
 			//if (N < 20) N = 1;
 
-			float avgWeightDiff = Genome.getAverageWeightDifference(this, gen2);
+			float avgWeightDiff = Genome.GetAverageWeightDifference(this, gen2);
 
 			float c1 = this.ParentSimulation.Parameters.ExcessGenessCoeff;
 			float c2 = this.ParentSimulation.Parameters.DisjointGenesCoeff;
 			float c3 = this.ParentSimulation.Parameters.WeightDiffCoeff;
 
-			return (c1 * Genome.excessGenesCount(this, gen2) / N) + (c2 * Genome.disjointGenesCount(this, gen2) / N) + (c3 * avgWeightDiff);
+			return (c1 * Genome.ExcessGenesCount(this, gen2) / N) + (c2 * Genome.DisjointGenesCount(this, gen2) / N) + (c3 * avgWeightDiff);
 		}
 
         public List<Node> Nodes => this.nodes;

@@ -113,7 +113,7 @@ namespace NEAT_CSharp.Demo
 					numnodes = gen.Nodes.Count;
 					thresh = numnodes * 2;
 
-					gen.Fitness = go_cart(network, MAX_STEPS, thresh, r);
+					gen.Fitness = Go_cart(network, MAX_STEPS, thresh, r);
 					if (gen.Fitness > epochBestFitness)
 					{
 						epochBestFitness = gen.Fitness;
@@ -146,7 +146,7 @@ namespace NEAT_CSharp.Demo
 
 		//     cart_and_pole() was take directly from the pole simulator written
 		//     by Richard Sutton and Charles Anderson.
-		private static int go_cart(Network net, int max_steps, int thresh, Random rnd)
+		private static int Go_cart(Network net, int max_steps, int thresh, Random rnd)
 		{
 			float x,                /* cart position, meters */
 				  x_dot,            /* cart velocity */
@@ -200,7 +200,7 @@ namespace NEAT_CSharp.Demo
 					y = 1;
 
 				/*--- Apply action to the simulated cart-pole ---*/
-				cart_pole(y, ref x, ref x_dot, ref theta, ref theta_dot);
+				Cart_pole(y, ref x, ref x_dot, ref theta, ref theta_dot);
 
 				/*--- Check for failure.  If so, return steps ---*/
 				if (x < -2.4 || x > 2.4 || theta < -twelve_degrees || theta > twelve_degrees)
@@ -220,7 +220,7 @@ namespace NEAT_CSharp.Demo
 		 four state variables and updates their values by estimating the state
 		 TAU seconds later.
 		----------------------------------------------------------------------*/
-		static void cart_pole(int action, ref float x, ref float x_dot, ref float theta, ref float theta_dot)
+		static void Cart_pole(int action, ref float x, ref float x_dot, ref float theta, ref float theta_dot)
 		{
 			float xacc, thetaacc, force, costheta, sintheta, temp;
 

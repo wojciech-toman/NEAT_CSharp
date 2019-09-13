@@ -34,11 +34,11 @@ namespace NEAT_CSharp.Tests
 
             // Add connections from the paper
             gen1.AddConnection(1, 4, 0.5f);
-            gen1.addConnection(2, 4, false);
-            gen1.addConnection(3, 4);
-            gen1.addConnection(2, 5);
-            gen1.addConnection(5, 4);
-            gen1.addConnection(1, 5, true, 8);
+            gen1.AddConnection(2, 4, false);
+            gen1.AddConnection(3, 4);
+            gen1.AddConnection(2, 5);
+            gen1.AddConnection(5, 4);
+            gen1.AddConnection(1, 5, true, 8);
 
 
 
@@ -58,15 +58,15 @@ namespace NEAT_CSharp.Tests
             gen2.AddNode(new Node(Node.ENodeType.HIDDEN, 6));
 
             // Add connections from the paper
-            gen2.addConnection(1, 4);
-            gen2.addConnection(2, 4, false);
-            gen2.addConnection(3, 4);
-            gen2.addConnection(2, 5);
-            gen2.addConnection(5, 4, false);
-            gen2.addConnection(5, 6);
-            gen2.addConnection(6, 4);
-            gen2.addConnection(3, 5, true, 9);
-            gen2.addConnection(1, 6, true, 10);
+            gen2.AddConnection(1, 4);
+            gen2.AddConnection(2, 4, false);
+            gen2.AddConnection(3, 4);
+            gen2.AddConnection(2, 5);
+            gen2.AddConnection(5, 4, false);
+            gen2.AddConnection(5, 6);
+            gen2.AddConnection(6, 4);
+            gen2.AddConnection(3, 5, true, 9);
+            gen2.AddConnection(1, 6, true, 10);
         }
 
         [TestCleanup]
@@ -86,10 +86,10 @@ namespace NEAT_CSharp.Tests
 
             for (int i = 1; i <= gen1.Nodes.Count; ++i)
             {
-                Assert.IsTrue(gen1.getNodeById(i).ID == i);
+                Assert.IsTrue(gen1.GetNodeById(i).ID == i);
             }
-            Assert.IsTrue(gen1.getNodeById(0) == null);
-            Assert.IsTrue(gen1.getNodeById(6) == null);
+            Assert.IsTrue(gen1.GetNodeById(0) == null);
+            Assert.IsTrue(gen1.GetNodeById(6) == null);
         }
 
         [TestMethod]
@@ -133,7 +133,7 @@ namespace NEAT_CSharp.Tests
             gen3.AddConnection(2, 3, 1.0f);
 
             Assert.IsTrue(gen3.Nodes.Count == 3);
-            gen3.addNodeMutation(innovations);
+            gen3.AddNodeMutation(innovations);
             Assert.IsTrue(gen3.Nodes.Count == 4);
         }
 
@@ -148,14 +148,14 @@ namespace NEAT_CSharp.Tests
             float epsilon = 0.0001f;
 
             Assert.IsTrue(Math.Abs(gen1.CompatibilityDistance(gen2) - 5.04) < epsilon);
-            Assert.AreEqual(5, Genome.matchingGenesCount(gen1, gen2));
-            Assert.AreEqual(2, Genome.excessGenesCount(gen1, gen2));
-            Assert.AreEqual(3, Genome.disjointGenesCount(gen1, gen2));
-            Assert.IsTrue(Math.Abs(Genome.getAverageWeightDifference(gen1, gen2) - 0.1) < epsilon);
+            Assert.AreEqual(5, Genome.MatchingGenesCount(gen1, gen2));
+            Assert.AreEqual(2, Genome.ExcessGenesCount(gen1, gen2));
+            Assert.AreEqual(3, Genome.DisjointGenesCount(gen1, gen2));
+            Assert.IsTrue(Math.Abs(Genome.GetAverageWeightDifference(gen1, gen2) - 0.1) < epsilon);
 
 
             Console.WriteLine("\n\nCrossover:");
-            gen1.crossover(gen2, r).debugPrint();
+            gen1.Crossover(gen2, r).DebugPrint();
         }
 
         [TestMethod]
@@ -184,14 +184,14 @@ namespace NEAT_CSharp.Tests
             gen4.AddNode(new Node(Node.ENodeType.HIDDEN, 5));
 
             // Add connections from the paper
-            gen4.addConnection(1, 4);
-            gen4.addConnection(2, 4);
-            gen4.addConnection(3, 4);
-            gen4.addConnection(2, 5);
-            gen4.addConnection(5, 4);
+            gen4.AddConnection(1, 4);
+            gen4.AddConnection(2, 4);
+            gen4.AddConnection(3, 4);
+            gen4.AddConnection(2, 5);
+            gen4.AddConnection(5, 4);
 
             Assert.IsTrue(gen4.ConnectionGenes.Count == 5);
-            gen4.addConnectionMutation(innovations);
+            gen4.AddConnectionMutation(innovations);
             Assert.IsTrue(gen4.ConnectionGenes.Count == 6);
         }
 
@@ -307,20 +307,20 @@ namespace NEAT_CSharp.Tests
             gen1.AddConnection(1, 4, 0.5f);
             Assert.IsTrue(gen1.GetInnovationNumber() == 1);
 
-            gen1.addConnection(2, 4, false);
+            gen1.AddConnection(2, 4, false);
             Assert.IsTrue(gen1.GetInnovationNumber() == 2);
-            gen1.addConnection(3, 4);
+            gen1.AddConnection(3, 4);
             Assert.IsTrue(gen1.GetInnovationNumber() == 3);
-            gen1.addConnection(2, 5);
+            gen1.AddConnection(2, 5);
             Assert.IsTrue(gen1.GetInnovationNumber() == 4);
-            gen1.addConnection(5, 4);
+            gen1.AddConnection(5, 4);
             Assert.IsTrue(gen1.GetInnovationNumber() == 5);
-            gen1.addConnection(1, 5, true);
+            gen1.AddConnection(1, 5, true);
             Assert.IsTrue(gen1.GetInnovationNumber() == 6);
         }
 
         [TestMethod]
-        public void compatibilityDistanceTest_EmptyGenomes_Expected_0()
+        public void CompatibilityDistanceTest_EmptyGenomes_Expected_0()
         {
             Genome gen1 = new Genome(r);
             Genome gen2 = new Genome(r);
@@ -336,7 +336,7 @@ namespace NEAT_CSharp.Tests
         }
 
         [TestMethod]
-        public void compatibilityDistanceTest_ToSelf_Expected_0()
+        public void CompatibilityDistanceTest_ToSelf_Expected_0()
         {
             float epsilon = 0.0001f;
             Simulation tmpSim = new Simulation(r, gen1, 1);
@@ -346,7 +346,7 @@ namespace NEAT_CSharp.Tests
         }
 
         [TestMethod]
-        public void compatibilityDistanceTest_ToCopyOfSelf_Expected_0()
+        public void CompatibilityDistanceTest_ToCopyOfSelf_Expected_0()
         {
             float epsilon = 0.0001f;
             Simulation tmpSim = new Simulation(r, gen1, 1);
@@ -360,7 +360,7 @@ namespace NEAT_CSharp.Tests
         }
 
         [TestMethod]
-        public void compatibilityDistanceTest_TwoDifferentGenomes()
+        public void CompatibilityDistanceTest_TwoDifferentGenomes()
         {
             Simulation tmpSim = new Simulation(r, gen1, 1);
 
@@ -373,7 +373,7 @@ namespace NEAT_CSharp.Tests
         }
 
         [TestMethod]
-        public void compatibilityDistanceTest_TwoDifferentGenomes_2()
+        public void CompatibilityDistanceTest_TwoDifferentGenomes_2()
         {
             Simulation tmpSim = new Simulation(r, gen1, 1);
 
@@ -386,13 +386,13 @@ namespace NEAT_CSharp.Tests
 
             float epsilon = 0.0001f;
 
-            Assert.IsTrue(Genome.disjointGenesCount(gen1, genCopy) == 1);
+            Assert.IsTrue(Genome.DisjointGenesCount(gen1, genCopy) == 1);
             float distance = Math.Abs(gen1.CompatibilityDistance(genCopy));
             Assert.IsTrue(Math.Abs(distance - 1.0f) < epsilon, String.Format("Expected {0}, got {1}", 1.0f, distance));
         }
 
         [TestMethod]
-        public void compatibilityDistanceTest_TwoDifferentGenomes_3()
+        public void CompatibilityDistanceTest_TwoDifferentGenomes_3()
         {
             Simulation tmpSim = new Simulation(r, gen1, 1);
 
@@ -409,7 +409,7 @@ namespace NEAT_CSharp.Tests
 
             float epsilon = 0.0001f;
 
-            Assert.IsTrue(Genome.disjointGenesCount(gen1, genCopy) == 2);
+            Assert.IsTrue(Genome.DisjointGenesCount(gen1, genCopy) == 2);
 
             float distance = Math.Abs(gen1.CompatibilityDistance(genCopy));
             float weightDiff = 0.4f * (0.5f + 1.0f) / 6.0f;
@@ -419,7 +419,7 @@ namespace NEAT_CSharp.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void compatibilityDistanceTest_ToNull_Expected_Exception()
+        public void CompatibilityDistanceTest_ToNull_Expected_Exception()
         {
             Simulation tmpSim = new Simulation(r, gen1, 1);
             gen1.ParentSimulation = tmpSim;
@@ -438,37 +438,37 @@ namespace NEAT_CSharp.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void addConnectionTest_Null_ExpectectedException()
+        public void AddConnectionTest_Null_ExpectectedException()
         {
             Simulation tmpSim = new Simulation(r, gen1, 1);
             gen1.ParentSimulation = tmpSim;
 
-            gen1.addConnection(null);
+            gen1.AddConnection(null);
         }
 
         [TestMethod]
-        public void addConnectionTest_NonExisting()
+        public void AddConnectionTest_NonExisting()
         {
             Simulation tmpSim = new Simulation(r, gen1, 1);
             gen1.ParentSimulation = tmpSim;
 
-            ConnectionGene connection = new ConnectionGene(gen1.getNodeById(1), gen1.getNodeById(3), false, 1.0f, true, 1);
+            ConnectionGene connection = new ConnectionGene(gen1.GetNodeById(1), gen1.GetNodeById(3), false, 1.0f, true, 1);
 
-            gen1.addConnection(connection);
+            gen1.AddConnection(connection);
 
             Assert.AreEqual(7, gen1.ConnectionGenes.Count);
             Assert.AreEqual(5, gen1.Nodes.Count);
         }
 
         [TestMethod]
-        public void addConnectionTest_OneNonExistingNode_Expected_AddIt()
+        public void AddConnectionTest_OneNonExistingNode_Expected_AddIt()
         {
             Simulation tmpSim = new Simulation(r, gen1, 1);
             gen1.ParentSimulation = tmpSim;
 
-            ConnectionGene connection = new ConnectionGene(gen1.getNodeById(1), new Node(Node.ENodeType.HIDDEN, 10, 0.0f), false, 1.0f, true, 1);
+            ConnectionGene connection = new ConnectionGene(gen1.GetNodeById(1), new Node(Node.ENodeType.HIDDEN, 10, 0.0f), false, 1.0f, true, 1);
 
-            gen1.addConnection(connection);
+            gen1.AddConnection(connection);
 
             Assert.AreEqual(7, gen1.ConnectionGenes.Count);
             Assert.AreEqual(6, gen1.Nodes.Count);
@@ -476,14 +476,14 @@ namespace NEAT_CSharp.Tests
         }
 
         [TestMethod]
-        public void addConnectionTest_TwoNonExistingNode_Expected_AddThem()
+        public void AddConnectionTest_TwoNonExistingNode_Expected_AddThem()
         {
             Simulation tmpSim = new Simulation(r, gen1, 1);
             gen1.ParentSimulation = tmpSim;
 
             ConnectionGene connection = new ConnectionGene(new Node(Node.ENodeType.HIDDEN, 9, 0.0f), new Node(Node.ENodeType.HIDDEN, 10, 0.0f), false, 1.0f, true, 1);
 
-            gen1.addConnection(connection);
+            gen1.AddConnection(connection);
 
             Assert.AreEqual(7, gen1.ConnectionGenes.Count);
             Assert.AreEqual(7, gen1.Nodes.Count);
@@ -536,7 +536,7 @@ namespace NEAT_CSharp.Tests
             genome.AddNode(new Node(Node.ENodeType.SENSOR, 1));
             genome.AddNode(new Node(Node.ENodeType.OUTPUT, 2));
 
-            genome.addConnection(1, 2, false);
+            genome.AddConnection(1, 2, false);
 
             int connectionIndex = -1;
             bool found = genome.FindConnectionGeneToSplit(out connectionIndex);
@@ -555,7 +555,7 @@ namespace NEAT_CSharp.Tests
             genome.AddNode(new Node(Node.ENodeType.SENSOR, 1));
             genome.AddNode(new Node(Node.ENodeType.OUTPUT, 2));
 
-            genome.addConnection(1, 2, true);
+            genome.AddConnection(1, 2, true);
 
             int connectionIndex = -1;
             bool found = genome.FindConnectionGeneToSplit(out connectionIndex);
