@@ -193,8 +193,10 @@ namespace NEAT_CSharp
 			}
 		}
 
-		private void MutateChild(Genome child)
+		public void MutateChild(Genome child)
 		{
+            if (child == null) throw new ArgumentNullException(nameof(child));
+
 			if (this.random.NextDouble() < this.ParentSimulation.Parameters.AddNodeProbability)
 			{
 				child.AddNodeMutation(this.Innovations);

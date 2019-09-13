@@ -107,7 +107,8 @@ namespace NEAT_CSharp
 					outNodeFound = true;
 				}
 
-				if (inNodeFound && outNodeFound) break;
+				if (inNodeFound && outNodeFound)
+                    break;
 			}
 		}
 
@@ -116,16 +117,11 @@ namespace NEAT_CSharp
 			if (input == null) throw new ArgumentNullException(nameof(input));
 
 			if (input.Length != this.inputNodes.Count)
-			{
-                throw new ArgumentException($"Invalid number of input elements. Expected {inputNodes.Count}, was {input.Length}");
-			}
+			    throw new ArgumentException($"Invalid number of input elements. Expected {inputNodes.Count}, was {input.Length}");
 
 			// Set active state on the sensor nodes
 			for (int i = 0; i < input.Length; ++i)
 			{
-				// Don't set BIAS nodes
-				//if (inputNodes[i].NodeType == Node.ENodeType.BIAS) continue;
-
 				this.inputNodes[i].Activation = input[i];
 				this.inputNodes[i].ActivationCount++;
 			}
@@ -183,14 +179,16 @@ namespace NEAT_CSharp
         {
             foreach (Node node in this.nodes)
             {
-                if (node.NodeType == Node.ENodeType.SENSOR || node.NodeType == Node.ENodeType.BIAS) continue;
+                if (node.NodeType == Node.ENodeType.SENSOR || node.NodeType == Node.ENodeType.BIAS)
+                    continue;
 
                 node.ActivationSum = 0.0f;
                 node.IsActive = false;
                 foreach (Link lnk in node.IncomingLinks)
                 {
                     float toAdd = lnk.Weight * lnk.InNode.ActivationOut;
-                    if (lnk.InNode.NodeType == Node.ENodeType.SENSOR || lnk.InNode.NodeType == Node.ENodeType.BIAS || lnk.InNode.IsActive) node.IsActive = true;
+                    if (lnk.InNode.NodeType == Node.ENodeType.SENSOR || lnk.InNode.NodeType == Node.ENodeType.BIAS || lnk.InNode.IsActive)
+                        node.IsActive = true;
                     node.ActivationSum += toAdd;
                 }
             }
@@ -200,14 +198,15 @@ namespace NEAT_CSharp
         {
             foreach (Node node in this.nodes)
             {
-                if (node.NodeType == Node.ENodeType.SENSOR || node.NodeType == Node.ENodeType.BIAS) continue;
+                if (node.NodeType == Node.ENodeType.SENSOR || node.NodeType == Node.ENodeType.BIAS)
+                    continue;
+
                 if (node.IsActive)
                 {
                     node.LastActivation2 = node.LastActivation;
                     node.LastActivation = node.Activation;
 
                     node.Activation = ActivationFunction.CalculateActivation(node.ActivationSum);
-                    //node.Activation = (float)(1.0f / (1.0f + (Math.Exp(-(constant * node.ActivationSum - 2.4621365)))));
 
                     node.ActivationCount++;
                 }
@@ -249,7 +248,8 @@ namespace NEAT_CSharp
 
 			if (inNode == null) throw new ArgumentNullException(nameof(inNode));
 
-			if (inNode == outNode) return true;
+			if (inNode == outNode)
+                return true;
 			else
 			{
 				foreach(Link lnk in inNode.IncomingLinks)
@@ -258,6 +258,7 @@ namespace NEAT_CSharp
 						if (this.IsRecurrentConnection(lnk.InNode, outNode, count, thresh)) return true;
 				}
 			}
+
 			return false;
 		}
 	}

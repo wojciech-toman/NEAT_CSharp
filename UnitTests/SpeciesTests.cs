@@ -14,13 +14,14 @@ namespace NEAT_CSharp.Tests
         Random r = null;
         Species species = null;
         Simulation sim = null;
+        Genome gen = null;
 
         [TestInitialize]
         public void SetupTest()
         {
             r = new Random(0);
 
-            Genome gen = new Genome(r);
+            gen = new Genome(r);
             sim = new Simulation(r, gen, 1);
 
             // Create some fake species and genomes
@@ -34,6 +35,7 @@ namespace NEAT_CSharp.Tests
             r = null;
             species = null;
             sim = null;
+            gen = null;
         }
 
         [TestMethod]
@@ -133,6 +135,13 @@ namespace NEAT_CSharp.Tests
             species.Reproduce(nextGeneration, innovations);
 
             Assert.AreEqual(offspring, nextGeneration.Count);
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void MutateChildTest_NullChild_ExpectedException()
+        {
+            species.MutateChild(null);
         }
     }
 }

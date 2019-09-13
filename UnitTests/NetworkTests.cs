@@ -12,7 +12,7 @@ namespace NEAT_CSharp.Tests
     public class NetworkTests
     {
         [TestMethod]
-        public void activateTest_OneOutputNotConnected_Expected_False()
+        public void ActivateTest_OneOutputNotConnected_Expected_False()
         {
             // Create network and leave one of the output nodes unconnected
             Network net = new Network();
@@ -33,7 +33,7 @@ namespace NEAT_CSharp.Tests
         }
 
         [TestMethod]
-        public void activateTest_AllOutputsConnected_Expected_True()
+        public void ActivateTest_AllOutputsConnected_Expected_True()
         {
             // Create network and make all outputs connected to the network
             Network net = new Network();
@@ -55,7 +55,7 @@ namespace NEAT_CSharp.Tests
         }
 
         [TestMethod]
-        public void activateTest_OneInputNotConnected_Expected_True()
+        public void ActivateTest_OneInputNotConnected_Expected_True()
         {
             // Create network and leave one of the input nodes unconnected
             Network net = new Network();
@@ -76,7 +76,7 @@ namespace NEAT_CSharp.Tests
         }
 
         [TestMethod]
-        public void activateTest_HiddenNotConnected_Expected_True()
+        public void ActivateTest_HiddenNotConnected_Expected_True()
         {
             // Create network and leave hidden layer not connected
             Network net = new Network();
@@ -96,7 +96,7 @@ namespace NEAT_CSharp.Tests
         }
 
         [TestMethod]
-        public void addNodes()
+        public void AddNodes()
         {
             Network net = new Network();
 
@@ -115,14 +115,14 @@ namespace NEAT_CSharp.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void addNodes_Null_Expected_Exception()
+        public void AddNodes_Null_Expected_Exception()
         {
             Network net = new Network();
             net.AddNodes(null);
         }
 
         [TestMethod()]
-        public void getNodeByIdTest_NonExisting_Expected_Null()
+        public void GetNodeByIdTest_NonExisting_Expected_Null()
         {
             Network net = new Network();
 
@@ -139,7 +139,7 @@ namespace NEAT_CSharp.Tests
         }
 
         [TestMethod()]
-        public void getNodeByIdTest_Existing()
+        public void GetNodeByIdTest_Existing()
         {
             Network net = new Network();
 
@@ -235,7 +235,7 @@ namespace NEAT_CSharp.Tests
         [TestMethod()]
         public void SerializeDeserializeBinaryTest()
         {
-        Network net = new Network();
+            Network net = new Network();
 
             Node inNode1 = new Node(Node.ENodeType.SENSOR, 1);
             Node inNode2 = new Node(Node.ENodeType.SENSOR, 2);
@@ -284,6 +284,70 @@ namespace NEAT_CSharp.Tests
             Assert.AreEqual(5, net.Links[3].OutNode.ID);
 
             Assert.IsTrue(net.ActivationFunction is TestActivationFunction);
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(ArgumentException))]
+        public void SetInputTest_IncorrectInput_Size_Expected_Exception()
+        {
+            Network net = new Network();
+
+            Node inNode1 = new Node(Node.ENodeType.SENSOR, 1);
+            Node inNode2 = new Node(Node.ENodeType.SENSOR, 2);
+            Node hiddenNode = new Node(Node.ENodeType.HIDDEN, 3);
+            Node outNode1 = new Node(Node.ENodeType.OUTPUT, 4);
+            Node outNode2 = new Node(Node.ENodeType.OUTPUT, 5);
+
+            net.AddNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
+
+            net.AddLink(new Link(inNode1, hiddenNode, false, 1.0f));
+            net.AddLink(new Link(inNode2, hiddenNode, false, 1.0f));
+            net.AddLink(new Link(hiddenNode, outNode1, false, 1.0f));
+
+            net.SetInput(new float[] { 1.0f });
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void SetInputTest_NullInput_Expected_Exception()
+        {
+            Network net = new Network();
+
+            Node inNode1 = new Node(Node.ENodeType.SENSOR, 1);
+            Node inNode2 = new Node(Node.ENodeType.SENSOR, 2);
+            Node hiddenNode = new Node(Node.ENodeType.HIDDEN, 3);
+            Node outNode1 = new Node(Node.ENodeType.OUTPUT, 4);
+            Node outNode2 = new Node(Node.ENodeType.OUTPUT, 5);
+
+            net.AddNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
+
+            net.AddLink(new Link(inNode1, hiddenNode, false, 1.0f));
+            net.AddLink(new Link(inNode2, hiddenNode, false, 1.0f));
+            net.AddLink(new Link(hiddenNode, outNode1, false, 1.0f));
+
+            net.SetInput(null);
+        }
+
+        [TestMethod()]
+        public void SetInputTest_Correct()
+        {
+            Network net = new Network();
+
+            Node inNode1 = new Node(Node.ENodeType.SENSOR, 1);
+            Node inNode2 = new Node(Node.ENodeType.SENSOR, 2);
+            Node hiddenNode = new Node(Node.ENodeType.HIDDEN, 3);
+            Node outNode1 = new Node(Node.ENodeType.OUTPUT, 4);
+            Node outNode2 = new Node(Node.ENodeType.OUTPUT, 5);
+
+            net.AddNodes(new Node[] { inNode1, inNode2, hiddenNode, outNode1, outNode2 });
+
+            net.AddLink(new Link(inNode1, hiddenNode, false, 1.0f));
+            net.AddLink(new Link(inNode2, hiddenNode, false, 1.0f));
+            net.AddLink(new Link(hiddenNode, outNode1, false, 1.0f));
+
+            net.SetInput(new float[] { 1.0f, 2.0f });
+            Assert.AreEqual(1.0f, inNode1.Activation);
+            Assert.AreEqual(2.0f, inNode2.Activation);
         }
     }
 }
