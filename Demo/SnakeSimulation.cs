@@ -3,10 +3,15 @@
     using NEAT_CSharp;
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Threading;
 
     public class SnakeSimulation
 	{
+        // Grid dimensions
+        public const int gridWidth = 30;
+        public const int gridHeight = 30;
+
         #region Variables
 
         private Simulation sim;
@@ -38,6 +43,108 @@
 
 			this.isSimulationStarted = true;
 		}
+
+        public void ReplaySimulation()
+        {
+            int oldWidth = Console.WindowWidth;
+            int oldHeight = Console.WindowHeight;
+
+            if (!File.Exists("./best_snake"))
+            {
+                Console.WriteLine("\nNo saved networks found. Please make sure to run simulation first and then try again");
+                return;
+            }
+            Network net = Network.DeserializeNetwork("./best_snake");
+            Snake snakeObj = new Snake();
+            snakeObj.Brain = net;
+            snakeObj.rnd = rnd;
+            snakeObj.RunID = 0;
+            snakeObj.Seed = rnd.Next();
+            snakeObj.Start();
+
+            // Draw the board
+            Console.SetWindowSize(SnakeSimulation.gridWidth + 2, SnakeSimulation.gridHeight + 2);
+            Console.Clear();
+            for (int y = 0; y <= SnakeSimulation.gridHeight; ++y)
+            {
+                for (int x = 0; x <= SnakeSimulation.gridWidth; ++x)
+                {
+                    if (x == 0 || x == SnakeSimulation.gridWidth || y == 0 || y == SnakeSimulation.gridHeight)
+                    {
+                        Console.SetCursorPosition(x, y);
+                        Console.Write("#");
+                    }
+                }
+            }
+
+            Point previousSnakeLocation;
+            previousSnakeLocation.x = -100;
+            previousSnakeLocation.y = -100;
+            List<Point> previousSnake = new List<Point>();
+            List<Point> pointsToDraw = new List<Point>();
+
+            while (!snakeObj.IsDead)
+            {
+                // Clear previous food and snake
+                if (previousSnakeLocation.x != -100 && previousSnakeLocation.y != -100 &&
+                    previousSnakeLocation.x != snakeObj.FoodLocation.x && previousSnakeLocation.y != snakeObj.FoodLocation.y)
+                {
+                    Console.SetCursorPosition(previousSnakeLocation.x + SnakeSimulation.gridWidth / 2, previousSnakeLocation.y + SnakeSimulation.gridHeight / 2);
+                    Console.Write(" ");
+                }
+                previousSnakeLocation = snakeObj.FoodLocation;
+
+                pointsToDraw.Clear();
+                pointsToDraw.Add(snakeObj.CurrentLocation);
+                pointsToDraw.AddRange(snakeObj.Tails);
+
+                if (previousSnake.Count > 0)
+                {
+                    List<Point> pointsToClear = new List<Point>();
+                    foreach (Point p in previousSnake)
+                    {
+                        if (!pointsToDraw.Contains(p))
+                        {
+                            pointsToClear.Add(p);
+                            pointsToDraw.Remove(p);
+                        }
+                    }
+                    foreach (Point p in pointsToClear)
+                    {
+                        Console.SetCursorPosition(p.x + SnakeSimulation.gridWidth / 2, p.y + SnakeSimulation.gridHeight / 2);
+                        Console.Write(" ");
+                    }
+                }
+
+                previousSnake.Clear();
+                previousSnake.Add(snakeObj.CurrentLocation);
+                previousSnake.AddRange(snakeObj.Tails);
+
+                // Draw current food and snake
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.SetCursorPosition(snakeObj.FoodLocation.x + SnakeSimulation.gridWidth / 2, snakeObj.FoodLocation.y + SnakeSimulation.gridHeight / 2);
+                Console.Write("O");
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                foreach (Point p in pointsToDraw)
+                {
+                    Console.SetCursorPosition(p.x + SnakeSimulation.gridWidth / 2, p.y + SnakeSimulation.gridHeight / 2);
+                    Console.Write("@");
+                }
+                Console.ForegroundColor = ConsoleColor.White;
+
+                Console.SetCursorPosition(0, 0);
+
+                // Move the snake
+                snakeObj.MoveOnce();
+
+                Thread.Sleep(10);
+            }
+
+
+            Console.SetWindowSize(oldWidth, oldHeight);
+            Console.Clear();
+        }
 
 		private void InitSimulation()
 		{

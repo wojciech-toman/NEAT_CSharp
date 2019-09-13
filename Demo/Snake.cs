@@ -13,13 +13,10 @@ namespace NEAT_CSharp.Demo
 
     public class Snake
 	{
-		public const int gridWidth = 30;
-		public const int gridHeight = 30;
-
-		public const int borderTop = -gridHeight / 2;
-		public const int borderBottom = gridHeight / 2;
-		public const int borderLeft = -gridWidth / 2;
-		public const int borderRight = gridWidth / 2;
+		public const int borderTop = -SnakeSimulation.gridHeight / 2;
+		public const int borderBottom = SnakeSimulation.gridHeight / 2;
+		public const int borderLeft = -SnakeSimulation.gridWidth / 2;
+		public const int borderRight = SnakeSimulation.gridWidth / 2;
 
 		private static float allSnakesBestScore = 0;
 		private static float currentBestScore = 0;
@@ -121,7 +118,7 @@ namespace NEAT_CSharp.Demo
 
 		float maxDistance;
 
-		public int WithoutChangesThreshold { get; set; } = 240;
+		public int WithoutChangesThreshold { get; set; } = SnakeSimulation.gridWidth * 8;
 		public int RunID { get; internal set; }
 		public static float AllSnakesBestScore { get => allSnakesBestScore; set => allSnakesBestScore = value; }
 		public static float CurrentBestScore { get => currentBestScore; set => currentBestScore = value; }

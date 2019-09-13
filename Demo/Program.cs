@@ -31,9 +31,9 @@ namespace NEAT_CSharp.Demo
                 else if (key.Key == ConsoleKey.D2)
                     PoleBalanceSingleTest(r);
                 else if (key.Key == ConsoleKey.D3)
-                    SnakeGameTest(r);
+                    SnakeGameTest();
                 else if (key.Key == ConsoleKey.D4)
-                    SnakeGameReplay(r);
+                    SnakeGameReplay();
                 else
                     Console.WriteLine("Demo not found");
 
@@ -52,7 +52,7 @@ namespace NEAT_CSharp.Demo
             Console.WriteLine("- ESC to quit");
         }
 
-        private static void SnakeGameTest(Random r)
+        private static void SnakeGameTest()
 		{
 			SnakeSimulation sim = new SnakeSimulation();
 			sim.Start();
@@ -64,106 +64,10 @@ namespace NEAT_CSharp.Demo
 			Console.WriteLine("\nSimulation finished");
 		}
 
-		private static void SnakeGameReplay(Random r)
+		private static void SnakeGameReplay()
 		{
-            int oldWidth = Console.WindowWidth;
-            int oldHeight = Console.WindowHeight;
-
-            if (!File.Exists("./best_snake"))
-			{
-				Console.WriteLine("\nNo saved networks found. Please make sure to run simulation first and then try again");
-				return;
-			}
-			Network net = Network.DeserializeNetwork("./best_snake");
-			Snake snakeObj = new Snake();
-			snakeObj.Brain = net;
-			snakeObj.rnd = r;
-			snakeObj.RunID = 0;
-			snakeObj.Seed = r.Next();
-			snakeObj.Start();
-
-			// Draw the board
-			Console.SetWindowSize(Snake.gridWidth + 2, Snake.gridHeight + 2);
-			Console.Clear();
-			for (int y = 0; y <= Snake.gridHeight; ++y)
-			{
-				for (int x = 0; x <= Snake.gridWidth; ++x)
-				{
-					if (x == 0 || x == Snake.gridWidth || y == 0 || y == Snake.gridHeight)
-					{
-						Console.SetCursorPosition(x, y);
-						Console.Write("#");
-					}
-				}
-			}
-
-			Point previousSnakeLocation;
-			previousSnakeLocation.x = -100;
-			previousSnakeLocation.y = -100;
-			List<Point> previousSnake = new List<Point>();
-			List<Point> pointsToDraw = new List<Point>();
-
-			while (!snakeObj.IsDead)
-			{
-				// Clear previous food and snake
-				if (previousSnakeLocation.x != -100 && previousSnakeLocation.y != -100 &&
-					previousSnakeLocation.x != snakeObj.FoodLocation.x && previousSnakeLocation.y != snakeObj.FoodLocation.y)
-				{
-					Console.SetCursorPosition(previousSnakeLocation.x + Snake.gridWidth / 2, previousSnakeLocation.y + Snake.gridHeight / 2);
-					Console.Write(" ");
-				}
-				previousSnakeLocation = snakeObj.FoodLocation;
-
-				pointsToDraw.Clear();
-				pointsToDraw.Add(snakeObj.CurrentLocation);
-				pointsToDraw.AddRange(snakeObj.Tails);
-
-				if (previousSnake.Count > 0)
-				{
-					List<Point> pointsToClear = new List<Point>();
-					foreach (Point p in previousSnake)
-					{
-						if (!pointsToDraw.Contains(p))
-						{
-							pointsToClear.Add(p);
-							pointsToDraw.Remove(p);
-						}
-					}
-					foreach (Point p in pointsToClear)
-					{
-						Console.SetCursorPosition(p.x + Snake.gridWidth / 2, p.y + Snake.gridHeight / 2);
-						Console.Write(" ");
-					}
-				}
-
-				previousSnake.Clear();
-				previousSnake.Add(snakeObj.CurrentLocation);
-				previousSnake.AddRange(snakeObj.Tails);
-
-				// Draw current food and snake
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.SetCursorPosition(snakeObj.FoodLocation.x + Snake.gridWidth / 2, snakeObj.FoodLocation.y + Snake.gridHeight / 2);
-				Console.Write("O");
-
-				Console.ForegroundColor = ConsoleColor.Green;
-				foreach (Point p in pointsToDraw)
-				{
-					Console.SetCursorPosition(p.x + Snake.gridWidth / 2, p.y + Snake.gridHeight / 2);
-					Console.Write("@");
-				}
-				Console.ForegroundColor = ConsoleColor.White;
-
-				Console.SetCursorPosition(0, 0);
-
-				// Move the snake
-				snakeObj.MoveOnce();
-
-				Thread.Sleep(10);
-			}
-
-
-            Console.SetWindowSize(oldWidth, oldHeight);
-            Console.Clear();
+            SnakeSimulation sim = new SnakeSimulation();
+            sim.ReplaySimulation();
         }
 
 		private static void PoleBalanceSingleTest(Random r)
@@ -209,7 +113,7 @@ namespace NEAT_CSharp.Demo
 					numnodes = gen.Nodes.Count;
 					thresh = numnodes * 2;
 
-					gen.Fitness = Go_cart(network, MAX_STEPS, thresh, r);
+					gen.Fitness = go_cart(network, MAX_STEPS, thresh, r);
 					if (gen.Fitness > epochBestFitness)
 					{
 						epochBestFitness = gen.Fitness;
@@ -242,7 +146,7 @@ namespace NEAT_CSharp.Demo
 
 		//     cart_and_pole() was take directly from the pole simulator written
 		//     by Richard Sutton and Charles Anderson.
-		private static int Go_cart(Network net, int max_steps, int thresh, Random rnd)
+		private static int go_cart(Network net, int max_steps, int thresh, Random rnd)
 		{
 			float x,                /* cart position, meters */
 				  x_dot,            /* cart velocity */
@@ -296,7 +200,7 @@ namespace NEAT_CSharp.Demo
 					y = 1;
 
 				/*--- Apply action to the simulated cart-pole ---*/
-				Cart_pole(y, ref x, ref x_dot, ref theta, ref theta_dot);
+				cart_pole(y, ref x, ref x_dot, ref theta, ref theta_dot);
 
 				/*--- Check for failure.  If so, return steps ---*/
 				if (x < -2.4 || x > 2.4 || theta < -twelve_degrees || theta > twelve_degrees)
@@ -316,7 +220,7 @@ namespace NEAT_CSharp.Demo
 		 four state variables and updates their values by estimating the state
 		 TAU seconds later.
 		----------------------------------------------------------------------*/
-		static void Cart_pole(int action, ref float x, ref float x_dot, ref float theta, ref float theta_dot)
+		static void cart_pole(int action, ref float x, ref float x_dot, ref float theta, ref float theta_dot)
 		{
 			float xacc, thetaacc, force, costheta, sintheta, temp;
 
