@@ -24,7 +24,7 @@ namespace NEAT_CSharp
 		public int Offspring { get; set; }
 		public int AgeWithoutImprovement { get { return this.Age - this.LastImprovementAge; } }
 		public int LastImprovementAge { get; set; }
-		public bool ShouldBeObliterated { get; set; }
+		public bool ShouldBePenalized { get; set; }
 		// Maximum property ever registered by this species
 		public double MaxFitnessEver { get; private set; } = -1.0;
 
@@ -234,7 +234,7 @@ namespace NEAT_CSharp
 				gen.OriginalFitness = gen.Fitness;
 
 				// Penalize extreme stagnation
-				if ((ageDebt >= 1) || this.ShouldBeObliterated)
+				if ((ageDebt >= 1) || this.ShouldBePenalized)
 				{
 					gen.Fitness *= this.ParentSimulation.Parameters.SpeciesStagnationPenalty;
 				}

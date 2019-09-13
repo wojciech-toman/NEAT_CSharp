@@ -178,11 +178,11 @@ namespace NEAT_CSharp.Tests
 
             sim.EpochID = 30;
 
-            sim.ObliterateWorstSpecies();
+            sim.PenalizeNonImprovingSpecies();
 
-            Assert.AreEqual(false, species1.ShouldBeObliterated);
-            Assert.AreEqual(true, species2.ShouldBeObliterated);
-            Assert.AreEqual(false, species3.ShouldBeObliterated);
+            Assert.AreEqual(false, species1.ShouldBePenalized);
+            Assert.AreEqual(true, species2.ShouldBePenalized);
+            Assert.AreEqual(false, species3.ShouldBePenalized);
 
         }
 

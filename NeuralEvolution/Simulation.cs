@@ -104,7 +104,7 @@ namespace NEAT_CSharp
             // Once in 30 epochs, flag the worst performing species with age over 20 to be obliterated (its genomes will
             // get big fitness penalty for not improving). This should help reduce stagnation
             if (this.EpochID > 0 && this.EpochID % (this.Parameters.MaxSpeciesGenerationsWithoutImprovement * 2) == 0)
-                this.ObliterateWorstSpecies();
+                this.PenalizeNonImprovingSpecies();
 
             // Clear nextGeneration list -> new organisms will be added to it
             nextGeneration.Clear();
@@ -297,13 +297,13 @@ namespace NEAT_CSharp
                 this.species.RemoveAll(item => item.Genomes.Count == 0);
         }
 
-        public void ObliterateWorstSpecies()
+        public void PenalizeNonImprovingSpecies()
         {
             for (int i = this.species.Count - 1; i >= 0; --i)
             {
                 if (species[i].Age >= (this.Parameters.MaxSpeciesGenerationsWithoutImprovement + 5))
                 {
-                    species[i].ShouldBeObliterated = true;
+                    species[i].ShouldBePenalized = true;
                     break;
                 }
             }
