@@ -211,11 +211,11 @@ namespace NEAT_CSharp
 				}
 				if (this.random.NextDouble() < this.ParentSimulation.Parameters.MutateToggleEnabledProbability)
 				{
-					child.toggleEnabledMutation();
+					child.ToggleEnabledMutation();
 				}
 				if (this.random.NextDouble() < this.ParentSimulation.Parameters.MutateReenableProbability)
 				{
-					child.reenableMutation();
+					child.ReenableMutation();
 				}
 			}
 		}

@@ -200,12 +200,12 @@ namespace NEAT_CSharp.Tests
         {
             Genome gen5 = gen2.Copy();
             Assert.IsTrue(gen5.ConnectionGenes[7].IsEnabled == true);
-            gen5.toggleEnabledMutation();
+            gen5.ToggleEnabledMutation();
             Assert.IsTrue(gen5.ConnectionGenes[7].IsEnabled == false);
 
             gen5 = gen2.Copy();
             Assert.IsTrue(gen5.ConnectionGenes[1].IsEnabled == false);
-            gen5.reenableMutation();
+            gen5.ReenableMutation();
 
             Assert.IsTrue(gen5.ConnectionGenes[1].IsEnabled == true);
         }

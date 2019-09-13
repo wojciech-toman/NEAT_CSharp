@@ -656,7 +656,7 @@ namespace NEAT_CSharp
 		}
 
 		// Mutation that reenables previously disabled connection gene
-		public void reenableMutation()
+		public void ReenableMutation()
 		{
 			// Find first disabled gene and reenable it
 			foreach (ConnectionGene gene in this.connectionGenes)
@@ -822,7 +822,7 @@ namespace NEAT_CSharp
 
         public List<Node> Nodes => this.nodes;
 
-        public void toggleEnabledMutation()
+        public void ToggleEnabledMutation()
 		{
 			// Handle special case when one of the genomes is completely empty
 			if (this.connectionGenes.Count == 0)
