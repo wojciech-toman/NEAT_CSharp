@@ -20,7 +20,7 @@ namespace NEAT_CSharp
 
 		}
 
-		public Link(Node inNode, Node outNode, bool isRecurrent, float weight)
+		public Link(Node inNode, Node outNode, bool isRecurrent=false, float weight=0.0f)
 		{
 			this.InNode = inNode;
 			this.OutNode = outNode;

@@ -14,7 +14,8 @@ namespace NEAT_CSharp
 	// You need to create at least one object of Genome type and pass it to Simulation constructor.
 	public class Genome
 	{
-		private List<ConnectionGene> connectionGenes = new List<ConnectionGene>();
+        #region Variables
+        private List<ConnectionGene> connectionGenes = new List<ConnectionGene>();
 		private List<Node> nodes = new List<Node>();
 		private Random random = null;
 		private const int maxTries = 20;
@@ -28,9 +29,10 @@ namespace NEAT_CSharp
 
 
 		private int localInnovationCounter = 0;
+        #endregion
 
 
-		public int NextInnovationNumber()
+        public int NextInnovationNumber()
 		{
 			return ++this.localInnovationCounter;
 		}
@@ -58,7 +60,7 @@ namespace NEAT_CSharp
 			// First add all nodes
 			foreach (Node n in net.Nodes)
 			{
-				this.AddNode(n.copy());
+				this.AddNode(n.Copy());
 			}
 
 			// And now create connections based on the links
@@ -95,13 +97,8 @@ namespace NEAT_CSharp
 			return result;
 		}
 
-        private double fitness = 0.0;
-		public double Fitness
-		{
-			get { return this.fitness; }
-			set { this.fitness = value; }
-		}
-		public double OriginalFitness { get; set; }
+        public double Fitness { get; set; } = 0.0;
+        public double OriginalFitness { get; set; }
 
 		public float Error { get; set; }
 		public bool ShouldBeEliminated { get; set; }
@@ -125,7 +122,7 @@ namespace NEAT_CSharp
 				this.network = new Network();
 				foreach (Node n in this.nodes)
 				{
-					this.network.AddNode(n.copy());
+					this.network.AddNode(n.Copy());
 				}
 
 				foreach (ConnectionGene gene in this.connectionGenes)
@@ -178,8 +175,8 @@ namespace NEAT_CSharp
 				if (foundNode1 && foundNode2) break;
 			}
 
-			if (!foundNode1) this.AddNode(gene.InNodeGene.copy());
-			if (!foundNode2) this.AddNode(gene.OutNodeGene.copy());
+			if (!foundNode1) this.AddNode(gene.InNodeGene.Copy());
+			if (!foundNode2) this.AddNode(gene.OutNodeGene.Copy());
 
 			this.phenotypeChanged = true;
 		}
@@ -234,7 +231,7 @@ namespace NEAT_CSharp
             foreach (Node n in gen1.Nodes)
             {
                 if (n.NodeType == Node.ENodeType.SENSOR || n.NodeType == Node.ENodeType.BIAS || n.NodeType == Node.ENodeType.OUTPUT)
-                    child.AddNode(n.copy());
+                    child.AddNode(n.Copy());
             }
 
             foreach (ConnectionGene gene1 in moreFit.ConnectionGenes)
@@ -248,7 +245,7 @@ namespace NEAT_CSharp
                     if (gene1.Innovation == gene2.Innovation)
                     {
                         foundMatch = true;
-                        newGene = rnd.Next(2) == 0 ? gene1.copy() : gene2.copy();
+                        newGene = rnd.Next(2) == 0 ? gene1.Copy() : gene2.Copy();
                         // If one of the parent genes is disabled, there's big chance children's version will be too
                         if (!gene1.IsEnabled || !gene2.IsEnabled)
                             newGene.IsEnabled = rnd.NextDouble() > this.ParentSimulation.Parameters.DisableGeneProbability;
@@ -298,7 +295,7 @@ namespace NEAT_CSharp
 			foreach (Node n in gen1.Nodes)
 			{
 				if (n.NodeType == Node.ENodeType.SENSOR || n.NodeType == Node.ENodeType.BIAS || n.NodeType == Node.ENodeType.OUTPUT)
-					child.AddNode(n.copy());
+					child.AddNode(n.Copy());
 			}
 
 			foreach (ConnectionGene gene1 in moreFit.ConnectionGenes)
@@ -312,7 +309,7 @@ namespace NEAT_CSharp
 					if (gene1.Innovation == gene2.Innovation)
 					{
 						foundMatch = true;
-						newGene = rnd.NextDouble() < 0.5 ? gene1.copy() : gene2.copy();
+						newGene = rnd.NextDouble() < 0.5 ? gene1.Copy() : gene2.Copy();
 						newGene.Weight = (gene1.Weight + gene2.Weight) / 2.0f;
 						newGene.IsRecurrent = rnd.NextDouble() < 0.5 ? gene1.IsRecurrent : gene2.IsRecurrent;
 						newGene.Innovation = gene1.Innovation;
@@ -485,8 +482,6 @@ namespace NEAT_CSharp
 				if (!innovationFound)
 				{
 					float newRandomWeight = (float)(this.random.NextDouble() * 2.0f - 1.0f);
-					//this.connectionGenes.Add(new ConnectionGene(this.getNode(startNode), this.getNode(targetNode), newRandomWeight, true, this.NextInnovationNumber()));
-					//this.addConnection(new ConnectionGene(this.getNode(startNode), this.getNode(targetNode), newRandomWeight, true, this.NextInnovationNumber()));
 					Innovation newInnov = new Innovation(Innovation.EInnovationType.NEWLINK, node1, node2, null, Innovation.GetNextID(), 0, newRandomWeight, 0);
 					innovations.Add(newInnov);
 

@@ -34,7 +34,8 @@ namespace NEAT_CSharp
 			}
 			catch (Exception ex)
 			{
-				//Log exception here
+				// Rethrow exception
+                throw;
 			}
 		}
 
@@ -54,7 +55,8 @@ namespace NEAT_CSharp
 			}
 			catch (Exception ex)
 			{
-				//Log exception here
+                // Rethrow exception
+                throw;
 			}
 
 			return result;
@@ -94,7 +96,7 @@ namespace NEAT_CSharp
 				if (n.ID == link.InNode.ID)
 				{
 					link.InNode = n;
-					n.addOutcomingLink(link);
+					n.AddOutcomingLink(link);
 
 					inNodeFound = true;
 				}
@@ -102,7 +104,7 @@ namespace NEAT_CSharp
 				if (n.ID == link.OutNode.ID)
 				{
 					link.OutNode = n;
-					n.addIncomingLink(link);
+					n.AddIncomingLink(link);
 
 					outNodeFound = true;
 				}
@@ -226,7 +228,7 @@ namespace NEAT_CSharp
 		public void Reset()
 		{
 			foreach (Node n in this.nodes)
-				n.reset();
+				n.Reset();
 		}
 
 		public int GetMaxDepth()
@@ -234,7 +236,7 @@ namespace NEAT_CSharp
 			int maxDepth = 0;
 			foreach (Node n in this.outputNodes)
 			{
-				int depth = n.getDepth(0);
+				int depth = n.GetDepth(0);
 				if (depth > maxDepth) maxDepth = depth;
 			}
 

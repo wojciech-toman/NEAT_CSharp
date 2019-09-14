@@ -39,6 +39,15 @@ namespace NEAT_CSharp.Tests
         }
 
         [TestMethod]
+        public void AgeWithoutImprovementTest()
+        {
+            species.LastImprovementAge = 10;
+            species.Age = 30;
+
+            Assert.AreEqual(20, species.AgeWithoutImprovement);
+        }
+
+        [TestMethod]
         public void GetChampionTest_BeforeFitnessAdjustment()
         {
             Genome gen1 = new Genome(r); gen1.ParentSimulation = sim; gen1.Fitness = 1.0f;

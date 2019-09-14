@@ -309,8 +309,10 @@ namespace NEAT_CSharp
             }
         }
 
-        private void AddGenomesToSpecies(List<Genome> genomes)
+        public void AddGenomesToSpecies(List<Genome> genomes)
 		{
+            if (genomes == null) throw new ArgumentNullException(nameof(genomes));
+
 			foreach (Genome gen in genomes)
 			{
 				bool compatibleSpeciesFound = false;

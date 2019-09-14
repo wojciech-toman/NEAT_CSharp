@@ -22,7 +22,7 @@ namespace NEAT_CSharp
 		public Simulation ParentSimulation { get; set; }
 
 		public int Offspring { get; set; }
-		public int AgeWithoutImprovement { get { return this.Age - this.LastImprovementAge; } }
+		public int AgeWithoutImprovement => this.Age - this.LastImprovementAge;
 		public int LastImprovementAge { get; set; }
 		public bool ShouldBePenalized { get; set; }
 		// Maximum property ever registered by this species
@@ -47,11 +47,6 @@ namespace NEAT_CSharp
 			genomes.Remove(gen);
 		}
 
-		/*public double getAdjustedFitness(int genomeIdx)
-		{
-			return (this.genomes[genomeIdx].Fitness / this.genomes.Count);
-		}*/
-
 		public double GetAverageFitness()
 		{
 			double totalFitness = 0.0;
@@ -60,15 +55,6 @@ namespace NEAT_CSharp
 
 			return (totalFitness / this.genomes.Count);
 		}
-
-		/*public double getTotalAdjustedFitness()
-		{
-			double totalFitness = 0.0;
-			for (int i = 0; i < this.genomes.Count; ++i)
-				totalFitness += this.getAdjustedFitness(i);
-
-			return totalFitness;
-		}*/
 
 		public Genome GetSampleGenome()
 		{

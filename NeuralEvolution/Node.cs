@@ -18,7 +18,6 @@ namespace NEAT_CSharp
 			BIAS = 3
 		};
 
-		//static int nodeId;
 		private List<Link> incomingLinks = new List<Link>();
 		private List<Link> outcomingLinks = new List<Link>();
 
@@ -36,7 +35,7 @@ namespace NEAT_CSharp
                 this.ActivationCount == n.ActivationCount && this.ActivationOut == n.ActivationOut && this.ActivationSum == n.ActivationSum);
         }
 
-        public void addIncomingLink(Link lnk)
+        public void AddIncomingLink(Link lnk)
 		{
 			this.incomingLinks.Add(lnk);
 		}
@@ -45,7 +44,7 @@ namespace NEAT_CSharp
 
         public List<Link> OutcomingLinks => this.outcomingLinks;
 
-        public void addOutcomingLink(Link lnk)
+        public void AddOutcomingLink(Link lnk)
 		{
 			this.outcomingLinks.Add(lnk);
 		}
@@ -78,23 +77,20 @@ namespace NEAT_CSharp
 		public int ID { get; set; }
 		public int ActivationCount { get; set; }
 		public float Activation { get; set; }
-		public float ActivationOut
-		{
-			get { return (this.ActivationCount > 0 ? this.Activation : 0.0f); }
-		}
-		public bool IsActive { get; set; }
+        public float ActivationOut => (this.ActivationCount > 0 ? this.Activation : 0.0f);
+        public bool IsActive { get; set; }
 		public float ActivationSum { get; set; }
 		public float LastActivation { get; set; }
 		public float LastActivation2 { get; set; }
 
-		public Node copy()
+		public Node Copy()
 		{
 			return new Node(this.NodeType, this.ID, this.Activation);
 		}
 
-		public void reset()
+		public void Reset()
 		{
-			//A sensor should not flush black
+			// A sensor should not flush black
 			if (this.NodeType == ENodeType.SENSOR || this.NodeType == ENodeType.BIAS)
 			{
 				this.ActivationCount = 0;
@@ -117,12 +113,12 @@ namespace NEAT_CSharp
 				{
 					//lnk.addedWeight = 0.0f;
 					if (lnk.InNode.ActivationCount > 0)
-						lnk.InNode.reset();
+						lnk.InNode.Reset();
 				}
 			}
 		}
 
-		public int getDepth(int depth)
+		public int GetDepth(int depth)
 		{
 			if (depth > 10)
 				return 10;
@@ -136,7 +132,7 @@ namespace NEAT_CSharp
 			{
 				foreach (Link lnk in this.incomingLinks)
 				{
-					curDepth = lnk.InNode.getDepth(depth + 1);
+					curDepth = lnk.InNode.GetDepth(depth + 1);
 					if (curDepth > maxDepth) maxDepth = curDepth;
 				}
 

@@ -40,9 +40,9 @@ namespace NEAT_CSharp
                 this.IsEnabled == rhs.IsEnabled && this.Innovation == rhs.Innovation && this.IsRecurrent == rhs.IsRecurrent);
         }
 
-        public ConnectionGene copy()
+        public ConnectionGene Copy()
 		{
-			return new ConnectionGene(this.InNodeGene.copy(), this.OutNodeGene.copy(), this.IsRecurrent, this.Weight, this.IsEnabled, this.Innovation);
+			return new ConnectionGene(this.InNodeGene.Copy(), this.OutNodeGene.Copy(), this.IsRecurrent, this.Weight, this.IsEnabled, this.Innovation);
 		}
 	}
 }

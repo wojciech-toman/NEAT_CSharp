@@ -422,7 +422,7 @@ namespace NEAT_CSharp.Tests
             sim.CalculateSpeciesOffspring(0.0f);
 
             Assert.AreEqual(7, sim.Species[0].Offspring);
-            for(int i = 1; i < sim.Species.Count; ++i)
+            for (int i = 1; i < sim.Species.Count; ++i)
                 Assert.AreEqual(5, sim.Species[i].Offspring);
         }
 
@@ -469,6 +469,66 @@ namespace NEAT_CSharp.Tests
             Assert.AreEqual(4, species2.Offspring);
             Assert.AreEqual(6, species3.Offspring);
             Assert.AreEqual(9, species4.Offspring);
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void AddGenomesToSpeciesTest_NullGenomes_Expected_Exception()
+        {
+            UnitTests.RandomStub randomStub = new UnitTests.RandomStub();
+            Simulation sim = new Simulation(randomStub, gen, 21);
+
+            sim.AddGenomesToSpecies(null);
+        }
+
+        [TestMethod()]
+        public void AddGenomesToSpeciesTest_NoSpecies_Expected_CreateNewSpecies()
+        {
+            UnitTests.RandomStub randomStub = new UnitTests.RandomStub();
+            Simulation sim = new Simulation(randomStub, gen, 10);
+            sim.Species.Clear();
+
+            Genome gen1 = new Genome(randomStub);
+            gen1.OriginalFitness = 5;
+            gen1.Fitness = 5;
+
+
+            Assert.AreEqual(0, sim.Species.Count);
+            sim.AddGenomesToSpecies(new List<Genome> { gen1 });
+            Assert.AreEqual(1, sim.Species.Count);
+        }
+
+        [TestMethod()]
+        public void AddGenomesToSpeciesTest()
+        {
+            UnitTests.RandomStub randomStub = new UnitTests.RandomStub();
+            Simulation sim = new Simulation(randomStub, gen, 10);
+
+            // Create some fake species and genomes
+            Species species1 = new Species(randomStub);
+
+            // Two genomes are matching, one is not so we should get 2 species (with 2 and 1 Genomes respectively)
+            Genome gen1 = new Genome(randomStub);
+            Genome gen2 = new Genome(randomStub);
+
+            Genome gen3 = new Genome(randomStub);
+            gen3.ParentSimulation = sim;
+            gen3.AddNode(new Node(Node.ENodeType.SENSOR, 1));
+            gen3.AddNode(new Node(Node.ENodeType.SENSOR, 2));
+            gen3.AddNode(new Node(Node.ENodeType.OUTPUT, 3));
+            gen3.AddNode(new Node(Node.ENodeType.OUTPUT, 4));
+            gen3.AddConnectionGene(1, 2, true);
+            gen3.AddConnectionGene(1, 3, true);
+            gen3.AddConnectionGene(1, 4, true);
+
+
+            sim.Species.Clear();
+
+            sim.AddGenomesToSpecies(new List<Genome> { gen1, gen2, gen3 });
+
+            Assert.AreEqual(2, sim.Species.Count);
+            Assert.AreEqual(2, sim.Species[0].Genomes.Count);
+            Assert.AreEqual(1, sim.Species[1].Genomes.Count);
         }
     }
 }
