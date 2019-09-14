@@ -152,11 +152,11 @@
 
 			Genome startGenome = new Genome(rnd);
 			int inputs = 3 + 1 + 3 + 3;
-			// 3 nodes are used to store distance to food,
-			// 1 node is used as a bias (always 1.0),
-			// 3 nodes are used to store distance to the snake itself (to avoid collisions with self - hopefully),
-			// 3 nodes are used to store distance to the walls
-			for (int i = 0; i < inputs; ++i)
+            // 3 nodes are used to store distance to the walls
+            // 1 node is used as a bias (always 1.0),
+            // 3 nodes are used to store distance to the snake itself (to avoid collisions with self),
+            // 3 nodes are used to store distance to food
+            for (int i = 0; i < inputs; ++i)
 				startGenome.AddNode(new Node(i != 3 ? Node.ENodeType.SENSOR : Node.ENodeType.BIAS, i + 1));
 
 			// Output: Move left, straight, right
@@ -165,9 +165,8 @@
 			startGenome.AddNode(new Node(Node.ENodeType.OUTPUT, outputStart + 1));
 			startGenome.AddNode(new Node(Node.ENodeType.OUTPUT, outputStart + 2));
 
-
-			// Food distance
-			startGenome.AddConnectionGene(1, outputStart + 0, 0.0f);
+            // Walls distance
+            startGenome.AddConnectionGene(1, outputStart + 0, 0.0f);
 			startGenome.AddConnectionGene(2, outputStart + 1, 0.0f);
 			startGenome.AddConnectionGene(3, outputStart + 2, 0.0f);
 
@@ -176,8 +175,8 @@
 			startGenome.AddConnectionGene(6, outputStart + 1, 0.0f);
 			startGenome.AddConnectionGene(7, outputStart + 2, 0.0f);
 
-			// Walls distance
-			startGenome.AddConnectionGene(8, outputStart + 0, 0.0f);
+            // Food distance
+            startGenome.AddConnectionGene(8, outputStart + 0, 0.0f);
 			startGenome.AddConnectionGene(9, outputStart + 1, 0.0f);
 			startGenome.AddConnectionGene(10, outputStart + 2, 0.0f);
 
