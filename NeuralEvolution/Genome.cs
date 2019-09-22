@@ -228,16 +228,11 @@ namespace NEAT_CSharp
             GetMoreAndLessFit(gen2, gen1, out moreFit, out lessFit);
 
             // Make sure all inputs and outputs are included in the child genome
-            foreach (Node n in gen1.Nodes)
-            {
-                if (n.NodeType == Node.ENodeType.SENSOR || n.NodeType == Node.ENodeType.BIAS || n.NodeType == Node.ENodeType.OUTPUT)
-                    child.AddNode(n.Copy());
-            }
+            child.AddInputAndOutputNodesFromGenome(gen1);
 
             foreach (ConnectionGene gene1 in moreFit.ConnectionGenes)
             {
                 bool foundMatch = false;
-                bool skip = false;
                 ConnectionGene newGene = null;
                 foreach (ConnectionGene gene2 in lessFit.ConnectionGenes)
                 {
@@ -255,27 +250,42 @@ namespace NEAT_CSharp
 
                 // Disjoint or excess node
                 if (!foundMatch)
-                {
                     newGene = gene1;
-                }
 
-                // Check if there aren't any conflicts with an existing connection
-                foreach (ConnectionGene g in child.ConnectionGenes)
-                {
-                    if ((g.InNodeGene.ID == newGene.InNodeGene.ID && g.OutNodeGene.ID == newGene.OutNodeGene.ID && g.IsRecurrent == newGene.IsRecurrent) ||
-                        (g.InNodeGene.ID == newGene.OutNodeGene.ID && g.OutNodeGene.ID == newGene.InNodeGene.ID && !g.IsRecurrent && !newGene.IsRecurrent))
-                    {
-                        skip = true;
-                        break;
-                    }
-                }
-
-                if (!skip)
-                    child.AddConnectionGene(newGene);
+                this.AddConnectionGeneToChild(child, newGene);
             }
 
 
             return child;
+        }
+
+        private void AddConnectionGeneToChild(Genome child, ConnectionGene newGene)
+        {
+            // Check if there aren't any conflicts with an existing connection
+            bool skip = false;
+            foreach (ConnectionGene g in child.ConnectionGenes)
+            {
+                if ((g.InNodeGene.ID == newGene.InNodeGene.ID && g.OutNodeGene.ID == newGene.OutNodeGene.ID && g.IsRecurrent == newGene.IsRecurrent) ||
+                    (g.InNodeGene.ID == newGene.OutNodeGene.ID && g.OutNodeGene.ID == newGene.InNodeGene.ID && !g.IsRecurrent && !newGene.IsRecurrent))
+                {
+                    skip = true;
+                    break;
+                }
+            }
+
+            if (!skip)
+                child.AddConnectionGene(newGene);
+        }
+
+        public void AddInputAndOutputNodesFromGenome(Genome baseGenome)
+        {
+            if (baseGenome == null) throw new ArgumentNullException(nameof(baseGenome));
+
+            foreach (Node n in baseGenome.Nodes)
+            {
+                if (n.NodeType == Node.ENodeType.SENSOR || n.NodeType == Node.ENodeType.BIAS || n.NodeType == Node.ENodeType.OUTPUT)
+                    this.AddNode(n.Copy());
+            }
         }
 
         // Performs crossover by averaging both genomes
@@ -291,17 +301,12 @@ namespace NEAT_CSharp
 			Genome moreFit, lessFit;
 			GetMoreAndLessFit(gen2, gen1, out moreFit, out lessFit);
 
-			// Make sure all inputs and outputs are included in the child genome
-			foreach (Node n in gen1.Nodes)
-			{
-				if (n.NodeType == Node.ENodeType.SENSOR || n.NodeType == Node.ENodeType.BIAS || n.NodeType == Node.ENodeType.OUTPUT)
-					child.AddNode(n.Copy());
-			}
+            // Make sure all inputs and outputs are included in the child genome
+            child.AddInputAndOutputNodesFromGenome(gen1);
 
-			foreach (ConnectionGene gene1 in moreFit.ConnectionGenes)
+            foreach (ConnectionGene gene1 in moreFit.ConnectionGenes)
 			{
 				bool foundMatch = false;
-				bool skip = false;
 				ConnectionGene newGene = null;
 				foreach (ConnectionGene gene2 in lessFit.ConnectionGenes)
 				{
@@ -320,24 +325,12 @@ namespace NEAT_CSharp
 					}
 				}
 
-				// Disjoint or excess node
-				if (!foundMatch)
-					newGene = gene1;
+                // Disjoint or excess node
+                if (!foundMatch)
+                    newGene = gene1;
 
-				// Check if there aren't any conflicts with an existing connection
-				foreach (ConnectionGene g in child.ConnectionGenes)
-				{
-					if ((g.InNodeGene.ID == newGene.InNodeGene.ID && g.OutNodeGene.ID == newGene.OutNodeGene.ID && g.IsRecurrent == newGene.IsRecurrent) ||
-						(g.InNodeGene.ID == newGene.OutNodeGene.ID && g.OutNodeGene.ID == newGene.InNodeGene.ID && !g.IsRecurrent && !newGene.IsRecurrent))
-					{
-						skip = true;
-						break;
-					}
-				}
-
-				if (!skip)
-					child.AddConnectionGene(newGene);
-			}
+                this.AddConnectionGeneToChild(child, newGene);
+            }
 
 
 			return child;

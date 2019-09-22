@@ -591,5 +591,27 @@ namespace NEAT_CSharp.Tests
             Assert.AreEqual(7, gen1.ConnectionGenes.Count);
             Assert.AreEqual(newGene, gen1.ConnectionGenes[1]);
         }
+
+        [TestMethod()]
+        public void AddNodesToChildGenomeTest()
+        {
+            Genome newGenome = new Genome(r);
+
+            Assert.AreEqual(0, newGenome.Nodes.Count);
+
+            newGenome.AddInputAndOutputNodesFromGenome(baseGenome: gen1);
+
+            Assert.AreEqual(4, newGenome.Nodes.Count);
+            Assert.AreEqual(0, newGenome.ConnectionGenes.Count);
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void AddNodesToChildGenomeTest_NullBase_Expected_Exception()
+        {
+            Genome newGenome = new Genome(r);
+
+            newGenome.AddInputAndOutputNodesFromGenome(baseGenome: null);
+        }
     }
 }
