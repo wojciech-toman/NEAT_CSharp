@@ -72,15 +72,7 @@ namespace NEAT_CSharp
 
 		public Genome Copy()
 		{
-			if (!typeof(Genome).IsSerializable)
-			{
-				throw new Exception("The source object must be serializable");
-			}
-
-			if (Object.ReferenceEquals(this, null))
-			{
-				throw new Exception("The source object must not be null");
-			}
+			if (!typeof(Genome).IsSerializable) throw new Exception("The source object must be serializable");
 
 			Genome result = default(Genome);
 
@@ -584,61 +576,63 @@ namespace NEAT_CSharp
 			else severeMutation = false;
 
 			double rate = 1.0;
-			double gausspoint, coldgausspoint;
+			double gaussPoint, coldGaussPoint;
 			double genesCount = this.connectionGenes.Count;
 			double endpart = genesCount * 0.8;
 			double counter = 0.0;
 
 			foreach (ConnectionGene gene in this.connectionGenes)
-			{
-				if (severeMutation)
-				{
-					gausspoint = 0.3;
-					coldgausspoint = 0.1;
-				}
-				else if ((genesCount >= 10.0) && (counter > endpart))
-				{
-					gausspoint = 0.5;       // Mutate by modification % of connections
-					coldgausspoint = 0.3;   // Mutate the rest by replacement % of the time
-				}
-				else
-				{
-					// Half the time don't do any cold mutations
-					if (this.random.NextDouble() > 0.5)
-					{
-						gausspoint = 1.0 - rate;
-						coldgausspoint = 1.0 - rate - 0.1;
-					}
-					else
-					{
-						gausspoint = 1.0 - rate;
-						coldgausspoint = 1.0 - rate;
-					}
-				}
+            {
+                if (severeMutation)
+                {
+                    gaussPoint = 0.3;
+                    coldGaussPoint = 0.1;
+                }
+                else if ((genesCount >= 10.0) && (counter > endpart))
+                {
+                    gaussPoint = 0.5;       // Mutate by modification % of connections
+                    coldGaussPoint = 0.3;   // Mutate the rest by replacement % of the time
+                }
+                else
+                {
+                    // Half the time don't do any cold mutations
+                    if (this.random.NextDouble() > 0.5)
+                    {
+                        gaussPoint = 1.0 - rate;
+                        coldGaussPoint = 1.0 - rate - 0.1;
+                    }
+                    else
+                    {
+                        gaussPoint = 1.0 - rate;
+                        coldGaussPoint = 1.0 - rate;
+                    }
+                }
 
-				double randomWeight = (this.random.NextDouble() * 2.0f - 1.0f) * mutationPower;
+                double randomWeight = (this.random.NextDouble() * 2.0f - 1.0f) * mutationPower;
 
-				double randchoice = this.random.NextDouble();
-				if (randchoice > gausspoint)
-					gene.Weight += (float)randomWeight;
-				else if (randchoice > coldgausspoint)
-					gene.Weight = (float)randomWeight;
+                this.UpdateGeneWeight(gene, gaussPoint, coldGaussPoint, randomWeight);
 
+                counter += 1.0;
+            }
 
-				if (this.ParentSimulation.Parameters.AreConnectionWeightsCapped)
-				{
-					if (gene.Weight > this.ParentSimulation.Parameters.MaxWeight) gene.Weight = this.ParentSimulation.Parameters.MaxWeight;
-					if (gene.Weight < -this.ParentSimulation.Parameters.MaxWeight) gene.Weight = -this.ParentSimulation.Parameters.MaxWeight;
-				}
-
-				counter += 1.0;
-			}
-
-			this.phenotypeChanged = true;
+            this.phenotypeChanged = true;
 		}
 
-		// Mutation that reenables previously disabled connection gene
-		public void ReenableMutation()
+        private void UpdateGeneWeight(ConnectionGene geneToChange, double gaussPoint, double coldGaussPoint, double randomWeight)
+        {
+            double randchoice = this.random.NextDouble();
+            if (randchoice > gaussPoint)
+                geneToChange.Weight += (float)randomWeight;
+            else if (randchoice > coldGaussPoint)
+                geneToChange.Weight = (float)randomWeight;
+
+
+            if (this.ParentSimulation.Parameters.AreConnectionWeightsCapped)
+                geneToChange.Weight.Clamp(-this.ParentSimulation.Parameters.MaxWeight, this.ParentSimulation.Parameters.MaxWeight);
+        }
+
+        // Mutation that reenables previously disabled connection gene
+        public void ReenableMutation()
 		{
 			// Find first disabled gene and reenable it
 			foreach (ConnectionGene gene in this.connectionGenes)
