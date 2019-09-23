@@ -52,6 +52,7 @@
     <Compile Include="ActivationFunctions\ReLUTests.cs" />
     <Compile Include="ActivationFunctions\SteepenedSigmoidTests.cs" />
     <Compile Include="ActivationFunctions\ThresholdTests.cs" />
+    <Compile Include="HelperMethodsTests.cs" />
     <Compile Include="InnovationTests.cs" />
     <Compile Include="RandomStub.cs" />
     <Compile Include="GenomeTests.cs" />

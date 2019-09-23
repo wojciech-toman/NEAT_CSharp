@@ -60,6 +60,7 @@
     <Compile Include="ActivationFunctions\Threshold.cs" />
     <Compile Include="ConnectionGene.cs" />
     <Compile Include="Genome.cs" />
+    <Compile Include="HelperMethods.cs" />
     <Compile Include="Innovation.cs" />
     <Compile Include="Link.cs" />
     <Compile Include="Network.cs" />
