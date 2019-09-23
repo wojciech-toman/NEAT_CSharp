@@ -235,8 +235,18 @@ namespace NEAT_CSharp.Demo
 			if (currentLocation.x == foodLocation.x && currentLocation.y == foodLocation.y)
 				ate = true;
 
-			// Did eat something? If so, insert new tail element into the gap and increase snake's genome fitness (to reward it for doing good thing)
-			if (ate)
+            // Add small penalty for those movements that don't result in eating.
+            // The rationale is that the Snake will "prefer" to find quicker ways to get to food
+            // and thus develop more complex moves.
+            if (!ate)
+            {
+                if(fitness >= 0.005f) fitness -= 0.005f;
+                if (this.Genome != null)
+                    if (fitness >= 0.005f) this.Genome.Fitness -= 0.005f;
+            }
+
+            // Did eat something? If so, insert new tail element into the gap and increase snake's genome fitness (to reward it for doing good thing)
+            if (ate)
 			{
 				fitness += 1;
 				if (this.Genome != null)
