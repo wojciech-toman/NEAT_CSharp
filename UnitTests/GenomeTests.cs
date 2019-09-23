@@ -613,5 +613,28 @@ namespace NEAT_CSharp.Tests
 
             newGenome.AddInputAndOutputNodesFromGenome(baseGenome: null);
         }
+
+        [TestMethod()]
+        public void FindFirstNonInputNodeTest()
+        {
+            Assert.AreEqual(3, gen1.FindFirstNonInputNode());
+
+            // Genome 1
+            Genome newGenome = new Genome(r);
+
+            // Create 3 sensors & 1 bias
+            newGenome.AddNode(new Node(Node.ENodeType.SENSOR, 1));
+            newGenome.AddNode(new Node(Node.ENodeType.SENSOR, 2));
+            newGenome.AddNode(new Node(Node.ENodeType.SENSOR, 3));
+            newGenome.AddNode(new Node(Node.ENodeType.BIAS, 4));
+
+            // Create 1 output
+            newGenome.AddNode(new Node(Node.ENodeType.OUTPUT, 4));
+
+            // Create 1 hidden node
+            newGenome.AddNode(new Node(Node.ENodeType.HIDDEN, 5));
+
+            Assert.AreEqual(4, newGenome.FindFirstNonInputNode());
+        }
     }
 }

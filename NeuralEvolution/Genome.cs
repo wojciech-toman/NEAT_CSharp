@@ -352,143 +352,145 @@ namespace NEAT_CSharp
 
         // Mutation that creates new connection between 2 nodes.
         public void AddConnectionMutation(List<Innovation> innovations)
-		{
-			if (innovations == null) throw new ArgumentNullException(nameof(innovations));
+        {
+            if (innovations == null) throw new ArgumentNullException(nameof(innovations));
 
-			// Find first non-sensor node, so the target is never a sensor
-			int minTargetNode = 0;
-			while (this.nodes[minTargetNode].NodeType == Node.ENodeType.SENSOR || this.nodes[minTargetNode].NodeType == Node.ENodeType.BIAS)
-			{
-				minTargetNode++;
-			}
+            // Find first non-sensor node, so the target is never a sensor
+            int minTargetNode = this.FindFirstNonInputNode();
 
-			bool doRecurrency = this.random.NextDouble() < this.ParentSimulation.Parameters.RecurrencyProbability;
-			bool recurFlag = false;
-			bool found = false;
-			Node node1 = null, node2 = null;
+            bool doRecurrency = this.random.NextDouble() < this.ParentSimulation.Parameters.RecurrencyProbability;
+            bool recurFlag = false;
+            bool found = false;
+            Node node1 = null, node2 = null;
 
-			if (doRecurrency)
-			{
-				int counter = 0;
-				while (counter++ < maxTries)
-				{
-					bool recurrentLoop = this.random.NextDouble() > 0.5;
+            if (doRecurrency)
+            {
+                int counter = 0;
+                while (counter++ < maxTries && !found)
+                {
+                    bool recurrentLoop = this.random.NextDouble() > 0.5;
 
-					int startNode = this.random.Next(0, this.nodes.Count);
-					int targetNode = recurrentLoop ? startNode : this.random.Next(minTargetNode, this.nodes.Count);
+                    int startNode = this.random.Next(0, this.nodes.Count);
+                    int targetNode = recurrentLoop ? startNode : this.random.Next(minTargetNode, this.nodes.Count);
 
 
-					// Check if connection exists between the nodes
-					int i = 0;
-					node1 = this.nodes[startNode];
-					node2 = this.nodes[targetNode];
-					for (i = 0; i < this.connectionGenes.Count; ++i)
-					{
-						if ((node2.NodeType == Node.ENodeType.SENSOR || node2.NodeType == Node.ENodeType.BIAS) ||
-							(connectionGenes[i].InNodeGene.ID == node1.ID && connectionGenes[i].OutNodeGene.ID == node2.ID && connectionGenes[i].IsRecurrent))
-							break;
-						//if (connectionGenes[i].InNodeGene.ID == node1.ID && connectionGenes[i].OutNodeGene.ID == node2.ID)
-						//	break;
-					}
-					if (i == this.connectionGenes.Count)
-					{
-						Network net = this.GetNetwork();
-						Node netNode1 = net.GetNodeById(node1.ID);
-						Node netNode2 = net.GetNodeById(node2.ID);
-						if (netNode1 != null && netNode2 != null)
-							recurFlag = (parentSimulation.Parameters.RecurrencyProbability > 0.0f && net.IsRecurrentConnection(netNode1, netNode2, 0, this.nodes.Count * this.nodes.Count));
-						// Connections outgoing from Output nodes are considered recurrent
-						if (node1.NodeType == Node.ENodeType.OUTPUT)
-							recurFlag = true;
+                    // Check if connection exists between the nodes
+                    int i = 0;
+                    node1 = this.nodes[startNode];
+                    node2 = this.nodes[targetNode];
+                    for (i = 0; i < this.connectionGenes.Count; ++i)
+                    {
+                        if ((node2.NodeType == Node.ENodeType.SENSOR || node2.NodeType == Node.ENodeType.BIAS) ||
+                            (connectionGenes[i].InNodeGene.ID == node1.ID && connectionGenes[i].OutNodeGene.ID == node2.ID && connectionGenes[i].IsRecurrent))
+                            break;
+                    }
+                    if (i == this.connectionGenes.Count)
+                    {
+                        recurFlag = this.IsRecurrentConnectioBetweenNodes(node1, node2);
 
-						if (!recurFlag)
-							continue;
-						else
-							found = true;
+                        if (!recurFlag)
+                            continue;
+                        else
+                            found = true;
+                    }
+                }
+            }
+            else
+            {
+                int counter = 0;
+                while (counter++ < maxTries && !found)
+                {
+                    int startNode = this.random.Next(0, this.nodes.Count);
+                    int targetNode = this.random.Next(minTargetNode, this.nodes.Count);
 
-						break;
-					}
-				}
-			}
-			else
-			{
-				int counter = 0;
-				while (counter++ < maxTries)
-				{
-					int startNode = this.random.Next(0, this.nodes.Count);
-					int targetNode = this.random.Next(minTargetNode, this.nodes.Count);
+                    if (startNode != targetNode)
+                    {
+                        // Check if connection exists between the nodes
+                        int i = 0;
+                        node1 = this.nodes[startNode];
+                        // Don't allow recurrencies for now
+                        if (node1.NodeType == Node.ENodeType.OUTPUT)
+                            continue;
+                        node2 = this.nodes[targetNode];
+                        for (i = 0; i < this.connectionGenes.Count; ++i)
+                        {
+                            if (connectionGenes[i].InNodeGene.ID == node1.ID && connectionGenes[i].OutNodeGene.ID == node2.ID && !connectionGenes[i].IsRecurrent)
+                                break;
+                        }
+                        if (i == this.connectionGenes.Count)
+                        {
+                            recurFlag = this.IsRecurrentConnectioBetweenNodes(node1, node2);
 
-					if (startNode != targetNode)
-					{
-						// Check if connection exists between the nodes
-						int i = 0;
-						node1 = this.nodes[startNode];
-						// Don't allow recurrencies for now
-						if (node1.NodeType == Node.ENodeType.OUTPUT)
-							continue;
-						node2 = this.nodes[targetNode];
-						for (i = 0; i < this.connectionGenes.Count; ++i)
-						{
-							if (connectionGenes[i].InNodeGene.ID == node1.ID && connectionGenes[i].OutNodeGene.ID == node2.ID && !connectionGenes[i].IsRecurrent)
-								break;
-						}
-						if (i == this.connectionGenes.Count)
-						{
-							Network net = this.GetNetwork();
-							Node netNode1 = net.GetNodeById(node1.ID);
-							Node netNode2 = net.GetNodeById(node2.ID);
-							if(netNode1 != null && netNode2 != null)
-								recurFlag = (parentSimulation.Parameters.RecurrencyProbability > 0.0f && net.IsRecurrentConnection(netNode1, netNode2, 0, this.nodes.Count * this.nodes.Count));
-							// Connections outgoing from Output nodes are considered recurrent
-							if (node1.NodeType == Node.ENodeType.OUTPUT)
-								recurFlag = true;
+                            if (recurFlag)
+                                continue;
+                            else
+                                found = true;
+                        }
+                    }
+                }
+            }
 
-							if (recurFlag)
-								continue;
-							else
-								found = true;
+            // Check if this is new innovation, or if it already existed somewhere in the population
+            if (found)
+            {
+                if (doRecurrency) recurFlag = true;
 
-							break;
-						}
-					}
-				}
-			}
+                bool innovationFound = false;
+                ConnectionGene newGene = null;
+                foreach (Innovation innov in innovations)
+                {
+                    if (innov.InnovationType == Innovation.EInnovationType.NEWLINK && innov.InNode.ID == node1.ID && innov.OutNode.ID == node2.ID)
+                    {
+                        innovationFound = true;
+                        newGene = new ConnectionGene(innov.InNode, innov.OutNode, recurFlag, innov.Weight, true, innov.ID);
+                        break;
+                    }
+                }
 
-			// Check if this is new innovation, or whether it already exists somewhere in the population
-			if (found)
-			{
-				if (doRecurrency) recurFlag = true;
+                // This is completely new innovation
+                if (!innovationFound)
+                {
+                    float newRandomWeight = (float)(this.random.NextDouble() * 2.0f - 1.0f);
+                    Innovation newInnov = new Innovation(Innovation.EInnovationType.NEWLINK, node1, node2, null, Innovation.GetNextID(), 0, newRandomWeight, 0);
+                    innovations.Add(newInnov);
 
-				bool innovationFound = false;
-				ConnectionGene newGene = null;
-				foreach (Innovation innov in innovations)
-				{
-					if (innov.InnovationType == Innovation.EInnovationType.NEWLINK && innov.InNode.ID == node1.ID && innov.OutNode.ID == node2.ID)
-					{
-						innovationFound = true;
-						newGene = new ConnectionGene(innov.InNode, innov.OutNode, recurFlag, innov.Weight, true, innov.ID);
-						break;
-					}
-				}
+                    newGene = new ConnectionGene(node1, node2, recurFlag, newRandomWeight, true, newInnov.ID);
+                }
 
-				// This is completely new innovation
-				if (!innovationFound)
-				{
-					float newRandomWeight = (float)(this.random.NextDouble() * 2.0f - 1.0f);
-					Innovation newInnov = new Innovation(Innovation.EInnovationType.NEWLINK, node1, node2, null, Innovation.GetNextID(), 0, newRandomWeight, 0);
-					innovations.Add(newInnov);
+                this.AddConnectionGene(newGene);
 
-					newGene = new ConnectionGene(node1, node2, recurFlag, newRandomWeight, true, newInnov.ID);
-				}
+                this.phenotypeChanged = true;
+            }
+        }
 
-				this.AddConnectionGene(newGene);
+        private bool IsRecurrentConnectioBetweenNodes(Node node1, Node node2)
+        {
+            bool recurFlag = false;
+            Network net = this.GetNetwork();
+            Node netNode1 = net.GetNodeById(node1.ID);
+            Node netNode2 = net.GetNodeById(node2.ID);
+            if (netNode1 != null && netNode2 != null)
+                recurFlag = (parentSimulation.Parameters.RecurrencyProbability > 0.0f && net.IsRecurrentConnection(netNode1, netNode2, 0, this.nodes.Count * this.nodes.Count));
+            // Connections outgoing from Output nodes are considered recurrent
+            if (node1.NodeType == Node.ENodeType.OUTPUT)
+                recurFlag = true;
 
-				this.phenotypeChanged = true;
-			}
-		}
+            return recurFlag;
+        }
 
-		// Mutation that creates new node in the genome.
-		public void AddNodeMutation(List<Innovation> innovations)
+        public int FindFirstNonInputNode()
+        {
+            int minTargetNode = 0;
+            while (this.nodes[minTargetNode].NodeType == Node.ENodeType.SENSOR || this.nodes[minTargetNode].NodeType == Node.ENodeType.BIAS)
+            {
+                minTargetNode++;
+            }
+
+            return minTargetNode;
+        }
+
+        // Mutation that creates new node in the genome.
+        public void AddNodeMutation(List<Innovation> innovations)
         {
             if (innovations == null) throw new ArgumentNullException(nameof(innovations));
 
