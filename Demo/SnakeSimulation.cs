@@ -11,11 +11,14 @@
 		#region Variables
 
 		// Grid dimensions
-		public const int gridWidth = 20;
-		public const int gridHeight = 20;
+		public const int gridWidth = 30;
+		public const int gridHeight = 30;
 
 		private Simulation sim;
-        private System.Random rnd = new System.Random();
+		private System.Random rnd = null;
+		private bool useNonRandomSeed = false;
+
+		private bool saveAllBestSnakes = false;
 
 		private int numberOfRuns = 1;
 		private int run = 0;
@@ -31,14 +34,19 @@
         private bool firstTime = true;
         private bool isSimulationStarted = false;
 
-        private double bestFitnessEver = 0.0f;
+        private double bestFitnessEver = -1.0f;
 		private double bestScore = -1;
 
 		private int slowestSpeed = 20;
-		private int replaySpeed = 5;
+		private int replaySpeed = 19;
 
         #endregion
 
+
+		public SnakeSimulation()
+		{
+			rnd = useNonRandomSeed ? new Random(9) : new Random();
+		}
 
         // Use this for initialization
         public void Start()
@@ -58,16 +66,17 @@
                 Console.WriteLine("\nNo saved networks found. Please make sure to run simulation first and then try again");
                 return;
             }
-            Network net = Network.DeserializeNetwork("./best_snake");
+            Network net = Network.LoadNetworkFromFile("./best_snake");
             Snake snakeObj = new Snake();
+
             snakeObj.Brain = net;
             snakeObj.rnd = rnd;
             snakeObj.RunID = 0;
-            snakeObj.Seed = rnd.Next();
+            snakeObj.Seed = this.useNonRandomSeed ? 9 : rnd.Next();
             snakeObj.Start();
 
             // Draw the board
-            Console.SetWindowSize(SnakeSimulation.gridWidth + 2, SnakeSimulation.gridHeight + 2 + 11);
+            Console.SetWindowSize(SnakeSimulation.gridWidth + 2, SnakeSimulation.gridHeight + 2 + 13);
             Console.Clear();
 			int y = 0;
             for (y = 0; y <= SnakeSimulation.gridHeight; ++y)
@@ -83,8 +92,11 @@
             }
 
 			y = SnakeSimulation.gridHeight + 2;
-			string[] captions = { "SPEED:", "WALL L:", "WALL S:", "WALL R:", "TAIL L:", "TAIL S:", "TAIL R:", "FOOD L:", "FOOD S:", "FOOD R:" };
-			for(int i = 0; i < captions.Length; ++i)
+			string[] captions = { "SCORE:", "SPEED:", "WALL L:", "WALL S:", "WALL R:", "TAIL L:", "TAIL S:", "TAIL R:", "FOOD L:", "FOOD S:", "FOOD R:" };
+			Console.SetCursorPosition(0, y++);
+			Console.Write(captions[0]);
+			y++;
+			for (int i = 1; i < captions.Length; ++i)
 			{
 				Console.SetCursorPosition(0, y++);
 				Console.Write(captions[i]);
@@ -162,8 +174,10 @@
 						Console.SetCursorPosition(10, y);
 						Console.Write("            ");
 						Console.SetCursorPosition(10, y++);
-						if (i == 0) Console.Write(slowestSpeed - replaySpeed + 1);
-						else Console.Write(snakeObj.PreviousInput[i - 1]);
+
+						if (i == 0) { Console.Write(snakeObj.Tails.Count + 1); y++; }
+						else if (i == 1) Console.Write(slowestSpeed - replaySpeed + 1);
+						else Console.Write(snakeObj.PreviousInput[i - 2]);
 					}
 				}
 
@@ -189,18 +203,23 @@
 
 		private void InitSimulation()
 		{
+			Console.WriteLine("Would you like to save all best snakes? [Yn]");
+			var key = Console.ReadKey().Key;
+			if (key == ConsoleKey.Y) this.saveAllBestSnakes = true;
+			Console.WriteLine("");
+			Console.WriteLine("--- Simulation started ---");
+
 			Snake.StartingLength = 1;// 3;// int.Parse(this.startingSnakeLength.text);
 
 			Genome startGenome = new Genome(rnd);
 			int startIdx = 1;
-			int bias = 0;
-			int inputs = 3 + 3 + 3;
-			int hidden = 0;
-			int outputs = 3;
-			// 1 node is used as a bias (always 1.0)
+			int bias = 0;           // 1 node is used as a bias (always 1.0)
 			// 3 nodes are used to store distance to the walls
 			// 3 nodes are used to store distance to the snake itself (to avoid collisions with self),
 			// 3 nodes are used to store distance to food
+			int inputs = 3 + 3 + 3;
+			int hidden = 0;
+			int outputs = 3;		// 3 outputs. Direction of movement - left, right, straight
 			for (int i = 0; i < bias; ++i)
 				startGenome.AddNode(new Node(Node.ENodeType.BIAS, startIdx++));
 
@@ -245,8 +264,9 @@
 				startGenome.AddConnectionGene(10, outputStart + 2, 0.0f);*/
 				for(int i = 0; i < inputs; ++i)
 				{
-					for(int j = 0; j < outputs; ++j)
-						startGenome.AddConnectionGene(inputStart + i, outputStart + j, 0.0f);
+					//for(int j = 0; j < outputs; ++j)
+						//startGenome.AddConnectionGene(inputStart + i, outputStart + j, 0.0f);
+					startGenome.AddConnectionGene(inputStart + i, outputStart + rnd.Next(outputs), 0.0f);
 				}
 			}
 
@@ -256,19 +276,17 @@
 				for (int j = 0; j < outputs; ++j)
 					startGenome.AddConnectionGene(i + 1, outputStart + j, 0.0f);
 			}
-			/*startGenome.AddConnectionGene(1, outputStart + 0, 0.0f);
-			startGenome.AddConnectionGene(1, outputStart + 1, 0.0f);
-			startGenome.AddConnectionGene(1, outputStart + 2, 0.0f);*/
 
 
 			// Set up simulation - but don't start it
-			sim = new Simulation(rnd, startGenome, 1500);
+			sim = new Simulation(rnd, startGenome, 15000);
 			sim.Parameters.AddNodeProbability = 0.02f;
 			sim.Parameters.AddConnectionProbability = 0.1f;
 			sim.Parameters.WeightMutationPower = 1.0f;
 			sim.Parameters.MutateConnectionWeightsProbability = 0.8f;
 			sim.Parameters.MutateToggleEnabledProbability = 0.05f;
 			sim.Parameters.MutateReenableProbability = 0.025f;
+			sim.Parameters.SurvivalThreshold = 0.01f;
 			sim.Parameters.AreConnectionWeightsCapped = true;
 			sim.Parameters.MaxWeight = 1.0f;
 			sim.Parameters.MaxSpeciesGenerationsWithoutImprovement = 70;
@@ -296,7 +314,9 @@
 			if (bestFitnessEver > bestScore)
 			{
 				Console.WriteLine("");
+				Console.ForegroundColor = ConsoleColor.Green;
 				Console.WriteLine(System.String.Format("Generation: {0} | Current best: {1}", this.generationID, bestFitnessEver.ToString("0.###"))); //Snake.currentBestScore.ToString("0.###")));
+				Console.ForegroundColor = ConsoleColor.White;
 				bestScore = bestFitnessEver;
 			}
 			else
@@ -339,7 +359,7 @@
 			// All snakes died so we can move onto next epoch
 			if (allSnakesDead)
 			{
-				Snake.CurrentBestScore = 0;
+				//Snake.CurrentBestScore = 0;
 				int randomSeed = rnd.Next();
 
 				// Remove snakes (all are dead at the moment)
@@ -367,7 +387,6 @@
 					if (avg > this.snakeBestAvg)
 					{
 						this.snakeBestAvg = avg;
-						//Console.WriteLine(string.Format("Average fitness: {0}", this.snakeBestAvg.ToString("0.###")));
 					}
 					this.avgFitnesses.Add(avg);
 				}
@@ -405,7 +424,8 @@
 							if (gen.OriginalFitness > bestFitnessEver)
 							{
 								bestFitnessEver = gen.OriginalFitness;
-								net.SerializeBinary(string.Format("./best_snake"));
+								if (!this.saveAllBestSnakes) net.SaveNetworkToFile("./best_snake");
+								else { net.SaveNetworkToFile($"./best_snake_gen_{this.generationID:D8}_fitness_{bestFitnessEver:0.000}"); }
 							}
 						}
 
@@ -416,7 +436,7 @@
 						snakeObj.Genome = gen;
 						snakeObj.rnd = rnd;
 						snakeObj.RunID = (run % numberOfRuns);
-						snakeObj.Seed = rnd.Next();
+						snakeObj.Seed = this.useNonRandomSeed ? 9 : rnd.Next();
 						snakeObj.Start();
 
 						allSnakes.Add(snakeObj);
