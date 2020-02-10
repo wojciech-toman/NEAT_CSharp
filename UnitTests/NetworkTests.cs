@@ -252,9 +252,9 @@ namespace NEAT_CSharp.Tests
 
             net.ActivationFunction = new TestActivationFunction();
 
-            net.SerializeBinary("./test");
+            net.SaveNetworkToFile("./test");
 
-            net = Network.DeserializeNetwork("./test");
+            net = Network.LoadNetworkFromFile("./test");
 
             // Check nodes
             Assert.AreEqual(5, net.Nodes.Count);
