@@ -22,7 +22,7 @@ namespace NEAT_CSharp
         public ActivationFunction ActivationFunction { get; set; } = new SteepenedSigmoid();
 
 
-        public void SerializeBinary(string fileName)
+        public void SaveNetworkToFile(string fileName)
 		{
 			try
 			{
@@ -39,7 +39,7 @@ namespace NEAT_CSharp
 			}
 		}
 
-		public static Network DeserializeNetwork(string fileName)
+		public static Network LoadNetworkFromFile(string fileName)
 		{
 			if (string.IsNullOrEmpty(fileName))
 				return null;

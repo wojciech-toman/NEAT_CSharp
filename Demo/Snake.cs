@@ -19,11 +19,6 @@ namespace NEAT_CSharp.Demo
 		public const int borderRight = SnakeSimulation.gridWidth / 2;
 
 		private static float allSnakesBestScore = 0;
-		private static float currentBestScore = 0;
-
-		private int sinceLastUpdate = 0;
-
-		float fitness = 0;
 
 
 		// Current Movement Direction (by default it moves to the right)
@@ -77,6 +72,12 @@ namespace NEAT_CSharp.Demo
 			// Below is using given seed to make sure each snake has same conditions
 			this.rnd = new System.Random(Seed);
 
+			int dir = this.rnd.Next(4);
+			if(dir == 0) { vecDirection.x = 1; vecDirection.y = 0; }
+			else if (dir == 1) { vecDirection.x = -1; vecDirection.y = 0; }
+			else if (dir == 2) { vecDirection.x = 0; vecDirection.y = 1; }
+			else if (dir == 3) { vecDirection.x = 0; vecDirection.y = -1; }
+
 			this.SpawnFood();
 
 			// Add tail objects if starting length > 1
@@ -118,29 +119,33 @@ namespace NEAT_CSharp.Demo
 
 		float maxDistance;
 
-		public int WithoutChangesThreshold { get; set; } = SnakeSimulation.gridWidth * 8;
+		int movesCount = 0;
+
+		public int MaxMoves { get; set; } = 15000;
+		public int MovesRemaining { get; set; } = SnakeSimulation.gridWidth * 8;
+		public int BonusMoves { get; set; } = SnakeSimulation.gridWidth * 10;
 		public int RunID { get; internal set; }
 		public static float AllSnakesBestScore { get => allSnakesBestScore; set => allSnakesBestScore = value; }
-		public static float CurrentBestScore { get => currentBestScore; set => currentBestScore = value; }
 		public Point FoodLocation { get => foodLocation; set => foodLocation = value; }
 		public Point CurrentLocation { get => currentLocation; set => currentLocation = value; }
 		public List<Point> Tails { get => tails; set => tails = value; }
-
-		float topScore = 0.0f;          // Maximum fitness for this snake
+		public float[] PreviousInput { get; set; }
 
 		private void MovementIteration()
 		{
-			++sinceLastUpdate;
+			++movesCount;
+			--this.MovesRemaining;
 
 			// "Thinking" phase
-			int inputs = 3 + 3 + 3 + 1;
+			int bias = 0;
+			int inputs = 3 + 3 + 3 + bias;
 			float[] input = new float[inputs];
 
 			float distX = borderRight - borderLeft;
 			float distY = borderBottom - borderTop;
 			maxDistance = Math.Max(distX, distY);
 			for (int i = 0; i < input.Length; ++i)
-				input[i] = maxDistance;
+				input[i] = maxDistance;//-maxDistance * 5;
 
 			Point vecLeft = this.GetDirectionVector(-1, vecDirection);
 			Point vecStraight = this.GetDirectionVector(0, vecDirection);
@@ -161,19 +166,19 @@ namespace NEAT_CSharp.Demo
 					// Distance to walls
 					if (currentPos.x == borderLeft)
 					{
-						input[i] = Math.Abs(currentLocation.x - currentPos.x); break;
+						input[i + bias] = Math.Abs(currentLocation.x - currentPos.x); break;
 					}
 					else if (currentPos.x == borderRight)
 					{
-						input[i] = Math.Abs(currentLocation.x - currentPos.x); break;
+						input[i + bias] = Math.Abs(currentLocation.x - currentPos.x); break;
 					}
 					else if (currentPos.y == borderTop)
 					{
-						input[i] = Math.Abs(currentLocation.y - currentPos.y); break;
+						input[i + bias] = Math.Abs(currentLocation.y - currentPos.y); break;
 					}
 					else if (currentPos.y == borderBottom)
 					{
-						input[i] = Math.Abs(currentLocation.y - currentPos.y); break;
+						input[i + bias] = Math.Abs(currentLocation.y - currentPos.y); break;
 					}
 
 					// Distance to self
@@ -181,7 +186,7 @@ namespace NEAT_CSharp.Demo
 					{
 						if (tail.x == currentPos.x && tail.y == currentPos.y)
 						{
-							input[i + 4] = Math.Min(input[i + 4], Math.Abs(currentLocation.x - tail.x) + Math.Abs(currentLocation.y - tail.y));
+							input[i + 3 + bias] = Math.Min(input[i + 3 + bias], Math.Abs(currentLocation.x - tail.x) + Math.Abs(currentLocation.y - tail.y));
 						}
 					}
 
@@ -189,19 +194,21 @@ namespace NEAT_CSharp.Demo
 					if (currentPos.x == foodLocation.x && currentPos.y == foodLocation.y)
 					{
 						//float dist = (float)Math.Sqrt(diffX * diffX + diffY * diffY);
-						input[i + 7] = Math.Abs(foodLocation.x - currentLocation.x) + Math.Abs(foodLocation.y - currentLocation.y);
+						input[i + 6 + bias] = Math.Abs(foodLocation.x - currentLocation.x) + Math.Abs(foodLocation.y - currentLocation.y);
 					}
 				}
 			}
 
+			// Set bias nodes always to 1
+			for (int i = 0; i < bias; ++i)
+				input[i] = 1.0f;
 			// Normalize the input [0; 1]
-			for (int i = 0; i < input.Length; ++i)
+			for (int i = bias; i < input.Length; ++i)
 			{
+				input[i] = maxDistance - input[i];
 				input[i] /= maxDistance;
 			}
-
-			// Set bias node always to 1
-			input[3] = 1.0f;
+			this.PreviousInput = input;
 
 
 			// Activate the neural network
@@ -217,9 +224,10 @@ namespace NEAT_CSharp.Demo
 			}
 
 			List<Node> outputs = this.Brain.Output;
-			float outLeft = outputs[0].Activation;			// Left
-			float outStraight = outputs[1].Activation;		// Straight
-			float outRight = outputs[2].Activation;			// Right
+			float outLeft = outputs[0].Activation;          // Left
+			float outStraight = outputs[1].Activation;      // Straight
+			float outRight = outputs[2].Activation;         // Right
+
 			int dir = -10;
 			if (outLeft > outRight) dir = outLeft > outStraight ? -1 : 0;
 			else dir = outRight > outStraight ? 1 : 0;
@@ -235,50 +243,66 @@ namespace NEAT_CSharp.Demo
 			if (currentLocation.x == foodLocation.x && currentLocation.y == foodLocation.y)
 				ate = true;
 
+			// Add small penalty for those movements that don't result in eating.
+			// The rationale is that the Snake will "prefer" to find quicker ways to get to food
+			// and thus develop more complex moves.
+			if (!ate)
+			{
+				float bonusFitness = 2.5f / this.MaxMoves;// - (dir == 0 ? 0.0f : 0.1f); // 0.01f
+				//fitness += bonusFitness;
+				if (this.Genome != null)
+				{
+					this.Genome.Fitness += bonusFitness;
+					//float score = (float)(this.Genome.Fitness / (this.RunID + 1));
+					//if (score > Snake.CurrentBestScore)
+						//CurrentBestScore = score;
+				}
+            }
+
+			// Did snake hit the border of the grid
+			if (currentLocation.x == borderLeft || currentLocation.x == borderRight || currentLocation.y == borderTop || currentLocation.y == borderBottom)
+			{
+				//if (this.Genome != null) this.Genome.Fitness *= 0.15f;
+				this.MarkAsDead();
+				return;
+			}
+
 			// Did eat something? If so, insert new tail element into the gap and increase snake's genome fitness (to reward it for doing good thing)
 			if (ate)
 			{
-				fitness += 1;
-				if (this.Genome != null)
-				{
-					this.Genome.Fitness += 1;
-					float score = (float)(this.Genome.Fitness / (this.RunID + 1));
-					if (score > Snake.CurrentBestScore)
-						CurrentBestScore = score;
-				}
+				if (this.Genome != null) this.Genome.Fitness += 1;
 
 				this.AddTailObject(v);
 
-				sinceLastUpdate = 0;
+				this.MovesRemaining += this.BonusMoves;
 
 				// Reset the flag and spawn new food item
 				ate = false;
 				SpawnFood();
 			}
-			// Do we have a Tail?
-			else if (tails.Count > 0)
+			// Snake didn't add anything so we just need to move it
+			else
 			{
-				if (currentLocation.x == borderLeft || currentLocation.x == borderRight || currentLocation.y == borderTop || currentLocation.y == borderBottom)
+				// Do we have a Tail?
+				if (tails.Count > 0)
 				{
-					this.MarkAsDead();
-					return;
-				}
-
-				for (int i = 0; i < tails.Count; ++i)
-				{
-					if (tails[i].x == currentLocation.x && tails[i].y == currentLocation.y)
+					for (int i = 0; i < tails.Count; ++i)
 					{
-						this.MarkAsDead();
-						return;
+						if (tails[i].x == currentLocation.x && tails[i].y == currentLocation.y)
+						{
+							//if (this.Genome != null) this.Genome.Fitness *= 0.15f;
+							this.MarkAsDead();
+							return;
+						}
 					}
+
+					// Move last Tail Element to where the Head was
+					tails[tails.Count - 1] = v;
+
+					// Add to front of list, remove from the back
+					tails.Insert(0, tails[tails.Count - 1]);
+					tails.RemoveAt(tails.Count - 1);
 				}
-
-				// Move last Tail Element to where the Head was
-				tails[tails.Count - 1] = v;
-
-				// Add to front of list, remove from the back
-				tails.Insert(0, tails[tails.Count - 1]);
-				tails.RemoveAt(tails.Count - 1);
 			}
 
 			// Incur small fitness penalty for every move away from food
@@ -292,10 +316,6 @@ namespace NEAT_CSharp.Demo
 
 
 			previousDistanceToFood = newDistanceToFood;
-
-
-			if (fitness > this.topScore)
-				topScore = fitness;
 		}
 
 		public void MoveOnce()
@@ -306,7 +326,7 @@ namespace NEAT_CSharp.Demo
 
 			this.MovementIteration();
 
-			if (sinceLastUpdate >= WithoutChangesThreshold)
+			if (MovesRemaining <= 0)
 				this.MarkAsDead();
 		}
 		public void Move()
@@ -315,7 +335,7 @@ namespace NEAT_CSharp.Demo
 			if (this.IsDead)
 				return;
 
-			while (!this.IsDead && sinceLastUpdate < WithoutChangesThreshold)
+			while (!this.IsDead && this.MovesRemaining > 0 && this.movesCount < this.MaxMoves)
 			{
 				this.MovementIteration();
 			}
@@ -334,11 +354,6 @@ namespace NEAT_CSharp.Demo
 			// Make sure fitness isn't negative (it can be at that point if snake was moving away from food most of the time)
 			if (this.IsDead) return;
 
-
-			if (this.Genome != null)
-			{
-				this.Genome.Fitness += Math.Pow(Math.Max(1.0f - previousDistanceToFood / maxDistance, 0.0f), 2);
-			}
 			this.IsDead = true;
 		}
 	}
