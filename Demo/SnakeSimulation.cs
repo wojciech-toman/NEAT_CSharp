@@ -31,7 +31,7 @@
         private double bestFitnessEver = 0.0f;
         private int run = 0;
 		private int slowestSpeed = 20;
-		private int replaySpeed = 1;
+		private int replaySpeed = 5;
 
         private double bestScore = -1;
 
