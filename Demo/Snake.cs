@@ -305,7 +305,7 @@ namespace NEAT_CSharp.Demo
 				SpawnFood();
 			}
 			// Do we have a Tail?
-			else if (tails.Count > 0)
+			else
 			{
 				if (currentLocation.x == borderLeft || currentLocation.x == borderRight || currentLocation.y == borderTop || currentLocation.y == borderBottom)
 				{
@@ -313,21 +313,24 @@ namespace NEAT_CSharp.Demo
 					return;
 				}
 
-				for (int i = 0; i < tails.Count; ++i)
+				if (tails.Count > 0)
 				{
-					if (tails[i].x == currentLocation.x && tails[i].y == currentLocation.y)
+					for (int i = 0; i < tails.Count; ++i)
 					{
-						this.MarkAsDead();
-						return;
+						if (tails[i].x == currentLocation.x && tails[i].y == currentLocation.y)
+						{
+							this.MarkAsDead();
+							return;
+						}
 					}
+
+					// Move last Tail Element to where the Head was
+					tails[tails.Count - 1] = v;
+
+					// Add to front of list, remove from the back
+					tails.Insert(0, tails[tails.Count - 1]);
+					tails.RemoveAt(tails.Count - 1);
 				}
-
-				// Move last Tail Element to where the Head was
-				tails[tails.Count - 1] = v;
-
-				// Add to front of list, remove from the back
-				tails.Insert(0, tails[tails.Count - 1]);
-				tails.RemoveAt(tails.Count - 1);
 			}
 
 			// Incur small fitness penalty for every move away from food
