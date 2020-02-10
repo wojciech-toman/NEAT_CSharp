@@ -9,8 +9,8 @@
     public class SnakeSimulation
 	{
         // Grid dimensions
-        public const int gridWidth = 30;
-        public const int gridHeight = 30;
+        public const int gridWidth = 20;
+        public const int gridHeight = 20;
 
         #region Variables
 
@@ -30,6 +30,8 @@
         private bool isSimulationStarted = false;
         private double bestFitnessEver = 0.0f;
         private int run = 0;
+		private int slowestSpeed = 20;
+		private int replaySpeed = 1;
 
         private double bestScore = -1;
 
@@ -63,9 +65,10 @@
             snakeObj.Start();
 
             // Draw the board
-            Console.SetWindowSize(SnakeSimulation.gridWidth + 2, SnakeSimulation.gridHeight + 2);
+            Console.SetWindowSize(SnakeSimulation.gridWidth + 2, SnakeSimulation.gridHeight + 2 + 11);
             Console.Clear();
-            for (int y = 0; y <= SnakeSimulation.gridHeight; ++y)
+			int y = 0;
+            for (y = 0; y <= SnakeSimulation.gridHeight; ++y)
             {
                 for (int x = 0; x <= SnakeSimulation.gridWidth; ++x)
                 {
@@ -77,13 +80,23 @@
                 }
             }
 
+			y = SnakeSimulation.gridHeight + 2;
+			string[] captions = { "SPEED:", "WALL L:", "WALL S:", "WALL R:", "TAIL L:", "TAIL S:", "TAIL R:", "FOOD L:", "FOOD S:", "FOOD R:" };
+			for(int i = 0; i < captions.Length; ++i)
+			{
+				Console.SetCursorPosition(0, y++);
+				Console.Write(captions[i]);
+			}
+
             Point previousSnakeLocation;
             previousSnakeLocation.x = -100;
             previousSnakeLocation.y = -100;
             List<Point> previousSnake = new List<Point>();
             List<Point> pointsToDraw = new List<Point>();
 
-            while (!snakeObj.IsDead)
+			bool cancelled = false;
+
+            while (!snakeObj.IsDead && !cancelled)
             {
                 // Clear previous food and snake
                 if (previousSnakeLocation.x != -100 && previousSnakeLocation.y != -100 &&
@@ -133,13 +146,39 @@
                 }
                 Console.ForegroundColor = ConsoleColor.White;
 
-                Console.SetCursorPosition(0, 0);
+				Console.SetCursorPosition(0, 0);
 
                 // Move the snake
                 snakeObj.MoveOnce();
 
-                Thread.Sleep(10);
-            }
+				Console.ForegroundColor = ConsoleColor.Green;
+				y = SnakeSimulation.gridHeight + 2;
+				if (snakeObj.PreviousInput != null)
+				{
+					for (int i = 0; i < captions.Length; ++i)
+					{
+						Console.SetCursorPosition(10, y);
+						Console.Write("            ");
+						Console.SetCursorPosition(10, y++);
+						if (i == 0) Console.Write(slowestSpeed - replaySpeed + 1);
+						else Console.Write(snakeObj.PreviousInput[i - 1]);
+					}
+				}
+
+				Console.ForegroundColor = ConsoleColor.White;
+				Console.SetCursorPosition(0, 0);
+
+				if(Console.KeyAvailable == true)
+				{
+					var key = Console.ReadKey().Key;
+					if (key == ConsoleKey.OemMinus) { ++replaySpeed; if (replaySpeed > slowestSpeed) replaySpeed = slowestSpeed; }
+					else if (key == ConsoleKey.OemPlus) { --replaySpeed; if (replaySpeed < 1) replaySpeed = 1; }
+					else if (key == ConsoleKey.Escape)
+						cancelled = true;
+				}
+
+				Thread.Sleep(10 * replaySpeed);
+			}
 
 
             Console.SetWindowSize(oldWidth, oldHeight);
@@ -151,43 +190,77 @@
 			Snake.StartingLength = 1;// 3;// int.Parse(this.startingSnakeLength.text);
 
 			Genome startGenome = new Genome(rnd);
-			int inputs = 3 + 1 + 3 + 3;
-            // 3 nodes are used to store distance to the walls
-            // 1 node is used as a bias (always 1.0),
-            // 3 nodes are used to store distance to the snake itself (to avoid collisions with self),
-            // 3 nodes are used to store distance to food
+			int startIdx = 1;
+			int bias = 0;
+			int inputs = 3 + 3 + 3;
+			int hidden = 0;
+			int outputs = 3;
+			// 1 node is used as a bias (always 1.0)
+			// 3 nodes are used to store distance to the walls
+			// 3 nodes are used to store distance to the snake itself (to avoid collisions with self),
+			// 3 nodes are used to store distance to food
+			for (int i = 0; i < bias; ++i)
+				startGenome.AddNode(new Node(Node.ENodeType.BIAS, startIdx++));
+
+			int inputStart = startIdx;
             for (int i = 0; i < inputs; ++i)
-				startGenome.AddNode(new Node(i != 3 ? Node.ENodeType.SENSOR : Node.ENodeType.BIAS, i + 1));
+				startGenome.AddNode(new Node(Node.ENodeType.SENSOR, startIdx++));
+
+			int hiddenStart = startIdx;
+			for(int i = 0; i < hidden; ++i)
+				startGenome.AddNode(new Node(Node.ENodeType.HIDDEN, startIdx++));
 
 			// Output: Move left, straight, right
-			int outputStart = inputs + 1;
-			startGenome.AddNode(new Node(Node.ENodeType.OUTPUT, outputStart + 0));
-			startGenome.AddNode(new Node(Node.ENodeType.OUTPUT, outputStart + 1));
-			startGenome.AddNode(new Node(Node.ENodeType.OUTPUT, outputStart + 2));
+			int outputStart = startIdx;
+			for(int i = 0; i < outputs; ++i)
+				startGenome.AddNode(new Node(Node.ENodeType.OUTPUT, startIdx++));
 
-            // Walls distance
-            startGenome.AddConnectionGene(1, outputStart + 0, 0.0f);
-			startGenome.AddConnectionGene(2, outputStart + 1, 0.0f);
-			startGenome.AddConnectionGene(3, outputStart + 2, 0.0f);
+			if (hidden > 0)
+			{
+				for (int i = 0; i < hidden; ++i)
+				{
+					for (int j = 0; j < inputs; ++j)
+						startGenome.AddConnectionGene(inputStart + j, hiddenStart + i, 0.0f);
+					for (int j = 0; j < outputs; ++j)
+						startGenome.AddConnectionGene(hiddenStart + i, outputStart + j, 0.0f);
+				}
+			}
+			else
+			{
+				// Walls distance
+				/*startGenome.AddConnectionGene(2, outputStart + 0, 0.0f);
+				startGenome.AddConnectionGene(3, outputStart + 1, 0.0f);
+				startGenome.AddConnectionGene(4, outputStart + 2, 0.0f);
 
-			// Tails distance
-			startGenome.AddConnectionGene(5, outputStart + 0, 0.0f);
-			startGenome.AddConnectionGene(6, outputStart + 1, 0.0f);
-			startGenome.AddConnectionGene(7, outputStart + 2, 0.0f);
+				// Tails distance
+				startGenome.AddConnectionGene(5, outputStart + 0, 0.0f);
+				startGenome.AddConnectionGene(6, outputStart + 1, 0.0f);
+				startGenome.AddConnectionGene(7, outputStart + 2, 0.0f);
 
-            // Food distance
-            startGenome.AddConnectionGene(8, outputStart + 0, 0.0f);
-			startGenome.AddConnectionGene(9, outputStart + 1, 0.0f);
-			startGenome.AddConnectionGene(10, outputStart + 2, 0.0f);
+				// Food distance
+				startGenome.AddConnectionGene(8, outputStart + 0, 0.0f);
+				startGenome.AddConnectionGene(9, outputStart + 1, 0.0f);
+				startGenome.AddConnectionGene(10, outputStart + 2, 0.0f);*/
+				for(int i = 0; i < inputs; ++i)
+				{
+					for(int j = 0; j < outputs; ++j)
+						startGenome.AddConnectionGene(inputStart + i, outputStart + j, 0.0f);
+				}
+			}
 
 			// Connect bias node to every output
-			startGenome.AddConnectionGene(4, outputStart + 0, 0.0f);
-			startGenome.AddConnectionGene(4, outputStart + 1, 0.0f);
-			startGenome.AddConnectionGene(4, outputStart + 2, 0.0f);
+			for(int i = 0; i < bias; ++i)
+			{
+				for (int j = 0; j < outputs; ++j)
+					startGenome.AddConnectionGene(i + 1, outputStart + j, 0.0f);
+			}
+			/*startGenome.AddConnectionGene(1, outputStart + 0, 0.0f);
+			startGenome.AddConnectionGene(1, outputStart + 1, 0.0f);
+			startGenome.AddConnectionGene(1, outputStart + 2, 0.0f);*/
 
 
 			// Set up simulation - but don't start it
-			sim = new Simulation(rnd, startGenome, 150);
+			sim = new Simulation(rnd, startGenome, 1500);
 			sim.Parameters.AddNodeProbability = 0.02f;
 			sim.Parameters.AddConnectionProbability = 0.1f;
 			sim.Parameters.WeightMutationPower = 1.0f;
