@@ -8,32 +8,34 @@
 
     public class SnakeSimulation
 	{
-        // Grid dimensions
-        public const int gridWidth = 20;
-        public const int gridHeight = 20;
+		#region Variables
 
-        #region Variables
+		// Grid dimensions
+		public const int gridWidth = 20;
+		public const int gridHeight = 20;
 
-        private Simulation sim;
+		private Simulation sim;
         private System.Random rnd = new System.Random();
 
 		private int numberOfRuns = 1;
+		private int run = 0;
 
-        private List<float> bestFitnesses = new List<float>();
+		private List<float> bestFitnesses = new List<float>();
         private List<float> avgFitnesses = new List<float>();
 
         private float snakeBestAvg = 0.0f;
 
         private int generationID = 1;
         private List<Snake> allSnakes = new List<Snake>();
+
         private bool firstTime = true;
         private bool isSimulationStarted = false;
+
         private double bestFitnessEver = 0.0f;
-        private int run = 0;
+		private double bestScore = -1;
+
 		private int slowestSpeed = 20;
 		private int replaySpeed = 5;
-
-        private double bestScore = -1;
 
         #endregion
 
